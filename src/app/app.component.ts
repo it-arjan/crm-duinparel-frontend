@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styles: ['.drop{ margin-top: 10px;}']
 })
 export class AppComponent {
   title = 'Duinparel-CRM';

@@ -1,9 +1,9 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
-import { BookingWrapComponent } from './booking/booking-wrap/booking-wrap.component';
-import { MailingWrapComponent } from './mailing/mailing-wrap/mailing-wrap.component';
-import { BookingListComponent } from './booking/booking-list/booking-list.component';
-import { CustomerNewEditComponent } from './booking/customer-new-edit/customer-new-edit.component';
+import { BookingWrapComponent } from './components/booking/booking-wrap/booking-wrap.component';
+import { MailingWrapComponent } from './components/mailing/mailing-wrap/mailing-wrap.component';
+import { BookingListComponent } from './components/booking/booking-list/booking-list.component';
+import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
 
 const appRoutes: Routes = [
     // {path: '', component: AppComponent},
