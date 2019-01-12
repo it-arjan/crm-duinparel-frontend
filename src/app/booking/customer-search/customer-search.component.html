@@ -1,0 +1,18 @@
+<div class="row">
+<form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()">
+<div class="form-group col-sm-3">
+    <label for="email">(stukje) email</label>
+    <input class ="form-control input-normal" type="text" id="email" formControlName="email">
+    <button class="btn btn-primary" type="submit" [disabled]="!reactiveForm.valid">
+        Zoek
+    </button>
+   </div>
+  <div class="col-sm-3"></div>
+  <div class="col-sm-3">
+    
+  </div>
+<button class="btn btn-primary" type="button" (click)="onNewCustomer()">
+    Nieuwe klant
+</button>
+</form>
+</div>

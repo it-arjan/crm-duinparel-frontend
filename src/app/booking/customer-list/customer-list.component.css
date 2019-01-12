@@ -1,0 +1,13 @@
+.rowselect{
+    background-color: #C7DBF0;
+}
+.show-hover{
+    cursor:pointer;
+    padding:0px;
+} 
+.show-hover div {
+    padding:5px;
+}
+.show-hover:hover{
+    background:#D2E5F9;
+}

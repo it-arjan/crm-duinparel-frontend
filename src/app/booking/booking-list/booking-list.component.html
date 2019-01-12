@@ -1,0 +1,9 @@
+<h2>Boekingen van {{customer.name}}</h2>
+<!-- add form + new fields + submit button -->
+<!-- list existing bookings here, + delete button -->
+<div class="row" *ngFor="let booking of customer.bookings;">
+<div class="col-sm-4">{{booking.arrive | date:'shortDate'}}</div>
+<div class="col-sm-4">{{booking.depart | date:'shortDate'}}</div>
+<div class="col-sm-2">{{booking.propcode }}</div>
+<div class="col-sm-2">X</div>
+</div>

@@ -1,0 +1,44 @@
+<h2 *ngIf="editMode else insertMode">
+    Bewerken gegevens
+</h2>
+<ng-template #insertMode>
+  <h2>Invoeren nieuwe klant</h2>
+</ng-template>
+<form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+              <label for="name">naam</label>
+              <input class ="form-control" type="text" id="name" formControlName="name">
+            </div>
+            <div class="form-group">
+                <label for="address">addres</label>
+                <input class ="form-control" type="text" id="address" formControlName="address">
+              </div>
+              <div class="form-group">
+                  <label for="email">email</label>
+                  <input class ="form-control" type="text" id="email" formControlName="email">
+                </div>
+                <div class="form-group">
+                    <label for="iban">iban</label>
+                    <input class ="form-control" type="text" id="iban" formControlName="iban">
+                  </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit" [disabled]="!reactiveForm.valid">
+                        {{'Opslaan'}}
+                    </button>
+                    <button class="btn btn-danger" type="button" (click)="onCancel()">
+                        Stop
+                    </button>
+                    <span style="width:30px"></span>
+                    <button 
+                    class="btn btn-danger" 
+                    type="button" 
+                    (click)="onDelete()"
+                    *ngIf="editMode">
+                        Verwijder
+                    </button>                 
+                </div>
+        </div>
+</form>

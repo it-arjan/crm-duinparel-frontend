@@ -1,0 +1,8 @@
+<h2>Zoekresultaat</h2>
+<div class="row show-hover " 
+[ngClass]="selectedIdx ==idx ?'rowselect':''"
+*ngFor="let c of customers;let idx=index">
+    <div class="col-sm-4 "  (click)="onClick(idx,'book')">{{c.name}} </div>
+    <div class="col-sm-4 "  (click)="onClick(idx,'book')">{{c.email}}</div>
+    <div class="col-sm-4"><button (click)="onClick(idx,'edit')"> bewerken</button></div>
+</div>
