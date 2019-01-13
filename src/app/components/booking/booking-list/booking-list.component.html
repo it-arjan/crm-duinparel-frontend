@@ -1,9 +1,69 @@
+<form 
+    [formGroup]="reactiveForm" 
+    (ngSubmit)="onSubmit()" 
+    class="form-inline"
+    >
+    <!-- <div class="row"> -->
+        <div class="col-md-10">
+            <div class="input-group">
+                <input 
+                    class ="form-control-sm" 
+                    type="text" 
+                    name="arrive" 
+                    id="arrive" 
+                    formControlName="arrive" 
+                    placeholder="aankomst"
+                    ngbDatepicker 
+                    #arriveRef="ngbDatepicker" 
+                    [displayMonths]="dpDisplayMonths" 
+                    [navigation]="dpNnavigation" 
+                    [showWeekNumbers]="dpShowWeekNumbers"
+                    [outsideDays]="dpOoutsideDays"   
+                    [minDate]="dpminDate"
+                    >
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calendar" (click)="arriveRef.toggle()" type="button"></button>
+               </div>
+               <input 
+                    class ="form-control-sm input-group-append" 
+                    type="text" 
+                    formControlName="depart" 
+                    placeholder="vertrek"
+                    ngbDatepicker 
+                    #departRef2="ngbDatepicker" 
+                    [displayMonths]="dpDisplayMonths"
+                    [navigation]="dpNnavigation" 
+                    [showWeekNumbers]="dpShowWeekNumbers"
+                    [outsideDays]="dpOoutsideDays"   
+                    [minDate]="dpminDate"
+               >
+               <div class="input-group-append">
+                   <button class="btn btn-outline-secondary calendar" (click)="departRef2.toggle()" type="button"></button>
+              </div>
+              <select class ="form-control input-group-append" formControlName="propcode">
+                    <option disabled selected value>--</option>
+                    <option *ngFor="let pcode of propCodes">{{pcode}}</option>
+                </select>
+            </div>
+        </div>
+    <!-- </div> -->
+
+
+    <div class="col-md-8">
+
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
+            Voeg toe
+        </button>
+    </div>
+</form>
 <h2>Boekingen van {{customer.name}}</h2>
-<!-- add form + new fields + submit button -->
+
 <!-- list existing bookings here, + delete button -->
-<div class="row" *ngFor="let booking of customer.bookings;">
+<div class="row" *ngFor="let booking of customer.bookings; let idx=index">
 <div class="col-md-4">{{booking.arrive | date:'shortDate'}}</div>
 <div class="col-md-4">{{booking.depart | date:'shortDate'}}</div>
 <div class="col-md-2">{{booking.propcode }}</div>
-<div class="col-md-2">X</div>
+<div class="col-md-2"><a class="" style="cursor:pointer" (click)='onDelete(idx)'>X</a></div>
 </div>

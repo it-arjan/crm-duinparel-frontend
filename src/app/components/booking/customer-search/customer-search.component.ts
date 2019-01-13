@@ -17,7 +17,7 @@ export class CustomerSearchComponent implements OnInit {
   }
   initForm(){
     this.reactiveForm = new FormGroup({
-      'email': new FormControl(name)//, Validators.required
+      'email': new FormControl('')//, Validators.required
     })
   }
   onSubmit(){

@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NgxElectronModule } from 'ngx-electron';
 
@@ -14,7 +15,10 @@ import { CustomerListComponent } from './components/booking/customer-list/custom
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
 import { MailingWrapComponent } from './components/mailing/mailing-wrap/mailing-wrap.component';
 import { BookingListComponent } from './components/booking/booking-list/booking-list.component';
-//import { CustomerListItemComponent } from './booking/customer-list-item/customer-list-item.component';
+import { ConfigComponent } from './components/config/config.component';
+import {NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/modal-confirm.component';
+
 
 @NgModule({
   declarations: [
@@ -27,10 +31,16 @@ import { BookingListComponent } from './components/booking/booking-list/booking-
     CustomerNewEditComponent,
     MailingWrapComponent,
     BookingListComponent,
-   // CustomerListItemComponent,
+    ConfigComponent,
+    ModalConfirmComponent,
+  ],
+  entryComponents: [
+    ModalConfirmComponent
   ],
   imports: [
+    NgbModule,
     BrowserModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
     AppRoutingModule,
     NgxElectronModule,

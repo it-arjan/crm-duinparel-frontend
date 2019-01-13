@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataPersistService } from './data-persist.service';
 import { Customer } from '../models/customer.model';
+import { Booking } from '../models/booking.model';
 
 @Injectable({
   providedIn: 'root'
@@ -35,11 +36,18 @@ export class DataService {
     idx = this.searchResult.indexOf(cust)
     if (idx >=0) this.searchResult.splice(idx, 1)
   }
-  
+  addBooking(custId:number, booking:Booking){
+    let realCust = this.customers.find(x=>x.id==custId)
+    realCust.consumeBooking(booking);
+    //todo: persist
+  }
+  removeBooking(id:number, booking:Booking){
+
+  }
   updateCustomer(id:number, cust:Customer){
     //object is same everywhere, only update it in customers
     let realCust = this.customers.find(x=>x.id==cust.id)
-    realCust.consume(cust);
+    realCust.consumeCustomer(cust);
     //todo: persist
   
   }

@@ -10,9 +10,14 @@ body {
     /* Increase all font sizes on mobile */
     @media (max-width: 767px) { 
      
-    body {
-    /* default is 1rem or 16px */
-    font-size: 16px;
     }
-     
-    }
+    i.crm-icon {
+        font-size: 3em;
+     }
+     i.crm-error{
+        color:red; 
+     }
+     i.crm-success{
+        color:green;
+     }
+ 
