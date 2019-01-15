@@ -24,7 +24,7 @@ export class CustomerSearchComponent implements OnInit {
     this._ds.searchCustomers(this.reactiveForm.get('email').value)
   }
 onNewCustomer(){
-  this._ds.clearSearchResult();
+  this._ds.clearCustomerSearch();
   this._router.navigate(['booking','cust','new'])
 }
 }

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MailingWrapComponent } from './mailing-wrap.component';
+import { MailingComponent } from './mailing.component';
 
-describe('MailingWrapComponent', () => {
-  let component: MailingWrapComponent;
-  let fixture: ComponentFixture<MailingWrapComponent>;
+describe('MailingComponent', () => {
+  let component: MailingComponent;
+  let fixture: ComponentFixture<MailingComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MailingWrapComponent ]
+      declarations: [ MailingComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MailingWrapComponent);
+    fixture = TestBed.createComponent(MailingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

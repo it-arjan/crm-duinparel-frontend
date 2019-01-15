@@ -17,6 +17,6 @@ export class Customer {
         this.iban=cust.iban
     }
     consumeBooking(booking:Booking){
-        this.bookings.push(booking)
+        this.bookings.unshift(booking)
     }
 }

@@ -13,7 +13,7 @@ import { BookingWrapComponent } from './components/booking/booking-wrap/booking-
 import { CustomerSearchComponent } from './components/booking/customer-search/customer-search.component';
 import { CustomerListComponent } from './components/booking/customer-list/customer-list.component';
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
-import { MailingWrapComponent } from './components/mailing/mailing-wrap/mailing-wrap.component';
+import { MailingComponent } from './components/mailing/mailing/mailing.component';
 import { BookingListComponent } from './components/booking/booking-list/booking-list.component';
 import { ConfigComponent } from './components/config/config.component';
 import {NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -29,7 +29,7 @@ import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/m
     CustomerSearchComponent,
     CustomerListComponent,
     CustomerNewEditComponent,
-    MailingWrapComponent,
+    MailingComponent,
     BookingListComponent,
     ConfigComponent,
     ModalConfirmComponent,

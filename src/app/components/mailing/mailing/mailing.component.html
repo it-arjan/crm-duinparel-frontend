@@ -1,0 +1,40 @@
+<form 
+    [formGroup]="reactiveForm" 
+    (ngSubmit)="onSubmit()" 
+    class="form-inline"
+    >
+    <div class="form-group">
+      <div class="col-md-8">
+        <label class ="form-control-sm" for="notVistedSince">Niet geweest sinds (maanden)
+          </label>
+          <input class ="form-control-sm" type="text" formControlName="notVisitedSince" name="notVistedSince" id="notVistedSince">
+        <label class ="form-control-sm" for="notMailedSince">Niet gemaild sinds (maanden)
+          </label>
+          <input class ="form-control-sm" type="text" formControlName="notMailedSince" name="notMailedSince" id="notMailedSince">
+          <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="propType">
+              <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" value="app"> app
+              </label> 
+              <label ngbButtonLabel class="btn-primary">
+                <input ngbButton type="radio" value="huis"> huis
+              </label>
+            </div>
+    </div>
+    <div class="col-md-1"><!--separator--></div>
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">Zoek</button>
+    </div>
+</form>
+<hr>
+<div class="row" *ngIf="selectedEmails">
+<h4 > Selectie: <small>Klanten ('{{selectedPropType}}') {{visitedSince}} maanden geleden voor het laatst, de laatste 
+  {{mailedSince}} maanden niet gemaild</small> </h4>
+<button class="btn btn-primary pad space" type="button" *ngIf="!mailingRemebered" (click)="rememberMailing()">Onthoudt deze mailing</button>
+<button class="btn btn-primary pad space" type="button" *ngIf="mailingRemebered" (click)="undoRememberMailing()">Maak onthouden ongedaan</button>
+</div>
+<div class="row" *ngFor="let batch of selectedEmails; let idx=index">
+    <hr>
+    <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.emails}}</div>
+  <div class="col-md-4" ><button class="btn btn-secondary btn-sm" (click)="copyBatch(idx)">Kopieer batch</button></div>
+</div>

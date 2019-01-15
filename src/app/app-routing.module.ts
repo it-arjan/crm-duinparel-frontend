@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { BookingWrapComponent } from './components/booking/booking-wrap/booking-wrap.component';
-import { MailingWrapComponent } from './components/mailing/mailing-wrap/mailing-wrap.component';
+import { MailingComponent } from './components/mailing/mailing/mailing.component';
 import { BookingListComponent } from './components/booking/booking-list/booking-list.component';
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
 import { ConfigComponent } from './components/config/config.component';
@@ -13,7 +13,7 @@ const appRoutes: Routes = [
         {path:'cust/:custid', component: CustomerNewEditComponent},
         {path:'cust/:custid/bookings', component: BookingListComponent},
     ]},
-    {path: 'mailing', component: MailingWrapComponent},
+    {path: 'mailing', component: MailingComponent},
     {path: 'config', component: ConfigComponent},
 ]
 @NgModule(

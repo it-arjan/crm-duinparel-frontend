@@ -128,20 +128,20 @@ export class BookingListComponent implements OnInit {
               ' van ' + this.customer.bookings[idx].arrive.toLocaleDateString() 
                 + ' tot ' + this.customer.bookings[idx].depart.toLocaleDateString();
     modalRef.result
-    .then(()=>{
-      try {
-        //throw new Error('testen van errors!')
-        this.customer.bookings.splice(idx,1)
-        this._ui.broadCastRemoval()
-      }
-      catch (err){
-        this._ui.error('verwijderen mislukt: ' + err)
-        console.log(err)
-      }
-    })
-    .catch(()=>{
-      console.log('modal cancelled')
+        .then(()=>{
+          try {
+            //throw new Error('testen van errors!')
+            this.customer.bookings.splice(idx,1)
+            this._ui.broadCastRemoval()
+          }
+          catch (err){
+            this._ui.error('verwijderen mislukt: ' + err)
+            console.log(err)
+          }
+        })
+        .catch(()=>{
+          console.log('modal cancelled')
 
-    })
+        })
   }      
 }
