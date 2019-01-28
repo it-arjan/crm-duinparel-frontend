@@ -20,33 +20,62 @@ export class MailingComponent implements OnInit {
   constructor(
     private _ds: DataService, 
     private _ui : UIService,
-    ) {}
+    ) {
+    }
 
   selectedEmails :EmailBatch[]
   reactiveForm: FormGroup;
   propTypes = ['app','huis']
+  bookTypes = ['week','midweek','weekend']
   selectedPropType: string
-  visitedSince=24 //todo maak setting
-  mailedSince=6 //todo maak setting
+  selectedBookTypes: Array<string> = []
+  visitedSinceFrom=24 //todo maak setting
+  visitedSinceUntil=0 //todo maak setting
+  mailedSinceFrom=0  //todo maak setting
+  mailedSinceUntil=0 //todo maak setting
   mailingRemebered=false
   batchesCopied_Idx: number[] = []
   ngOnInit() {
     this.initForm()
-    }
-
+  }
+  countSelectedEmails(){
+    return 45
+  }
   initForm(){
     this.reactiveForm = new FormGroup({
-      'notVisitedSince': new FormControl(this.visitedSince,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
-      'notMailedSince': new FormControl(this.mailedSince,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
-     'propType': new FormControl('',[Validators.required]),
+      'visitedSinceFrom': new FormControl(this.visitedSinceFrom,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
+      'visitedSinceUntil': new FormControl(this.visitedSinceUntil>0?this.visitedSinceUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
+      'mailedSinceFrom': new FormControl(this.mailedSinceFrom>0?this.mailedSinceFrom:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
+      'mailedSinceUntil': new FormControl(this.mailedSinceUntil>0?this.mailedSinceUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
+      'propType': new FormControl('',[Validators.required]),
+      'bookTypeCheckboxes': new FormGroup({
+       
+      }),
     })
+    //add checkbox dynamically, Angular 6 
+    const checkboxes = <FormGroup>this.reactiveForm.get('bookTypeCheckboxes');
+    for (let btype of this.bookTypes){
+      checkboxes.addControl(btype, new FormControl(btype));
+    }
   }
   
   onSubmit(){
-    this.visitedSince = this.reactiveForm.get('notVisitedSince').value;
-    this.mailedSince = this.reactiveForm.get('notMailedSince').value;
+    this.visitedSinceFrom = this.reactiveForm.get('visitedSinceFrom').value;
+    this.visitedSinceUntil = this.reactiveForm.get('visitedSinceUntil').value;
+    this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value;
+    this.mailedSinceUntil = this.reactiveForm.get('mailedSinceUntil').value;
     this.selectedPropType = this.reactiveForm.get('propType').value;
-    this.selectedEmails =this._ds.selectMailing(this.visitedSince,this.mailedSince, this.selectedPropType)
+    
+    this.selectedBookTypes.length=0
+    for (let btype of this.bookTypes){
+      let val= this.reactiveForm.get('bookTypeCheckboxes').get(btype).value
+      if (val) this.selectedBookTypes.push(val)
+     }
+
+    this.selectedEmails =
+      this._ds.selectMailing(this.visitedSinceFrom, this.visitedSinceUntil, 
+                            this.mailedSinceFrom, this.mailedSinceUntil, 
+                            this.selectedPropType, this.selectedBookTypes)
     console.log( this.selectedEmails)
   }
   rememberMailing(){
@@ -56,13 +85,24 @@ export class MailingComponent implements OnInit {
   undoRememberMailing(){
     this.mailingRemebered=false
   }
-  checkIfCopied(idx:number):boolean{
-    console.log('idx: ' + idx + ', ' + this.batchesCopied_Idx.includes(idx))
+  checkIfCopied(idx:number):boolean{ //for ngClass only
+    //console.log('checkIfCopied. idx: ' + idx + ', ' + this.batchesCopied_Idx.includes(idx))
     return this.batchesCopied_Idx.includes(idx)
   }
   copyBatch(idx:number){
-    if (!this.batchesCopied_Idx.includes(idx))
+    let newVariable: any = window.navigator; 
+    if (!this.batchesCopied_Idx.includes(idx)){
       this.batchesCopied_Idx.push(idx)
-    console.log(this.batchesCopied_Idx)
+      //work around typescript typings issue
+      let csv =''
+      for (let e of this.selectedEmails[idx].emails){
+        csv = csv + e  + ','
+      }
+      newVariable.clipboard.writeText(csv)
+    }
+    else{
+      newVariable.clipboard.writeText('De emails moeten in het scherm doorgestreept zijn, dan staan ze in het clipboard.')
+      this.batchesCopied_Idx.splice(idx, 1)
+    }
   }
 }

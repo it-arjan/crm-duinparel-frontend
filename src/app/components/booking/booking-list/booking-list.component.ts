@@ -26,6 +26,7 @@ export class BookingListComponent implements OnInit {
   }
   
   propCodes = ['app','alba','jvg']
+  bookTypes = ['week','midweek','weekend']
 
   dpDisplayMonths = 2;
   dpNnavigation = 'select';
@@ -66,6 +67,7 @@ export class BookingListComponent implements OnInit {
       'arrive': new FormControl('',[Validators.required, this.departureLaterThenArrival.bind(this)]),
       'depart': new FormControl('',[Validators.required, this.departureLaterThenArrival.bind(this)]),
       'propcode': new FormControl('',[Validators.required]),
+      'booktype': new FormControl('',[Validators.required]),
     })
   }
   departureLaterThenArrival(control: FormControl) : {[s: string]: boolean}{
@@ -110,12 +112,13 @@ export class BookingListComponent implements OnInit {
     let depart = new Date(ngbDepart.year, ngbDepart.month-1, ngbDepart.day);
 
     let propcode = this.reactiveForm.get('propcode').value;
+    let booktype = this.reactiveForm.get('booktype').value;
 
-    let booking = new Booking(0, this.custId, arrive, depart, propcode)
+    let booking = new Booking(0, this.custId, arrive, depart, propcode, booktype)
     //this.customer.bookings.push(booking)
     this._ds.addBooking(this.custId,booking)
 
-    this.reactiveForm.setValue({arrive:'',depart:'',propcode:''});
+    this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
     this._ui.success()
   }
 

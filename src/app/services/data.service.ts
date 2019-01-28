@@ -18,7 +18,7 @@ export class DataService {
     }
 
   searchCustomers(emailPiece:string){
-    let temp = this.customers.filter(x=>x.email.startsWith(emailPiece))
+    let temp = this.customers.filter(x=>x.email.indexOf(emailPiece) > -1)
     this.searchResult.length=0
     temp.forEach(x=>this.searchResult.push(x))
   }
@@ -78,7 +78,10 @@ export class DataService {
     this.searchResult.length=0;
   }
   
-  selectMailing(monthsNotVisited: number, monthsNotMailed:number, propType: string){
+  selectMailing(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
+              monthsNotMailedFrom:number, monthsNotMailedUntil:number, 
+              proptype:string,
+              bookTypes: Array<string>){
     let batch1 = new EmailBatch(95)// 100 = max size hotmail. todo make config setting
     batch1.add('a21@b.com')
     batch1.add('a2@b.com')
@@ -93,8 +96,4 @@ export class DataService {
     batch2.add('c5@b.com')
     return [batch1, batch2]
   }
-SaveAll(){
-
-}
-
 }

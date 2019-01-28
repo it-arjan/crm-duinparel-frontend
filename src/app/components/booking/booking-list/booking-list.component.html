@@ -44,7 +44,11 @@
                     <option disabled selected value>--</option>
                     <option *ngFor="let pcode of propCodes">{{pcode}}</option>
                 </select>
-            </div>
+                <select class ="form-control input-group-append" formControlName="booktype">
+                        <option disabled selected value>--</option>
+                        <option *ngFor="let btype of bookTypes">{{btype}}</option>
+                    </select>
+                </div>
         </div>
 
 
@@ -52,7 +56,7 @@
 
     </div>
     <div class="col-md-4">
-        <button class="btn btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
+        <button class="btn btn-outline-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
             Voeg toe
         </button>
     </div>
@@ -61,8 +65,9 @@
 
 <!-- list existing bookings here, + delete button -->
 <div class="row" *ngFor="let booking of customer.bookings; let idx=index">
-<div class="col-md-4">{{booking.arrive | date:'shortDate'}}</div>
-<div class="col-md-4">{{booking.depart | date:'shortDate'}}</div>
+<div class="col-md-2">{{booking.arrive | date:'shortDate'}}</div>
+<div class="col-md-2">{{booking.depart | date:'shortDate'}}</div>
 <div class="col-md-2">{{booking.propcode }}</div>
-<div class="col-md-2"><a class="" style="cursor:pointer" (click)='onDelete(idx)'>X</a></div>
+<div class="col-md-2">{{booking.booktype }}</div>
+<div class="col-md-2"><button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>Verwijder</button></div>
 </div>

@@ -1,40 +1,58 @@
 <form 
     [formGroup]="reactiveForm" 
     (ngSubmit)="onSubmit()" 
-    class="form-inline"
+    class="form-inline2"
     >
-    <div class="form-group">
-      <div class="col-md-8">
-        <label class ="form-control-sm" for="notVistedSince">Niet geweest sinds (maanden)
-          </label>
-          <input class ="form-control-sm" type="text" formControlName="notVisitedSince" name="notVistedSince" id="notVistedSince">
-        <label class ="form-control-sm" for="notMailedSince">Niet gemaild sinds (maanden)
-          </label>
-          <input class ="form-control-sm" type="text" formControlName="notMailedSince" name="notMailedSince" id="notMailedSince">
-          <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="propType">
-              <label ngbButtonLabel class="btn-primary">
-              <input ngbButton type="radio" value="app"> app
-              </label> 
-              <label ngbButtonLabel class="btn-primary">
-                <input ngbButton type="radio" value="huis"> huis
+          <div class="form-group row">
+              <div class="col-3">Laatste bezoek (maanden)</div>
+              <label for="visitedSinceFrom">van
+                <input class ="form-control-sm col-2" type="text" formControlName="visitedSinceFrom">
               </label>
+              <label for="visitedSinceUntil">tot
+                <input class ="form-control-sm col-2" type="text" formControlName="visitedSinceUntil">
+              </label>
+              <div class="row-2"></div>
+          </div>
+          <div class="form-group row">
+              <div class="col-3">Laatste mailing (maanden)</div>
+              <label class ="" for="mailedSinceFrom">van
+                <input class ="form-control-sm col-2" type="text" formControlName="mailedSinceFrom">
+              </label>
+                <label for="mailedSinceUntil">tot
+                  <input class ="form-control-sm col-2" type="text" formControlName="mailedSinceUntil">
+              </label>
+              <div class="row-2"></div>
+        </div>
+        <div class="form-group row">
+          <div class="col-2">
+            <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="propType">
+              <ng-template ngFor let-proptype [ngForOf]="propTypes">
+              <label ngbButtonLabel class="btn-outline-primary">
+              <input ngbButton type="radio" value="{{proptype}}"> {{proptype}}
+              </label> 
+            </ng-template>
+          </div>
+          </div>
+          <div class="col-4">
+              <div formGroupName="bookTypeCheckboxes" class="form-check form-check-inline">
+                <ng-template ngFor let-item [ngForOf]="reactiveForm.get('bookTypeCheckboxes').value | keyvalue">
+                    <input class="form-check-input" type="checkbox" [formControlName]="item.key" [id]="item.key" [value]="item.value" /> 
+                    <label class="form-check-label" [for]="item.key">{{ item.key }}</label>
+                    <span>&nbsp;</span>
+              </ng-template>
             </div>
-    </div>
-    <div class="col-md-1"><!--separator--></div>
-    </div>
-    <div class="col-md-4">
-        <button class="btn btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">Zoek</button>
-    </div>
-</form>
+            </div>
+          <div class="row-1"></div>
+          <div class="row-2"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Zoek</button></div>
+        </div>
+    </form>
 <hr>
 <div class="row" *ngIf="selectedEmails">
-<h4 > Selectie: <small>Klanten ('{{selectedPropType}}') {{visitedSince}} maanden geleden voor het laatst, de laatste 
-  {{mailedSince}} maanden niet gemaild</small> </h4>
-<button class="btn btn-primary pad space" type="button" *ngIf="!mailingRemebered" (click)="rememberMailing()">Onthoudt deze mailing</button>
-<button class="btn btn-primary pad space" type="button" *ngIf="mailingRemebered" (click)="undoRememberMailing()">Maak onthouden ongedaan</button>
+<p>Deze mailing bestaat uit {{countSelectedEmails()}} adressen</p><button class="btn btn-outline-primary pad space" type="button" *ngIf="!mailingRemebered" (click)="rememberMailing()">Onthoudt deze mailing</button>
+<button class="btn btn-outline-primary pad space" type="button" *ngIf="mailingRemebered" (click)="undoRememberMailing()">Maak onthouden ongedaan</button>
 </div>
 <div class="row" *ngFor="let batch of selectedEmails; let idx=index">
     <hr>
     <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.emails}}</div>
-  <div class="col-md-4" ><button class="btn btn-secondary btn-sm" (click)="copyBatch(idx)">Kopieer batch</button></div>
+  <div class="col-md-4" ><button class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)">Kopieer batch</button></div>
 </div>

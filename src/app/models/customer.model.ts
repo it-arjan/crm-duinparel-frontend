@@ -21,7 +21,7 @@ export class Customer {
         this.bookings.unshift(booking)
     }
     consumeBookingClone(b:Booking){
-        this.bookings.unshift(new Booking(b.id,b.custid,b.arrive,b.depart,b.propcode))
+        this.bookings.unshift(new Booking(b.id,b.custid,b.arrive,b.depart,b.propcode, b.booktype))
     }
     test(){
         console.log('test succeeded')

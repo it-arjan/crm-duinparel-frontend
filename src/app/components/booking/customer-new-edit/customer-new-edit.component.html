@@ -21,15 +21,15 @@
                   </div>
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-primary" type="submit" [disabled]="!reactiveForm.valid">
+                    <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
                         {{'Opslaan'}}
                     </button>
-                    <button class="btn btn-danger" type="button" (click)="onCancel()">
+                    <button class="btn btn-outline-danger" type="button" (click)="onCancel()">
                         Stop
                     </button>
                     <span style="width:30px"></span>
                     <button 
-                    class="btn btn-danger" 
+                    class="btn btn-outline-danger" 
                     type="button" 
                     (click)="onDelete()"
                     *ngIf="editMode">
