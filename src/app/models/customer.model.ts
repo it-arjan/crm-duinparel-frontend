@@ -9,6 +9,7 @@ export class Customer {
         public iban:string,
         public bookings: Array<Booking>){
     }
+
     consumeCustomer(cust :Customer){
         this.id=cust.id
         this.name=cust.name
@@ -18,5 +19,11 @@ export class Customer {
     }
     consumeBooking(booking:Booking){
         this.bookings.unshift(booking)
+    }
+    consumeBookingClone(b:Booking){
+        this.bookings.unshift(new Booking(b.id,b.custid,b.arrive,b.depart,b.propcode))
+    }
+    test(){
+        console.log('test succeeded')
     }
 }

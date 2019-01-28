@@ -38,7 +38,7 @@ export class HeaderComponentComponent implements OnInit {
       this.notificationState = 'in'
       this.processFeedback(msg)
       //Trigger state change after view is rendered
-      setTimeout(()=>{ this.notificationState = 'out' },1000)
+      setTimeout(()=>{ this.notificationState = 'out' },2000)
     })
   }
   

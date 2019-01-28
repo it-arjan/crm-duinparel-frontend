@@ -15,7 +15,7 @@ import { CustomerListComponent } from './components/booking/customer-list/custom
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
 import { MailingComponent } from './components/mailing/mailing/mailing.component';
 import { BookingListComponent } from './components/booking/booking-list/booking-list.component';
-import { ConfigComponent } from './components/config/config.component';
+import { SettingsComponent } from './components/settings/settings.component';
 import {NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/modal-confirm.component';
 
@@ -31,7 +31,7 @@ import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/m
     CustomerNewEditComponent,
     MailingComponent,
     BookingListComponent,
-    ConfigComponent,
+    SettingsComponent,
     ModalConfirmComponent,
   ],
   entryComponents: [

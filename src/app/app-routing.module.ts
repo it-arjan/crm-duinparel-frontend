@@ -4,7 +4,7 @@ import { BookingWrapComponent } from './components/booking/booking-wrap/booking-
 import { MailingComponent } from './components/mailing/mailing/mailing.component';
 import { BookingListComponent } from './components/booking/booking-list/booking-list.component';
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
-import { ConfigComponent } from './components/config/config.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 const appRoutes: Routes = [
     // {path: '', component: AppComponent},
@@ -14,7 +14,7 @@ const appRoutes: Routes = [
         {path:'cust/:custid/bookings', component: BookingListComponent},
     ]},
     {path: 'mailing', component: MailingComponent},
-    {path: 'config', component: ConfigComponent},
+    {path: 'config', component: SettingsComponent},
 ]
 @NgModule(
     {

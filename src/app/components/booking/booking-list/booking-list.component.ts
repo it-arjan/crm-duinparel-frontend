@@ -111,7 +111,7 @@ export class BookingListComponent implements OnInit {
 
     let propcode = this.reactiveForm.get('propcode').value;
 
-    let booking = new Booking(true,0, this.custId, arrive, depart, propcode)
+    let booking = new Booking(0, this.custId, arrive, depart, propcode)
     //this.customer.bookings.push(booking)
     this._ds.addBooking(this.custId,booking)
 
