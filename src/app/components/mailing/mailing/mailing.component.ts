@@ -33,13 +33,17 @@ export class MailingComponent implements OnInit {
   visitedSinceUntil=0 //todo maak setting
   mailedSinceFrom=0  //todo maak setting
   mailedSinceUntil=0 //todo maak setting
-  mailingRemebered=false
+  mailingRembered=false
   batchesCopied_Idx: number[] = []
   ngOnInit() {
     this.initForm()
   }
   countSelectedEmails(){
-    return 45
+    let result=0
+    for (let b of this.selectedEmails){
+      result += b.emails.length
+    }
+    return result
   }
   initForm(){
     this.reactiveForm = new FormGroup({
@@ -79,30 +83,33 @@ export class MailingComponent implements OnInit {
     console.log( this.selectedEmails)
   }
   rememberMailing(){
-    this.mailingRemebered=true
+    this.mailingRembered=true
   }
 
   undoRememberMailing(){
-    this.mailingRemebered=false
+    this.mailingRembered=false
   }
   checkIfCopied(idx:number):boolean{ //for ngClass only
     //console.log('checkIfCopied. idx: ' + idx + ', ' + this.batchesCopied_Idx.includes(idx))
     return this.batchesCopied_Idx.includes(idx)
   }
-  copyBatch(idx:number){
+  copyBatch(selectedEmail_Idx:number){
+    //workaround 4 a typescript typings issue
     let newVariable: any = window.navigator; 
-    if (!this.batchesCopied_Idx.includes(idx)){
-      this.batchesCopied_Idx.push(idx)
-      //work around typescript typings issue
+    //this is toggle functionality
+    if (!this.batchesCopied_Idx.includes(selectedEmail_Idx)){ //toggle on
+      //actual copy
       let csv =''
-      for (let e of this.selectedEmails[idx].emails){
+      for (let e of this.selectedEmails[selectedEmail_Idx].emails){
         csv = csv + e  + ','
       }
       newVariable.clipboard.writeText(csv)
+      //remember we copied
+      this.batchesCopied_Idx.push(selectedEmail_Idx)
     }
-    else{
-      newVariable.clipboard.writeText('De emails moeten in het scherm doorgestreept zijn, dan staan ze in het clipboard.')
-      this.batchesCopied_Idx.splice(idx, 1)
+    else {//toggle off
+      newVariable.clipboard.writeText('De emails moeten in het scherm doorgestreept zijn, alleen dan staan ze in het clipboard.')
+      this.batchesCopied_Idx.splice(this.batchesCopied_Idx.indexOf(selectedEmail_Idx), 1)
     }
   }
 }

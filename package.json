@@ -33,6 +33,7 @@
     "dotenv": "^6.2.0",
     "electron": "^3.0.7",
     "jquery": "^1.9.1",
+    "moment": "^2.24.0",
     "ngx-electron": "^2.0.0",
     "no-config": "^1.1.2",
     "popper.js": "^1.14.6",

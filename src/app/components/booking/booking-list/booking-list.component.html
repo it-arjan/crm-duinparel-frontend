@@ -4,7 +4,7 @@
     class="form-inline"
     >
     <!-- <div class="row"> -->
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="input-group">
                 <input 
                     class ="form-control-sm" 
@@ -19,7 +19,7 @@
                     [navigation]="dpNnavigation" 
                     [showWeekNumbers]="dpShowWeekNumbers"
                     [outsideDays]="dpOoutsideDays"   
-                    [minDate]="dpminDate"
+                    [minDate]="mindateArrive"
                     >
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary calendar" (click)="arriveRef.toggle()" type="button"></button>
@@ -35,7 +35,7 @@
                     [navigation]="dpNnavigation" 
                     [showWeekNumbers]="dpShowWeekNumbers"
                     [outsideDays]="dpOoutsideDays"   
-                    [minDate]="dpminDate"
+                    [minDate]="mindateDepart"
                >
                <div class="input-group-append">
                    <button class="btn btn-outline-secondary calendar" (click)="departRef2.toggle()" type="button"></button>
@@ -43,31 +43,26 @@
               <select class ="form-control input-group-append" formControlName="propcode">
                     <option disabled selected value>--</option>
                     <option *ngFor="let pcode of propCodes">{{pcode}}</option>
-                </select>
+                </select> 
                 <select class ="form-control input-group-append" formControlName="booktype">
                         <option disabled selected value>--</option>
                         <option *ngFor="let btype of bookTypes">{{btype}}</option>
                     </select>
-                </div>
+                    <button class="btn btn-sm btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
+                            Voeg toe
+                        </button>
+             </div>
         </div>
-
-
-    <div class="col-md-8">
-
-    </div>
-    <div class="col-md-4">
-        <button class="btn btn-outline-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
-            Voeg toe
-        </button>
-    </div>
 </form>
-<h2>Boekingen van {{customer.name}}</h2>
+<p class="text-info pad">Boekingen van {{customer.name}}</p>
 
 <!-- list existing bookings here, + delete button -->
-<div class="row" *ngFor="let booking of customer.bookings; let idx=index">
-<div class="col-md-2">{{booking.arrive | date:'shortDate'}}</div>
-<div class="col-md-2">{{booking.depart | date:'shortDate'}}</div>
+<div class="container">
+<div class="row border vcenter" *ngFor="let booking of customer.bookings; let idx=index">
+<div class="col-md-3  ">{{booking.arrive | date:'E, dd MMM yy'}}</div>
+<div class="col-md-3">{{booking.depart | date:'E, dd MMM yy'}}</div>
 <div class="col-md-2">{{booking.propcode }}</div>
 <div class="col-md-2">{{booking.booktype }}</div>
 <div class="col-md-2"><button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>Verwijder</button></div>
+</div>
 </div>

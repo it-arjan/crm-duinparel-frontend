@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { DataService } from 'src/app/services/data.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Customer } from 'src/app/models/customer.model';
@@ -8,11 +8,16 @@ import { UIService } from 'src/app/services/ui.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 import { Booking } from 'src/app/models/booking.model';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-booking-list',
   templateUrl: './booking-list.component.html',
-  styleUrls: ['./booking-list.component.css']
+  styles: [`
+  .vcenter {
+    display: flex;
+    align-items: center;
+  }`]
 })
 export class BookingListComponent implements OnInit {
 
@@ -32,8 +37,8 @@ export class BookingListComponent implements OnInit {
   dpNnavigation = 'select';
   dpShowWeekNumbers = false;
   dpOoutsideDays = 'visible';
-  dpminDate : NgbDate = null
-
+  mindateArrive : NgbDate = null
+  mindateDepart : NgbDate = null
   reactiveForm: FormGroup;
   custId: number;
   customer: Customer;
@@ -43,10 +48,11 @@ export class BookingListComponent implements OnInit {
     this.dpNnavigation = 'select';
     this.dpShowWeekNumbers = false;
     this.dpOoutsideDays = 'visible';
-    let d = new Date();
-    this.dpminDate = new NgbDate(d.getFullYear(), d.getMonth()+1, d.getDate())
-    console.log(this.dpminDate)
-    console.log(d.getDate())
+    let m = moment();
+    //console.log('moment: '+m.format('DD/MMM/YY') + ', year: ' + moment().year())
+    this.mindateArrive = new NgbDate(m.year(), m.month()+1, m.date())
+    m.add(1, 'days');
+    this.mindateDepart = new NgbDate(m.year(), m.month()+1, m.date())
   }
 
 
@@ -61,7 +67,7 @@ export class BookingListComponent implements OnInit {
     this.initForm()
     this.setupDp()
   }
-  
+
   initForm(){
     this.reactiveForm = new FormGroup({
       'arrive': new FormControl('',[Validators.required, this.departureLaterThenArrival.bind(this)]),
@@ -71,8 +77,8 @@ export class BookingListComponent implements OnInit {
     })
   }
   departureLaterThenArrival(control: FormControl) : {[s: string]: boolean}{
-    //PS: use as validator with bind(this)
-    if (this.reactiveForm &&  //can be called before this.reactiveForm is instantiated
+    //PS: call as validator with bind(this)
+    if (this.reactiveForm &&  //needed, is somehow called before this.reactiveForm is instantiated
       this.reactiveForm.get('arrive').value && //only check when both dates are filled
       this.reactiveForm.get('depart').value){
       

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy } from '@angular/core';
 import { UIService } from 'src/app/services/ui.service';
 import { UserFeedback } from 'src/app/models/UserFeedback.model';
 import {
@@ -24,7 +24,7 @@ import { MessageFeedabck } from 'src/app/models/message-feedback';
       transition('out =>in',animate('1ms')),
     ])
   ]})
-export class HeaderComponentComponent implements OnInit {
+export class HeaderComponentComponent implements OnInit, OnDestroy {
 
   constructor(private _ui : UIService) { }
   notificationState:string;
@@ -41,7 +41,9 @@ export class HeaderComponentComponent implements OnInit {
       setTimeout(()=>{ this.notificationState = 'out' },2000)
     })
   }
-  
+  ngOnDestroy(){
+    this._ui.notifyHelper.unsubscribe()
+  }
   processFeedback(feedback:UserFeedback){
     switch (feedback.type){
       case 'Removed':

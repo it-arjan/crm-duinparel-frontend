@@ -14,7 +14,7 @@
               <div class="row-2"></div>
           </div>
           <div class="form-group row">
-              <div class="col-3">Laatste mailing (maanden)</div>
+              <div class="col-3">Laatst gemaild (maanden)</div>
               <label class ="" for="mailedSinceFrom">van
                 <input class ="form-control-sm col-2" type="text" formControlName="mailedSinceFrom">
               </label>
@@ -27,7 +27,7 @@
           <div class="col-2">
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="propType">
               <ng-template ngFor let-proptype [ngForOf]="propTypes">
-              <label ngbButtonLabel class="btn-outline-primary">
+              <label ngbButtonLabel class="btn-outline-primary btn-sm">
               <input ngbButton type="radio" value="{{proptype}}"> {{proptype}}
               </label> 
             </ng-template>
@@ -48,8 +48,11 @@
     </form>
 <hr>
 <div class="row" *ngIf="selectedEmails">
-<p>Deze mailing bestaat uit {{countSelectedEmails()}} adressen</p><button class="btn btn-outline-primary pad space" type="button" *ngIf="!mailingRemebered" (click)="rememberMailing()">Onthoudt deze mailing</button>
-<button class="btn btn-outline-primary pad space" type="button" *ngIf="mailingRemebered" (click)="undoRememberMailing()">Maak onthouden ongedaan</button>
+    <div class="col-md-6 pad">Deze mailing bestaat uit {{countSelectedEmails()}} adressen die (ivm de hotmail bcc-limiet) zijn verdeeld in {{selectedEmails.length}} batches</div>
+    <div class="col-md-4" >
+      <button class="btn btn-outline-primary pad space" type="button" *ngIf="!mailingRemebered" (click)="rememberMailing()">Onthoud deze mailing</button>
+      <button class="btn btn-outline-primary pad space" type="button" *ngIf="mailingRemebered" (click)="undoRememberMailing()">Maak onthouden ongedaan</button>
+    </div>
 </div>
 <div class="row" *ngFor="let batch of selectedEmails; let idx=index">
     <hr>
