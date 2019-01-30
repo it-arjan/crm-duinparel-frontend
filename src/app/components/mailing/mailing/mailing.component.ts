@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EmailBatch } from 'src/app/models/emailbatch.model';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from 'src/app/services/data.service';
 import { UIService } from 'src/app/services/ui.service';
@@ -27,13 +27,13 @@ export class MailingComponent implements OnInit {
   reactiveForm: FormGroup;
   propTypes = ['app','huis']
   bookTypes = ['week','midweek','weekend']
-  selectedPropType: string
+  selectedPropTypes: Array<string> = []
   selectedBookTypes: Array<string> = []
   visitedSinceFrom=24 //todo maak setting
   visitedSinceUntil=0 //todo maak setting
   mailedSinceFrom=0  //todo maak setting
   mailedSinceUntil=0 //todo maak setting
-  mailingRembered=false
+  mailingRemembered=false
   batchesCopied_Idx: number[] = []
   ngOnInit() {
     this.initForm()
@@ -62,37 +62,40 @@ export class MailingComponent implements OnInit {
       checkboxes.addControl(btype, new FormControl(btype));
     }
   }
+  screen2PropCodes(screenSelection:string){
+    return screenSelection=='app' ? ['app']:['jvg', 'alb']
+  }
   
+  setSelectedBooktypes(checkboxes:FormGroup){
+    this.selectedBookTypes.length=0
+    this.bookTypes.map((booktype, i)=>{
+      if (checkboxes.get(booktype).value) this.selectedBookTypes.push(booktype)
+    })
+  }
+
   onSubmit(){
     this.visitedSinceFrom = this.reactiveForm.get('visitedSinceFrom').value;
     this.visitedSinceUntil = this.reactiveForm.get('visitedSinceUntil').value;
     this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value;
     this.mailedSinceUntil = this.reactiveForm.get('mailedSinceUntil').value;
-    this.selectedPropType = this.reactiveForm.get('propType').value;
-    
-    this.selectedBookTypes.length=0
-    for (let btype of this.bookTypes){
-      let val= this.reactiveForm.get('bookTypeCheckboxes').get(btype).value
-      if (val) this.selectedBookTypes.push(val)
-     }
-
-    this.selectedEmails =
-      this._ds.selectMailing(this.visitedSinceFrom, this.visitedSinceUntil, 
-                            this.mailedSinceFrom, this.mailedSinceUntil, 
-                            this.selectedPropType, this.selectedBookTypes)
-    console.log( this.selectedEmails)
+    this.selectedPropTypes = this.screen2PropCodes(this.reactiveForm.get('propType').value )
+    this.setSelectedBooktypes(<FormGroup>this.reactiveForm.get('bookTypeCheckboxes'))
+    console.log(this.selectedBookTypes)
   }
+
   rememberMailing(){
-    this.mailingRembered=true
+    this.mailingRemembered=true
   }
 
   undoRememberMailing(){
-    this.mailingRembered=false
+    this.mailingRemembered=false
   }
+
   checkIfCopied(idx:number):boolean{ //for ngClass only
     //console.log('checkIfCopied. idx: ' + idx + ', ' + this.batchesCopied_Idx.includes(idx))
     return this.batchesCopied_Idx.includes(idx)
   }
+
   copyBatch(selectedEmail_Idx:number){
     //workaround 4 a typescript typings issue
     let newVariable: any = window.navigator; 
