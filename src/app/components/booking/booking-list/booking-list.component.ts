@@ -73,7 +73,7 @@ export class BookingListComponent implements OnInit {
     if (this.reactiveForm &&  //needed, is somehow called before this.reactiveForm is instantiated
       this.reactiveForm.get('arrive').value && //only check when both dates are filled
       this.reactiveForm.get('depart').value &&
-      Globals.momDatePattern.test(this.reactiveForm.get('arrive').value)&& 
+      Globals.momDatePattern.test(this.reactiveForm.get('arrive').value) && //and our global dateformat regex passes
       Globals.momDatePattern.test(this.reactiveForm.get('depart').value)){
       
       let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
@@ -82,11 +82,13 @@ export class BookingListComponent implements OnInit {
       if (!formatRecognized){
         if (!m_arrive.isValid()) this._ui.error("Aankomst wordt niet als datum herkend!")
         if (!m_depart.isValid()) this._ui.error("Vertrek wordt niet als datum herkend!")
-        return {'dateValid': true} 
+
+        return {'dateInvalid': true} 
       }
       else if(m_arrive.isSame(m_depart) || m_arrive.isAfter(m_depart)) {
         this._ui.error("vertrek moet later zijn dan de aankomst!")
-        return {'dateValid': true} 
+
+        return {'dateInvalid': true} 
       }
       this._ui.info("vertrek en aankomst zijn ok")
       return null
