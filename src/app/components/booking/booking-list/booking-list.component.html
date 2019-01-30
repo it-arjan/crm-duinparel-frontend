@@ -44,8 +44,8 @@
 <!-- list existing bookings here, + delete button -->
 <div class="container">
 <div class="row border vcenter" *ngFor="let booking of customer.bookings; let idx=index">
-<div class="col-md-3  ">{{booking.arrive | date:'E, dd MMM yy'}}</div>
-<div class="col-md-3">{{booking.depart | date:'E, dd MMM yy'}}</div>
+<div class="col-md-3  ">{{booking.arrive | date:globDateformat()}}</div>
+<div class="col-md-3">{{booking.depart | date:globDateformat()}}</div>
 <div class="col-md-2">{{booking.propcode }}</div>
 <div class="col-md-2">{{booking.booktype }}</div>
 <div class="col-md-2"><button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>Verwijder</button></div>

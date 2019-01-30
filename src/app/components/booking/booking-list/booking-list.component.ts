@@ -6,10 +6,11 @@ import { NgbModal, NgbDate, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../../ng-bootstrap/modal-confirm/modal-confirm.component';
 import { UIService } from 'src/app/services/ui.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 import { Booking } from 'src/app/models/booking.model';
-import * as moment from 'moment';
 import { ModalDaterangeSelectComponent } from '../../ng-bootstrap/modal-daterange-select/modal-daterange-select.component';
+import { Globals } from '../../../shared/globals';
+
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-booking-list',
@@ -45,20 +46,6 @@ export class BookingListComponent implements OnInit {
   custId: number;
   customer: Customer;
 
-  
-  setupDp(){
-    this.dpDisplayMonths = 2;
-    this.dpNnavigation = 'select';
-    this.dpShowWeekNumbers = false;
-    this.dpOoutsideDays = 'visible';
-    let m = moment();
-    //console.log('moment: '+m.format('DD/MMM/YY') + ', year: ' + moment().year())
-    this.mindateArrive = new NgbDate(m.year(), m.month()+1, m.date())
-    m.add(1, 'days');
-    this.mindateDepart = new NgbDate(m.year(), m.month()+1, m.date())
-  }
-
-
   ngOnInit() {
   this._activatedRoute.params.subscribe( //subscription is cleanedup automatically in this case
     (params: Params) => {
@@ -68,30 +55,38 @@ export class BookingListComponent implements OnInit {
       this.customer = this._ds.getCustomer(this.custId);  
     });
     this.initForm()
-    this.setupDp()
   }
 
   initForm(){
     this.reactiveForm = new FormGroup({
-      'arrive': new FormControl('',[Validators.required, this.departureLaterThenArrival.bind(this)]),
-      'depart': new FormControl('',[Validators.required, this.departureLaterThenArrival.bind(this)]),
+      'arrive': new FormControl('',[Validators.required, Validators.pattern(Globals.momDatePattern), this.datesValid.bind(this)]),
+      'depart': new FormControl('',[Validators.required, Validators.pattern(Globals.momDatePattern), this.datesValid.bind(this)]),
       'propcode': new FormControl('',[Validators.required]),
       'booktype': new FormControl('',[Validators.required]),
     })
   }
-
-  departureLaterThenArrival(control: FormControl) : {[s: string]: boolean}{
+  globDateformat(){
+    return Globals.angDateformat;
+  }
+  datesValid(control: FormControl) : {[s: string]: boolean}{
     //PS: call as validator with bind(this)
     if (this.reactiveForm &&  //needed, is somehow called before this.reactiveForm is instantiated
       this.reactiveForm.get('arrive').value && //only check when both dates are filled
-      this.reactiveForm.get('depart').value){
+      this.reactiveForm.get('depart').value &&
+      Globals.momDatePattern.test(this.reactiveForm.get('arrive').value)&& 
+      Globals.momDatePattern.test(this.reactiveForm.get('depart').value)){
       
-        let m_arrive = moment(this.reactiveForm.get('arrive').value, "DD MMM YY");
-        let m_depart = moment(this.reactiveForm.get('depart').value, "DD MMM YY");
-        
-      if(m_arrive.isSame(m_depart) || m_arrive.isAfter(m_depart)) {
+      let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
+      let m_depart = moment(this.reactiveForm.get('depart').value, Globals.momDateformat);
+      let formatRecognized = m_arrive.isValid() && m_depart.isValid()
+      if (!formatRecognized){
+        if (!m_arrive.isValid()) this._ui.error("Aankomst wordt niet als datum herkend!")
+        if (!m_depart.isValid()) this._ui.error("Vertrek wordt niet als datum herkend!")
+        return {'dateValid': true} 
+      }
+      else if(m_arrive.isSame(m_depart) || m_arrive.isAfter(m_depart)) {
         this._ui.error("vertrek moet later zijn dan de aankomst!")
-        return {'departurelater': true} 
+        return {'dateValid': true} 
       }
       this._ui.info("vertrek en aankomst zijn ok")
       return null
@@ -100,10 +95,10 @@ export class BookingListComponent implements OnInit {
   }
   
   onSubmit(){
-    let m_arrive = moment(this.reactiveForm.get('arrive').value, "DD MMM YY");
+    let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
     let js_arrive = new Date(m_arrive.year(), m_arrive.month(), m_arrive.date());
 
-    let m_depart = moment(this.reactiveForm.get('depart').value, "DD MMM YY");
+    let m_depart = moment(this.reactiveForm.get('depart').value, Globals.momDateformat);
     let js_depart = new Date(m_depart.year(), m_depart.month(), m_depart.date());
 
     let propcode = this.reactiveForm.get('propcode').value;
@@ -116,6 +111,7 @@ export class BookingListComponent implements OnInit {
     this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
     this._ui.success()
   }
+
   openModalCalendar(){
     const modalRef = this._modalService.open(ModalDaterangeSelectComponent);
     modalRef.result
@@ -123,14 +119,14 @@ export class BookingListComponent implements OnInit {
           console.log('closed')
           let m_arrive = moment([result.fromNgb.year, result.fromNgb.month-1, result.fromNgb.day])
           let m_depart = moment([result.toNgb.year, result.toNgb.month-1, result.toNgb.day])
-          this.reactiveForm.patchValue({'arrive':m_arrive.format('DD MMM YY'),'depart':m_depart.format('DD MMM YY')})
+          this.reactiveForm.patchValue({'arrive':m_arrive.format(Globals.momDateformat),'depart':m_depart.format(Globals.momDateformat)})
           console.log(result.fromNgb, result.toNgb)
         })
         .catch((err)=>{
           console.log(err)
         })
-    
   }
+
   onDelete (idx:number) {
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Boeking verwijderen';
