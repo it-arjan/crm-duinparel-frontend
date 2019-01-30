@@ -3,6 +3,7 @@ import { DataPersistService } from './data-persist.service';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { EmailBatch } from '../models/emailbatch.model';
+import { Globals } from '../shared/globals';
 
 @Injectable({
   providedIn: 'root'
@@ -77,48 +78,47 @@ export class DataService {
   clearCustomerSearch(){
     this.searchResult.length=0;
   }
-  
-  selectMailing(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
-              monthsNotMailedFrom:number, monthsNotMailedUntil:number, 
-              proptypes:Array<string>,
-              bookTypes: Array<string>){
-      //customer of booktype
-      let cust= this.customers[0]
-      let custPropCode =cust.bookings.filter((book) =>
-           cust.bookings.filter(book => proptypes.includes(book.propcode) && bookTypes.includes(book.booktype)).length>0
-           )
 
-    //   let custBooktype = this.customers.filter(cust => {
-    //     let res =cust.bookings.filter((book) =>
-    //        cust.bookings.filter(book => book.propcode===proptype))
-    //   return res.length>0
-    // })
-    //bookTypes.includes(book.booktype) 
-    console.log('-----------------')
-    console.log(proptypes)
-    console.log(bookTypes)
-    console.log(custPropCode)
-    console.log('-----------------')
-        // cust.bookings.filter((book:Booking) =>{
-        //   bookTypes.includes(book.booktype)
-        // }).length > 0)
-        //return hasTypeBookings
-      //last booking  withint range
-      //monthsNotVisitedfrom < now - book.arrive > monthsNotVisitedUntil
+  searchEmails(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
+              monthsNotMailedFrom:number, monthsNotMailedUntil:number, 
+              proptypesArg:Array<string>,
+              bookTypesArg: Array<string>){
+      
+    let custHits =this.customers.filter((cust) => cust.bookings.filter(book => {
+      let result = proptypesArg.includes(book.propcode) && bookTypesArg.includes(book.booktype)
+      if (result){
+        let diff = Globals.jsDateDiffMonths(book.arrive, new Date(Date.now()))
+        console.log('->', diff)
+        result=diff >= monthsNotVisitedFrom
+        if (result && monthsNotVisitedUntil) result = diff < monthsNotVisitedUntil
+        if (result && monthsNotMailedFrom){
+          //todo
+        }
+      }
+      return result
+    }).length>0
+    )
+
+    // console.log('-----------------')
+    // console.log(proptypes)
+    // console.log(bookTypes)
+    // console.log(custHits)
+    // console.log('-----------------')
+
     let i=1
-    let batchsize=5
+    let batchsize=99
     let result=[]
     let batch : EmailBatch = new EmailBatch(batchsize)
-    // for (let c of custBooktype){
-    //   if (i>batchsize){
-    //     result.push(batch)
-    //     batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
-    //     i=1
-    //   }
-    //   batch.add(c.email)
-    //   i++
-    // }
-    // result.push(batch)
+    for (let c of custHits){
+      if (i>batchsize){
+        result.push(batch)
+        batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
+        i=1
+      }
+      batch.add(c.email)
+      i++
+    }
+    result.push(batch)
     return result
   }
 }

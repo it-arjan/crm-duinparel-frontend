@@ -78,8 +78,16 @@ export class MailingComponent implements OnInit {
     this.mailedSinceUntil = this.reactiveForm.get('mailedSinceUntil').value;
     this.selectedPropCodes = Globals.propType2PropCode(this.reactiveForm.get('propType').value )
     this.setSelectedBooktypes(<FormGroup>this.reactiveForm.get('bookTypeCheckboxes'))
-    console.log(this.selectedBookTypes)
-  }
+
+    console.log(this.visitedSinceFrom,this.visitedSinceUntil,
+      this.mailedSinceFrom,this.mailedSinceUntil,
+      this.selectedPropCodes, this.selectedBookTypes)
+      
+    this.selectedEmails = this._ds.searchEmails(this.visitedSinceFrom,this.visitedSinceUntil,
+                                                this.mailedSinceFrom,this.mailedSinceUntil,
+                                                this.selectedPropCodes, this.selectedBookTypes)
+    console.log(this.selectedEmails)
+    }
 
   rememberMailing(){
     this.mailingRemembered=true
@@ -95,17 +103,14 @@ export class MailingComponent implements OnInit {
   }
 
   copyBatch(selectedEmail_Idx:number){
-    //workaround 4 a typescript typings issue
-    let newVariable: any = window.navigator; 
-    //this is toggle functionality
+    let newVariable: any = window.navigator; //workaround 4 a typescript typings issue
     if (!this.batchesCopied_Idx.includes(selectedEmail_Idx)){ //toggle on
-      //actual copy
       let csv =''
       for (let e of this.selectedEmails[selectedEmail_Idx].emails){
         csv = csv + e  + ','
       }
       newVariable.clipboard.writeText(csv)
-      //remember we copied
+      //remember
       this.batchesCopied_Idx.push(selectedEmail_Idx)
     }
     else {//toggle off
