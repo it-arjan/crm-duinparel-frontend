@@ -23,7 +23,7 @@ export class DataService {
     temp.forEach(x=>this.searchResult.push(x))
   }
 
-  getCustomers() : Array<Customer> {
+  getAllCustomers() : Array<Customer> {
       return this.customers.slice();
   }
   
@@ -80,20 +80,45 @@ export class DataService {
   
   selectMailing(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
               monthsNotMailedFrom:number, monthsNotMailedUntil:number, 
-              proptype:string,
+              proptypes:Array<string>,
               bookTypes: Array<string>){
-    let batch1 = new EmailBatch(95)// 100 = max size hotmail. todo make config setting
-    batch1.add('a21@b.com')
-    batch1.add('a2@b.com')
-    batch1.add('a3@b.com')
-    batch1.add('a4@b.com')
-    batch1.add('a5@b.com')
-    let batch2 = new EmailBatch(95)// 100 = max size hotmail. todo make config setting
-    batch2.add('c21@b.com')
-    batch2.add('c2@b.com')
-    batch2.add('c3@b.com')
-    batch2.add('c4@b.com')
-    batch2.add('c5@b.com')
-    return [batch1, batch2]
+      //customer of booktype
+      let cust= this.customers[0]
+      let custPropCode =cust.bookings.filter((book) =>
+           cust.bookings.filter(book => proptypes.includes(book.propcode) && bookTypes.includes(book.booktype)).length>0
+           )
+
+    //   let custBooktype = this.customers.filter(cust => {
+    //     let res =cust.bookings.filter((book) =>
+    //        cust.bookings.filter(book => book.propcode===proptype))
+    //   return res.length>0
+    // })
+    //bookTypes.includes(book.booktype) 
+    console.log('-----------------')
+    console.log(proptypes)
+    console.log(bookTypes)
+    console.log(custPropCode)
+    console.log('-----------------')
+        // cust.bookings.filter((book:Booking) =>{
+        //   bookTypes.includes(book.booktype)
+        // }).length > 0)
+        //return hasTypeBookings
+      //last booking  withint range
+      //monthsNotVisitedfrom < now - book.arrive > monthsNotVisitedUntil
+    let i=1
+    let batchsize=5
+    let result=[]
+    let batch : EmailBatch = new EmailBatch(batchsize)
+    // for (let c of custBooktype){
+    //   if (i>batchsize){
+    //     result.push(batch)
+    //     batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
+    //     i=1
+    //   }
+    //   batch.add(c.email)
+    //   i++
+    // }
+    // result.push(batch)
+    return result
   }
 }

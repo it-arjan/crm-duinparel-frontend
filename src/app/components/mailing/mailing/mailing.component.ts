@@ -4,6 +4,7 @@ import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/fo
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from 'src/app/services/data.service';
 import { UIService } from 'src/app/services/ui.service';
+import { Globals } from 'src/app/shared/globals';
 
 @Component({
   selector: 'app-mailing-wrap',
@@ -25,9 +26,9 @@ export class MailingComponent implements OnInit {
 
   selectedEmails :EmailBatch[]
   reactiveForm: FormGroup;
-  propTypes = ['app','huis']
-  bookTypes = ['week','midweek','weekend']
-  selectedPropTypes: Array<string> = []
+  propTypes = Globals.propTypesMailing
+  bookTypes = Globals.bookTypes
+  selectedPropCodes: Array<string> = []
   selectedBookTypes: Array<string> = []
   visitedSinceFrom=24 //todo maak setting
   visitedSinceUntil=0 //todo maak setting
@@ -56,21 +57,18 @@ export class MailingComponent implements OnInit {
        
       }),
     })
-    //add checkbox dynamically, Angular 6 
+    //add checkbox formcontrols dynamically, Angular 6 
     const checkboxes = <FormGroup>this.reactiveForm.get('bookTypeCheckboxes');
     for (let btype of this.bookTypes){
-      checkboxes.addControl(btype, new FormControl(btype));
+      checkboxes.addControl(btype, new FormControl(true));
     }
-  }
-  screen2PropCodes(screenSelection:string){
-    return screenSelection=='app' ? ['app']:['jvg', 'alb']
   }
   
   setSelectedBooktypes(checkboxes:FormGroup){
-    this.selectedBookTypes.length=0
-    this.bookTypes.map((booktype, i)=>{
+    this.selectedBookTypes.length=0 //clear array
+    for (let booktype of this.bookTypes){
       if (checkboxes.get(booktype).value) this.selectedBookTypes.push(booktype)
-    })
+    }
   }
 
   onSubmit(){
@@ -78,7 +76,7 @@ export class MailingComponent implements OnInit {
     this.visitedSinceUntil = this.reactiveForm.get('visitedSinceUntil').value;
     this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value;
     this.mailedSinceUntil = this.reactiveForm.get('mailedSinceUntil').value;
-    this.selectedPropTypes = this.screen2PropCodes(this.reactiveForm.get('propType').value )
+    this.selectedPropCodes = Globals.propType2PropCode(this.reactiveForm.get('propType').value )
     this.setSelectedBooktypes(<FormGroup>this.reactiveForm.get('bookTypeCheckboxes'))
     console.log(this.selectedBookTypes)
   }

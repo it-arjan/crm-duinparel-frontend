@@ -14,7 +14,7 @@ import { CustomerSearchComponent } from './components/booking/customer-search/cu
 import { CustomerListComponent } from './components/booking/customer-list/customer-list.component';
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
 import { MailingComponent } from './components/mailing/mailing/mailing.component';
-import { BookingListComponent } from './components/booking/booking-list/booking-list.component';
+import { BookingComponent } from './components/booking/booking/booking.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import {NgbModule, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/modal-confirm.component';
@@ -31,7 +31,7 @@ import { ModalDaterangeSelectComponent } from './components/ng-bootstrap/modal-d
     CustomerListComponent,
     CustomerNewEditComponent,
     MailingComponent,
-    BookingListComponent,
+    BookingComponent,
     SettingsComponent,
     ModalConfirmComponent,
     ModalDaterangeSelectComponent,

@@ -13,8 +13,8 @@ import { Globals } from '../../../shared/globals';
 import * as moment from 'moment';
 
 @Component({
-  selector: 'app-booking-list',
-  templateUrl: './booking-list.component.html',
+  selector: 'app-booking',
+  templateUrl: './booking.component.html',
   styles: [`
   .vcenter {
     display: flex;
@@ -22,7 +22,7 @@ import * as moment from 'moment';
   }
     `]
 })
-export class BookingListComponent implements OnInit {
+export class BookingComponent implements OnInit {
 
   constructor(
     private _ds: DataService, 
@@ -33,8 +33,8 @@ export class BookingListComponent implements OnInit {
 
   }
   
-  propCodes = ['app','alba','jvg']
-  bookTypes = ['week','midweek','weekend']
+  propCodes = Globals.propCodes
+  bookTypes = Globals.bookTypes
 
   dpDisplayMonths = 2;
   dpNnavigation = 'select';
@@ -47,10 +47,10 @@ export class BookingListComponent implements OnInit {
   customer: Customer;
 
   ngOnInit() {
-  this._activatedRoute.params.subscribe( //subscription is cleanedup automatically in this case
+  this._activatedRoute.params.subscribe( //route subscriptions are cleaned up automatically
     (params: Params) => {
+      console.log('BookingListComponent _activatedRoute.params.subscribe')
       console.log(params)
-      console.log('editMode')
       this.custId = +params['custid'];
       this.customer = this._ds.getCustomer(this.custId);  
     });

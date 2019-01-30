@@ -16,7 +16,7 @@ import { NgbDate, NgbCalendar, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap
             {{ date.day }}
           </span>
         </ng-template>
-        <button type="button" class="btn btn-outline-dark" *ngIf="dateSelected" (click)="activeModal.close({'fromNgb': fromDate, 'toNgb': toDate})">Save</button>
+        <p  class="text-center" style="margin-top:5px"><button type="button" class="btn btn-outline-dark" *ngIf="dateSelected" (click)="activeModal.close({'fromNgb': fromDate, 'toNgb': toDate})">Selecteer</button></p>
   `,
   styles: [`
   .custom-day {
