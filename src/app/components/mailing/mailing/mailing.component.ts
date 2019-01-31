@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { EmailBatch } from 'src/app/models/emailbatch.model';
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
@@ -36,8 +36,28 @@ export class MailingComponent implements OnInit {
   mailedSinceUntil=0 //todo maak setting
   mailingRemembered=false
   batchesCopied_Idx: number[] = []
+
+  @ViewChild('b1') b1Tag: ElementRef; 
+  @ViewChild('b2') b2Tag: ElementRef; 
+
   ngOnInit() {
     this.initForm()
+    if (this.b1Tag) this.triggerHover(this.b1Tag)
+    if (this.b2Tag) this.triggerHover(this.b2Tag)
+  }
+
+  triggerHover(eltRef:ElementRef){
+    var event = new MouseEvent('mouseover', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true
+    });
+    
+    eltRef.nativeElement.dispatchEvent(event);
+  }
+
+  onMouseover(){
+    console.log('Event triggered');
   }
   countSelectedEmails(){
     let result=0
@@ -71,17 +91,19 @@ export class MailingComponent implements OnInit {
     }
   }
 
+
   onSubmit(){
     this.visitedSinceFrom = this.reactiveForm.get('visitedSinceFrom').value;
     this.visitedSinceUntil = this.reactiveForm.get('visitedSinceUntil').value;
     this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value;
     this.mailedSinceUntil = this.reactiveForm.get('mailedSinceUntil').value;
+
     this.selectedPropCodes = Globals.propType2PropCode(this.reactiveForm.get('propType').value )
     this.setSelectedBooktypes(<FormGroup>this.reactiveForm.get('bookTypeCheckboxes'))
 
-    console.log(this.visitedSinceFrom,this.visitedSinceUntil,
-      this.mailedSinceFrom,this.mailedSinceUntil,
-      this.selectedPropCodes, this.selectedBookTypes)
+    // console.log(this.visitedSinceFrom,this.visitedSinceUntil,
+    //   this.mailedSinceFrom,this.mailedSinceUntil,
+    //   this.selectedPropCodes, this.selectedBookTypes)
       
     this.selectedEmails = this._ds.searchEmails(this.visitedSinceFrom,this.visitedSinceUntil,
                                                 this.mailedSinceFrom,this.mailedSinceUntil,
@@ -103,6 +125,7 @@ export class MailingComponent implements OnInit {
   }
 
   copyBatch(selectedEmail_Idx:number){
+  
     let newVariable: any = window.navigator; //workaround 4 a typescript typings issue
     if (!this.batchesCopied_Idx.includes(selectedEmail_Idx)){ //toggle on
       let csv =''
