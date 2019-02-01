@@ -48,6 +48,10 @@
 <div class="col-md-3">{{booking.depart | date:globDateformat()}}</div>
 <div class="col-md-2">{{booking.propcode }}</div>
 <div class="col-md-2">{{booking.booktype }}</div>
-<div class="col-md-2"><button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>Verwijder</button></div>
+<div class="col-md-2 input-group">
+
+    <button style="margin-right:3px" class="btn btn-sm btn-outline-success" (click)='onWord(idx)'>Word</button>
+    <button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>X</button>
+</div>
 </div>
 </div>

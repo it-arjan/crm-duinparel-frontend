@@ -128,7 +128,9 @@ export class BookingComponent implements OnInit {
           console.log(err)
         })
   }
-
+  onWord(idx:number){
+    alert('omzetten naar word (via template) komt nog!')
+  }
   onDelete (idx:number) {
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Boeking verwijderen';
