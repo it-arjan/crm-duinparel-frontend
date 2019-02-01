@@ -10,7 +10,7 @@ import { Booking } from '../models/booking.model';
 })
 export class ConfigService {
   constructor(
-    private _electronService: ElectronService,
+    private _es: ElectronService,
     private _ui: UIService,
     ) { }
 
@@ -20,7 +20,7 @@ export class ConfigService {
   readConfig(){
     //subscribe
     console.log('subscribe to ReadConfigResponse')
-    this._electronService.ipcRenderer.once('ReadConfigResponse', (event: Electron.IpcMessageEvent, arg: ConfigSetting[]) => {
+    this._es.ipcRenderer.once('ReadConfigResponse', (event: Electron.IpcMessageEvent, arg: ConfigSetting[]) => {
       //console.log('ReadConfigResponse!!');
       this.settings=arg;
       this.settings.forEach((confSetting:ConfigSetting)=>{
@@ -29,10 +29,10 @@ export class ConfigService {
   });
 
   //console.log('send ReadConfig event to ipcMain..')
-  this._electronService.ipcRenderer.send('ReadConfig')
+  this._es.ipcRenderer.send('ReadConfig')
   }
 test(){
-  this._electronService.ipcRenderer.once('TestResponse', (event: Electron.IpcMessageEvent, result: Customer) => {
+  this._es.ipcRenderer.once('TestResponse', (event: Electron.IpcMessageEvent, result: Customer) => {
     console.log('TestResponse!!');
     console.log(result)
     let x:Customer = new Customer(result.id, result.name, result.address,result.email, result.iban, new Array<Booking>())
@@ -42,12 +42,12 @@ test(){
     console.log(x)
     x.test()
   })
-  this._electronService.ipcRenderer.send('Test')
+  this._es.ipcRenderer.send('Test')
 }
   writeConfig(){
     //subscribe
     console.log('subscribe to WriteConfigResponse')
-    this._electronService.ipcRenderer.once('WriteConfigResponse', (event: Electron.IpcMessageEvent, result: string) => {
+    this._es.ipcRenderer.once('WriteConfigResponse', (event: Electron.IpcMessageEvent, result: string) => {
       console.log('WriteConfigResponse!!');
       if (result === 'success') 
       {
@@ -59,12 +59,12 @@ test(){
   
   //console.log('send WriteConfig event to ipcMain..')
   this.settings[0].value='changed'
-  this._electronService.ipcRenderer.send('WriteConfig', this.settings)
+  this._es.ipcRenderer.send('WriteConfig', this.settings)
 }
 
 changePassword(){
   console.log('subscribe to ChangepasswordResponse')
-  this._electronService.ipcRenderer.once('RecryptDbSecretResponse', (event: Electron.IpcMessageEvent, result: string) => {
+  this._es.ipcRenderer.once('RecryptDbSecretResponse', (event: Electron.IpcMessageEvent, result: string) => {
     console.log('RecryptDbSecretResponse!!');
     if (result === 'success') 
     {
@@ -76,6 +76,6 @@ changePassword(){
   //console.log('send RecryptDbSecret event to ipcMain..')
   //this.settings[0].value='changed'
   let pwds = {oldpass:'initial', newpass:'initial2'}
-  this._electronService.ipcRenderer.send('RecryptDbSecret', pwds)
+  this._es.ipcRenderer.send('RecryptDbSecret', pwds)
 }
 }
