@@ -10,6 +10,9 @@ import {
 } from '@angular/animations';
 import { IconFeedabck } from 'src/app/models/icon-feedback';
 import { MessageFeedabck } from 'src/app/models/message-feedback';
+import { ElectronService } from 'ngx-electron';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalConfirmComponent } from '../ng-bootstrap/modal-confirm/modal-confirm.component';
 
 @Component({
   selector: 'app-header',
@@ -26,7 +29,11 @@ import { MessageFeedabck } from 'src/app/models/message-feedback';
   ]})
 export class HeaderComponentComponent implements OnInit, OnDestroy {
 
-  constructor(private _ui : UIService) { }
+  constructor(
+    private _ui : UIService, 
+    private _modalService: NgbModal,
+    private _es: ElectronService
+    ) { }
   notificationState:string;
   iconFeedback:IconFeedabck;
   msgFeedback:MessageFeedabck;
@@ -72,5 +79,16 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     console.log('iconFeedback: '+this.iconFeedback)
     console.log('msgFeedback: '+this.msgFeedback)
   }
-
+  exitElectron(){
+    const modalRef = this._modalService.open(ModalConfirmComponent);
+    modalRef.componentInstance.title = 'Programma afsluiten';
+    modalRef.componentInstance.message = 'Programma afsluiten?';
+    modalRef.result
+    .then(()=>{
+      this._es.ipcRenderer.send('ExitProgram')
+    })
+    .catch(()=>{
+      console.log('modal cancelled')
+    })  
+  }
 }
