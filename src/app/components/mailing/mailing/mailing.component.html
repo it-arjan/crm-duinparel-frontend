@@ -3,30 +3,29 @@
     (ngSubmit)="onSubmit()" 
     class="form-inline2"
     >
-          <div class="form-group row">
-              <div class="col-3">Laatste bezoek sinds</div>
-              <label for="visitedSinceFrom">
-                <input class ="col-2 form-control-sm " type="text" formControlName="visitedSinceFrom">
-              </label>
-              <label for="visitedSinceUntil">tot
-                <input class ="col-2 form-control-sm" type="text" formControlName="visitedSinceUntil">
-                &nbsp;maanden
-              </label> 
-              <div class="row-2"></div>
+          <div class="form-group row border-top pt-1">
+              <div class="col-2">Laatste bezoek tussen</div>
+              <div class="col-1">
+                <input class ="col-12" type="number" formControlName="visitedSinceFrom"/>
+              </div>
+              <div class="col-1 text-center">en</div>
+              <div class="col-1">
+                <input class ="col-12" type="number" formControlName="visitedSinceUntil">
+            </div>
+            <div class="row-1">maanden</div>
           </div>
-          <div class="form-group row">
-              <div class="col-3">Langer gemaild dan </div>
-              <label class ="" for="mailedSinceFrom">
-                <input class ="form-control-sm col-2" type="text" formControlName="mailedSinceFrom">
-              </label>
-                <label for="mailedSinceUntil">tot
-                  <input class ="form-control-sm col-2" type="text" formControlName="mailedSinceUntil">
-                  &nbsp;maanden
-              </label>
-              <div class="row-2"></div>
+          <div class="form-group row border-top pt-1">
+              <div class="col-2">Niet gemaild tussen </div>
+              <div class="col-1">
+                <input class ="col-12" type="number" formControlName="mailedSinceFrom">
+                </div>
+                <div class="col-1 text-center">en</div>
+                <div class="col-1">
+                  <input class ="col-12" type="number" formControlName="mailedSinceUntil"> 
+                </div>
+              <div class="row-1">maanden</div>
         </div>
-        <hr>
-        <div class="form-group row">
+        <div class="form-group row border-top pt-1">
           <div class="col-1"></div>
           <div class="col-2">
             <div formGroupName="bookTypeCheckboxes" class="form-check form-check-inline">
@@ -46,11 +45,10 @@
             </ng-template>
           </div>
         </div>
-        <div class="row-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Selecteer</button></div>
+        <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Selecteer</button></div>
       </div>
     </form>
-<hr>
-<div class="row" *ngIf="selectedEmails">
+<div class="row border-top pt-1" *ngIf="selectedEmails">
     <div class="col-md-6 pad">Deze selectie bestaat uit {{countSelectedEmails()}} adressen, onderverdeeld in {{selectedEmails.length}} batches.</div> 
     <div class="col-md-4" >
       <button #b1 class="btn btn-outline-primary pad space" type="button" 
@@ -61,8 +59,7 @@
         data-toggle="tooltip" title="Dit kan alleen nu nog">Maak onthouden ongedaan</button>
     </div>
 </div>
-<div class="row" *ngFor="let batch of selectedEmails; let idx=index">
-    <hr>
+<div class="row border-top pt-1" *ngFor="let batch of selectedEmails; let idx=index">
     <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.emails}}</div>
   <div class="col-md-4" ><button 
                           class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)" 
