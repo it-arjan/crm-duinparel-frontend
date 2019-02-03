@@ -45,7 +45,7 @@
             </ng-template>
           </div>
         </div>
-        <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Maak selectie</button></div>
+        <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Zoek</button></div>
       </div>
     </form>
 <div class="row border-top pt-2 vcenter rounded" *ngIf="selectedEmails">
@@ -53,7 +53,7 @@
     <div class="col-md-4" >
       <button #b1 class="btn btn-outline-primary pad space" type="button" 
         *ngIf="!mailingRemembered" (click)="rememberMailing()" 
-        data-toggle="tooltip" title="Alleen onthouden als de mail ook wordt verstuurd!">Onthoud deze selectie</button>
+        data-toggle="tooltip" title="Klik hierop als je daadwerkelijk een mail stuurt naar deze adressen, niet vergeten!">Onthoud deze selectie</button>
       <button #b2 class="btn btn-outline-primary pad space" type="button" 
         *ngIf="mailingRemembered" (click)="undoRememberMailing()" 
         data-toggle="tooltip" title="Dit kan alleen nu nog">Maak onthouden ongedaan</button>
@@ -61,7 +61,10 @@
 </div>
 <div class="row border-top pt-2 vcenter rounded" *ngFor="let batch of selectedEmails; let idx=index">
     <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.emails}}</div>
-  <div class="col-md-4" ><button 
-                          class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)" 
-                          data-toggle="tooltip" title="Naar het klipbord">Kopieer batch</button></div>
-</div>
+  <div class="col-md-4" >
+    <button 
+        class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)" 
+        data-toggle="tooltip" title="gebruik Ctrl-V om emails te plakken..">Kopieer batch
+      </button>
+    </div>
+  </div>
