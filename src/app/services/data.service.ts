@@ -88,7 +88,7 @@ export class DataService {
       let result = proptypesArg.includes(book.propcode) && bookTypesArg.includes(book.booktype)
       if (result){
         let diff = Globals.jsDateDiffMonths(book.arrive, new Date(Date.now()))
-        console.log('->', diff)
+        //console.log('->', diff)
         result=diff >= monthsNotVisitedFrom
         if (result && monthsNotVisitedUntil) result = diff < monthsNotVisitedUntil
         if (result && monthsNotMailedFrom){

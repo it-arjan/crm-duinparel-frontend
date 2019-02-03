@@ -24,30 +24,30 @@ export class DataPersistService {
 
     bookings = new Array<Booking>();
     bookings.push(new Booking( 3, 2, new Date("03/25/2018"), new Date("03/28/2018"),'jvg', 'weekend'))
-    bookings.push(new Booking( 4, 2, new Date("04/25/2018"), new Date("04/28/2018"),'jvg', 'weekend'))
+    bookings.push(new Booking( 4, 2, new Date("04/25/2018"), new Date("04/28/2018"),'alb', 'weekend'))
     bookings.push(new Booking( 5, 2, new Date("08/25/2018"), new Date("08/28/2018"),'jvg', 'weekend'))
     bookings.push(new Booking( 6, 2, new Date("11/25/2018"), new Date("11/28/2018"),'jvg', 'weekend'))
     result.push(new Customer(2,'jan doedel','dopperstraat 13, 1232 AJ, tsjietjerkstadeel', 'j.d@xs4all.nl','', bookings))
 
     bookings = new Array<Booking>();
     bookings.push(new Booking( 7, 3, new Date("03/25/2015"), new Date("03/28/2015"),'alb', 'week'))
-    bookings.push(new Booking( 8, 3, new Date("05/15/2014"), new Date("05/22/2014"),'alb', 'week'))
+    bookings.push(new Booking( 8, 3, new Date("05/15/2014"), new Date("05/22/2014"),'jvg', 'week'))
     result.push(new Customer(3,'bert pietersen','jan steenstraat 13, 1000 TA, amsterdam', 'bepie@outlook.com','0031ingb0475860', bookings))
 
     bookings = new Array<Booking>();
     bookings.push(new Booking( 9, 4, new Date("03/25/2015"), new Date("03/28/2015"),'app', 'midweek'))
     bookings.push(new Booking( 10, 4, new Date("03/25/2014"), new Date("03/28/2014"),'app', 'midweek'))
-    result.push(new Customer(4,'karel van beene','hoofdweg 33, 1013 XA, harlingen', 'kbeene@xs4all.nl','0031ingb017482225', bookings))
+    result.push(new Customer(4,'karel van appman','hoofdweg 33, 1013 XA, harlingen', 'kbeene.appmens@xs4all.nl','0031ingb017482225', bookings))
 
     bookings = new Array<Booking>();
     bookings.push(new Booking( 11, 5, new Date("03/25/2017"), new Date("03/28/2017"),'app', 'midweek'))
     bookings.push(new Booking( 12, 5, new Date("03/25/2018"), new Date("03/28/2018"),'app', 'midweek'))
-    result.push(new Customer(5,'M dawohl','hptwg 33, 10134, colon', 'd.wohl@grundlich.de','', bookings))
+    result.push(new Customer(5,'M dawohl','hptwg 33, 10134, colon', 'd.wohl.appmens@grundlich.de','', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 13, 6, new Date("03/25/2017"), new Date("03/28/2017"),'app', 'midweek'))
-    bookings.push(new Booking( 14, 6, new Date("03/25/2018"), new Date("03/28/2018"),'app', 'midweek'))
-    result.push(new Customer(6,'K debringer','mittelweg 34, 10123, hamburg', 'k.debringer@gmx.de','', bookings))
+    bookings.push(new Booking( 13, 6, new Date("09/24/2017"), new Date("09/28/2017"),'app', 'midweek'))
+    bookings.push(new Booking( 14, 6, new Date("08/18/2018"), new Date("08/14/2018"),'app', 'midweek'))
+    result.push(new Customer(6,'K debringer','mittelweg 34, 10123, hamburg', 'k.debringer.appmens@gmx.de','', bookings))
 
     bookings = new Array<Booking>();
     bookings.push(new Booking( 15, 7, new Date("06/23/2017"), new Date("06/29/2017"),'alb', 'midweek'))

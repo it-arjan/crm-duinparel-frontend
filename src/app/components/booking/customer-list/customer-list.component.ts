@@ -15,10 +15,8 @@ export class CustomerListComponent implements OnInit {
 
   ngOnInit() {
     this.customers = this._dataService.searchResult;
-    console.log('nr custoomers: ' + this.customers.length)
   }
   onClick(idx:number, action:string){
-    console.log(idx)
     this.selectedIdx=idx;
     if (action==='book') this._router.navigate(['booking','cust',this.customers[this.selectedIdx].id, 'bookings'])
     else this._router.navigate(['booking','cust',this.customers[this.selectedIdx].id])

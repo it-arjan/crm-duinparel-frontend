@@ -75,9 +75,9 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
 
     this.UserFeedback=feedback.message
     this.msgType=feedback.type
-    console.log(this.msgType)
-    console.log('iconFeedback: '+this.iconFeedback)
-    console.log('msgFeedback: '+this.msgFeedback)
+    // console.log(this.msgType)
+    // console.log('iconFeedback: '+this.iconFeedback)
+    // console.log('msgFeedback: '+this.msgFeedback)
   }
   exitElectron(){
     const modalRef = this._modalService.open(ModalConfirmComponent);

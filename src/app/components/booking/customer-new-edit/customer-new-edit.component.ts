@@ -31,9 +31,8 @@ export class CustomerNewEditComponent implements OnInit {
     this._activatedRoute.params.subscribe( //subscription is cleanedup automatically in this case
       (params: Params) => {
         this.editMode = params['custid'] != null;
-        console.log(params)
         if (this.editMode){
-          console.log('editMode')
+          //console.log('editMode')
           this.custId = +params['custid'];
           this.customer = this._dataService.getCustomer(this.custId);  
         } else{
@@ -45,7 +44,6 @@ export class CustomerNewEditComponent implements OnInit {
   }
 
   private initForm(){
-    console.log('initForm')
     let name='', address='', email='', iban='';
     if (this.editMode){
       name=this.customer.name

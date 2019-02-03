@@ -14,7 +14,6 @@ export class DropdownDirective{
     // one property for each element where this directive is placed on is not a problem
     
     @HostListener('click') dropDownClick(){
-        console.log('dropDownClick');
         this.isOpen = !this.isOpen;
         // if (this.isOpen){
         //     this.renderer.addClass(this.myElt.nativeElement,'open');

@@ -57,8 +57,9 @@ export class MailingComponent implements OnInit {
   }
 
   onMouseover(){
-    console.log('Event triggered');
+    //console.log('Event triggered');
   }
+
   countSelectedEmails(){
     let result=0
     for (let b of this.selectedEmails){
@@ -66,6 +67,7 @@ export class MailingComponent implements OnInit {
     }
     return result
   }
+
   initForm(){
     this.reactiveForm = new FormGroup({
       'visitedSinceFrom': new FormControl(this.visitedSinceFrom,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
@@ -91,7 +93,6 @@ export class MailingComponent implements OnInit {
     }
   }
 
-
   onSubmit(){
     this.visitedSinceFrom = this.reactiveForm.get('visitedSinceFrom').value;
     this.visitedSinceUntil = this.reactiveForm.get('visitedSinceUntil').value;
@@ -108,7 +109,7 @@ export class MailingComponent implements OnInit {
     this.selectedEmails = this._ds.searchEmails(this.visitedSinceFrom,this.visitedSinceUntil,
                                                 this.mailedSinceFrom,this.mailedSinceUntil,
                                                 this.selectedPropCodes, this.selectedBookTypes)
-    console.log(this.selectedEmails)
+   // console.log(this.selectedEmails)
     }
 
   rememberMailing(){
