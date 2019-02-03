@@ -16,10 +16,6 @@ import * as moment from 'moment';
   selector: 'app-booking',
   templateUrl: './booking.component.html',
   styles: [`
-  .vcenter {
-    display: flex;
-    align-items: center;
-  }
     `]
 })
 export class BookingComponent implements OnInit {
@@ -49,8 +45,6 @@ export class BookingComponent implements OnInit {
   ngOnInit() {
   this._activatedRoute.params.subscribe( //route subscriptions are cleaned up automatically
     (params: Params) => {
-      console.log('BookingListComponent _activatedRoute.params.subscribe')
-      console.log(params)
       this.custId = +params['custid'];
       this.customer = this._ds.getCustomer(this.custId);  
     });
@@ -118,11 +112,9 @@ export class BookingComponent implements OnInit {
     const modalRef = this._modalService.open(ModalDaterangeSelectComponent);
     modalRef.result
         .then((result)=>{
-          console.log('closed')
           let m_arrive = moment([result.fromNgb.year, result.fromNgb.month-1, result.fromNgb.day])
           let m_depart = moment([result.toNgb.year, result.toNgb.month-1, result.toNgb.day])
           this.reactiveForm.patchValue({'arrive':m_arrive.format(Globals.momDateformat),'depart':m_depart.format(Globals.momDateformat)})
-          console.log(result.fromNgb, result.toNgb)
         })
         .catch((err)=>{
           console.log(err)

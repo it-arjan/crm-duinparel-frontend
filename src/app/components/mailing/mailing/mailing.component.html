@@ -3,29 +3,29 @@
     (ngSubmit)="onSubmit()" 
     class="form-inline2"
     >
-          <div class="form-group row border-top pt-1">
+          <div class="form-group row border-top pt-2 vcenter">
               <div class="col-2">Laatste bezoek tussen</div>
               <div class="col-1">
-                <input class ="col-12" type="number" formControlName="visitedSinceFrom"/>
+                <input class ="col-12 rounded" type="number" formControlName="visitedSinceFrom"/>
               </div>
               <div class="col-1 text-center">en</div>
               <div class="col-1">
-                <input class ="col-12" type="number" formControlName="visitedSinceUntil">
+                <input class ="col-12 rounded" type="number" formControlName="visitedSinceUntil">
             </div>
             <div class="row-1">maanden</div>
           </div>
-          <div class="form-group row border-top pt-1">
+          <div class="form-group row border-top pt-2 vcenter">
               <div class="col-2">Niet gemaild tussen </div>
               <div class="col-1">
-                <input class ="col-12" type="number" formControlName="mailedSinceFrom">
+                <input class ="col-12 rounded" type="number" formControlName="mailedSinceFrom">
                 </div>
                 <div class="col-1 text-center">en</div>
                 <div class="col-1">
-                  <input class ="col-12" type="number" formControlName="mailedSinceUntil"> 
+                  <input class ="col-12 rounded" type="number" formControlName="mailedSinceUntil"> 
                 </div>
               <div class="row-1">maanden</div>
         </div>
-        <div class="form-group row border-top pt-1">
+        <div class="form-group row border-top pt-2 vcenter">
           <div class="col-1"></div>
           <div class="col-2">
             <div formGroupName="bookTypeCheckboxes" class="form-check form-check-inline">
@@ -45,10 +45,10 @@
             </ng-template>
           </div>
         </div>
-        <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Selecteer</button></div>
+        <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Maak selectie</button></div>
       </div>
     </form>
-<div class="row border-top pt-1" *ngIf="selectedEmails">
+<div class="row border-top pt-2 vcenter rounded" *ngIf="selectedEmails">
     <div class="col-md-6 pad">Deze selectie bestaat uit {{countSelectedEmails()}} adressen, onderverdeeld in {{selectedEmails.length}} batches.</div> 
     <div class="col-md-4" >
       <button #b1 class="btn btn-outline-primary pad space" type="button" 
@@ -59,7 +59,7 @@
         data-toggle="tooltip" title="Dit kan alleen nu nog">Maak onthouden ongedaan</button>
     </div>
 </div>
-<div class="row border-top pt-1" *ngFor="let batch of selectedEmails; let idx=index">
+<div class="row border-top pt-2 vcenter rounded" *ngFor="let batch of selectedEmails; let idx=index">
     <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.emails}}</div>
   <div class="col-md-4" ><button 
                           class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)" 
