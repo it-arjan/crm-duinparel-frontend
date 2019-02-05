@@ -14,37 +14,38 @@ export class ConfigService {
     private _ui: UIService,
     ) { }
 
-  settings: ConfigSetting[];
   userPassword: string
 
-  readConfig(){
+  readConfig(): Promise<ConfigSetting[]>{
     //subscribe
     console.log('subscribe to ReadConfigResponse')
-    this._es.ipcRenderer.once('ReadConfigResponse', (event: Electron.IpcMessageEvent, arg: ConfigSetting[]) => {
+    let result: Promise<ConfigSetting[]> = new Promise((resolve, reject) => {
+      this._es.ipcRenderer.once('ReadConfigResponse', (event: Electron.IpcMessageEvent, arg: ConfigSetting[]) => {
       //console.log('ReadConfigResponse!!');
-      this.settings=arg;
-      this.settings.forEach((confSetting:ConfigSetting)=>{
-        console.log(confSetting.name + ', ', confSetting.value)
+      if (arg) resolve(arg);
+      else reject([])
       })
-  });
+    })
 
   //console.log('send ReadConfig event to ipcMain..')
   this._es.ipcRenderer.send('ReadConfig')
+  return result;
   }
-test(){
-  this._es.ipcRenderer.once('TestResponse', (event: Electron.IpcMessageEvent, result: Customer) => {
-    console.log('TestResponse!!');
-    console.log(result)
-    let x:Customer = new Customer(result.id, result.name, result.address,result.email, result.iban, new Array<Booking>())
-    result.bookings.forEach((bt:Booking)=>{
-      x.consumeBookingClone(bt)
+  test(){
+    this._es.ipcRenderer.once('TestResponse', (event: Electron.IpcMessageEvent, result: Customer) => {
+      console.log('TestResponse!!');
+      console.log(result)
+      let x:Customer = new Customer(result.id, result.name, result.address,result.email, result.iban, new Array<Booking>())
+      result.bookings.forEach((bt:Booking)=>{
+        x.consumeBookingClone(bt)
+      })
+      console.log(x)
+      x.test()
     })
-    console.log(x)
-    x.test()
-  })
-  this._es.ipcRenderer.send('Test')
-}
-  writeConfig(){
+    this._es.ipcRenderer.send('Test')
+  }
+  
+  writeConfig(settings:ConfigSetting[]){
     //subscribe
     console.log('subscribe to WriteConfigResponse')
     this._es.ipcRenderer.once('WriteConfigResponse', (event: Electron.IpcMessageEvent, result: string) => {
@@ -58,8 +59,7 @@ test(){
   });  
   
   //console.log('send WriteConfig event to ipcMain..')
-  this.settings[0].value='changed'
-  this._es.ipcRenderer.send('WriteConfig', this.settings)
+  this._es.ipcRenderer.send('WriteConfig', settings)
 }
 
 changePassword(){

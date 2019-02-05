@@ -24,9 +24,12 @@ body {
       display: flex;
       align-items: center;
     }
+    .dp-smaller{
+      font-size: 90%;
+    }
+
     .rounded{
       border: 1px solid #ccc;
-   
       /* Safari 5, Chrome support border-radius without vendor prefix.
        * FF 3.0/3.5/3.6, Mobile Safari 4.0.4 require vendor prefix.
        * No support in Safari 3/4, IE 6/7/8, Opera 10.0.

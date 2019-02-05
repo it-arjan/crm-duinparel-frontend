@@ -1,3 +1,23 @@
+<div class="container">
+  <h3>Instellingen</h3>
+  <table class="table table-striped" style="width:50%">
+    <thead>
+      <tr>
+        <th>Naam</th>
+        <th>Waarde</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let setting of settings">
+        <td>{{setting.name}}</td>
+        <td class="dp-smaller">{{setting.value}}</td>
+        <td [ngClass]="{'text-danger': setting.error,'text-success': !setting.error}">{{setting.error?setting.error: 'ok'}}</td>
+      </tr>
+      </tbody>
+      </table>
+</div>
 <p>
-  <button class="btn btn-outline-secondary" (click)="readConfig()">read Config</button>  <button class="btn btn-outline-secondary" (click)="writeConfig()">write Config</button>  
+  <button class="btn btn-outline-secondary" (click)="writeConfig()">write Config</button>  
+  <button class="btn btn-outline-secondary" (click)="readConfig()">Read Config (again)</button> 
 </p>
