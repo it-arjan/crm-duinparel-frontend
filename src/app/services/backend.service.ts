@@ -4,22 +4,30 @@ import { ConfigSetting } from '../models/configsetting.model';
 import { UIService } from './ui.service';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
+import { setCurrentQueries } from '@angular/core/src/render3/state';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConfigService {
+export class BackendService {
   constructor(
     private _es: ElectronService,
     private _ui: UIService,
     ) { }
 
-  userPassword: string
-
+  private _userPassword: string
+  pwdCorrect(pwd:string){
+    console.log(this._userPassword, pwd)
+    return this._userPassword === pwd
+  }
+  isAuthenticated() : boolean {
+    return this._userPassword !=null && this._userPassword.length < 6
+  }
   readConfig(): Promise<ConfigSetting[]>{
     //subscribe
-    console.log('subscribe to ReadConfigResponse')
+    console.log('readConfig:')
     let result: Promise<ConfigSetting[]> = new Promise((resolve, reject) => {
+      //console.log('subscribe to ReadConfigResponse')
       this._es.ipcRenderer.once('ReadConfigResponse', (event: Electron.IpcMessageEvent, arg: ConfigSetting[]) => {
       //console.log('ReadConfigResponse!!');
       if (arg) resolve(arg);
@@ -62,20 +70,41 @@ export class ConfigService {
   this._es.ipcRenderer.send('WriteConfig', settings)
 }
 
-changePassword(){
-  console.log('subscribe to ChangepasswordResponse')
-  this._es.ipcRenderer.once('RecryptDbSecretResponse', (event: Electron.IpcMessageEvent, result: string) => {
-    console.log('RecryptDbSecretResponse!!');
-    if (result === 'success') 
+changePassword(oldpass:string, newpass:string) : Promise<boolean>{
+  //console.log('subscribe to ChangepasswordResponse')
+  let result: Promise<boolean> =  new Promise<boolean>((resolve, reject) => {
+     this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: string) => {
+    console.log('ChangePasswordResponse!!');
+    if (result) 
     {
-      this._ui.success()
+      this._userPassword = newpass
+      resolve(true)
     }
-    else this._ui.error("Error writing config: " + result)
-  });  
+    else reject(false)
+  })
+  })
 
   //console.log('send RecryptDbSecret event to ipcMain..')
   //this.settings[0].value='changed'
-  let pwds = {oldpass:'initial', newpass:'initial2'}
-  this._es.ipcRenderer.send('RecryptDbSecret', pwds)
+  let pwds = {oldpwd:oldpass, newpwd:newpass}
+  this._es.ipcRenderer.send('ChangePassword', pwds)
+  return result;
+}
+
+logOn(pwd:string): Promise<void>{
+  let result: Promise<void> =  new Promise((resolve, reject) => {
+  this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, success: boolean) => {
+    console.log('service.logon.result=' + success)
+    if (success) {
+      this._userPassword=pwd
+      resolve()
+    }
+    else reject()
+    })//once
+  })//promise
+  
+  //console.log( 'backend service: sending pwd ' + pwd)
+  this._es.ipcRenderer.send('Logon', pwd)
+  return result
 }
 }

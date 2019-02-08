@@ -1,10 +1,10 @@
-<div class="container">
-  <h3>Instellingen</h3>
-  <table class="table table-striped" style="width:50%">
+
+<h3>Instellingen</h3>
+  <table class="table table-striped">
     <thead>
       <tr>
         <th>Naam</th>
-        <th>Waarde</th>
+        <th>Waarde <img src="/assets/img/reload1.jpg" (click)="readConfig()"></th>
         <th>Status</th>
       </tr>
     </thead>
@@ -16,8 +16,30 @@
       </tr>
       </tbody>
       </table>
-</div>
-<p>
-  <button class="btn btn-outline-secondary" (click)="writeConfig()">write Config</button>  
-  <button class="btn btn-outline-secondary" (click)="readConfig()">Read Config (again)</button> 
-</p>
+
+      <div class="inloggen" *ngIf="!loggedOn">
+        <h3>Inloggen</h3>
+        <form
+        [formGroup]="logonForm" 
+        (ngSubmit)="onLogon()" 
+        class="form-inline"
+>
+        <label for="password">password <input type="password" formControlName="password" (keyup)="checkCapslock($event)"></label>
+        
+        <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid || capsLock">Log in</button>
+        </form>        
+      </div>
+      <div class="changepwd" *ngIf="loggedOn">
+        <button class="btn btn-outline-secondary" type="button" (click)="changepwdClicked=!changepwdClicked">Wachtwoord wijzigen</button>
+        <form
+          [formGroup]="changePwdForm" 
+          (ngSubmit)="onChangePwd()" 
+          class="form-inline"
+          *ngIf="changepwdClicked">
+          <label for="oldpassword">old password <input type="password" formControlName="oldpassword"></label>
+          <label for="newpassword">new password <input type="password" formControlName="newpassword"></label>
+          <label for="newpassword2">repeat new password <input type="password" formControlName="newpassword2"></label>
+    
+          <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid">Wijzig</button>
+      </form>  
+      </div>
