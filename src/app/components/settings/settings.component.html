@@ -1,5 +1,5 @@
 
-<ngb-tabset #tabset="ngbTabset" [activeId]="getActiveTab()">
+<ngb-tabset #tabset="ngbTabset" [activeId]="getActiveTab()" *ngIf="activetabNr >=0">
     <ngb-tab id="logon">
       <ng-template ngbTabTitle><b>Inloggen</b></ng-template>
         <ng-template ngbTabContent>
@@ -20,16 +20,16 @@
       <ng-template ngbTabTitle><b>Wachtwoordbeheer</b></ng-template>
       <ng-template ngbTabContent>
         <div class="changepwd">
-            <form
-              [formGroup]="changePwdForm" 
-              (ngSubmit)="onChangePwd()" 
-              class="form-inline">
+          <form
+            [formGroup]="changePwdForm" 
+            (ngSubmit)="onChangePwd()" 
+            class="form-inline">
               <label for="oldpassword">old password <input type="password" formControlName="oldpassword"></label>
               <label for="newpassword">new password <input type="password" formControlName="newpassword"></label>
               <label for="newpassword2">repeat new password <input type="password" formControlName="newpassword2"></label>
         
-              <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid">Wijzig</button>
-        </form>  
+              <button class="btn btn-outline-secondary" type="submit" [disabled]="!changePwdForm.valid">Wijzig</button>
+          </form>  
       </div>
   </ng-template> 
     </ngb-tab>

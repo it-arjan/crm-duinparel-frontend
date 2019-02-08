@@ -30,7 +30,7 @@ export class SettingsComponent implements OnInit {
   
   }
   tabs=['logon','changepwd', 'settings','logs']
-  activetabNr=2
+  activetabNr
 
   getActiveTab(){
     if (this.activetabNr > this.tabs.length -1)
@@ -45,14 +45,16 @@ export class SettingsComponent implements OnInit {
       this.activetabNr=2
     }
     else if (!this.loggedOn) this.activetabNr=0
+    else this.activetabNr=2
+
+    console.log('activetab: ' +this.activetabNr)
   }
 
   searchIncorrectSetting(): string {
     console.log('searchIncorrectSetting')
     for (let setting of this.settings){
-      console.log(setting.error)
       if (setting.error)  {
-        console.log('Found Error setting: ' + setting.name)
+        //console.log('Found Error setting: ' + setting.name)
         return setting.name
       }
     }
@@ -71,10 +73,11 @@ export class SettingsComponent implements OnInit {
   }
  
   onLogon(){
-    console.log( 'setings component: sending pwd ' + this.logonForm.get('password').value)
     this._bs.logOn(this.logonForm.get('password').value)
     .then(()=>{
       this.loggedOn =true
+      this.logonForm.setValue({password:''})
+      this.setActiveTab()
       this._ui.success()
     })
   .catch((err)=>{
@@ -95,6 +98,7 @@ export class SettingsComponent implements OnInit {
           this._bs.changePassword(oldpass, new1)
           .then(()=>{
             this.changePwdForm.setValue({oldpassword:'', newpassword:'', newpassword2:''})
+            this.setActiveTab()
             this._ui.success()
           })
           .catch(x=> this._ui.error("Error writing config."))
