@@ -14,7 +14,7 @@ speed-measure-plugin.json
 
 # secrets
 .env
-
+.nyc_output
 # IDEs and editors
 /.idea
 .project

@@ -1,45 +1,63 @@
 
-<h3>Instellingen</h3>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Naam</th>
-        <th>Waarde <img src="/assets/img/reload1.jpg" (click)="readConfig()"></th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let setting of settings">
-        <td>{{setting.name}}</td>
-        <td class="dp-smaller">{{setting.value}}</td>
-        <td [ngClass]="{'text-danger': setting.error,'text-success': !setting.error}">{{setting.error?setting.error: 'ok'}}</td>
-      </tr>
-      </tbody>
-      </table>
-
-      <div class="inloggen" *ngIf="!loggedOn">
-        <h3>Inloggen</h3>
-        <form
-        [formGroup]="logonForm" 
-        (ngSubmit)="onLogon()" 
-        class="form-inline"
->
-        <label for="password">password <input type="password" formControlName="password" (keyup)="checkCapslock($event)"></label>
+<ngb-tabset #tabset="ngbTabset" [activeId]="getActiveTab()">
+    <ngb-tab id="logon">
+      <ng-template ngbTabTitle><b>Inloggen</b></ng-template>
+        <ng-template ngbTabContent>
+            <div class="inloggen">
+                <h3>Inloggen</h3>
+                <form
+                [formGroup]="logonForm" 
+                (ngSubmit)="onLogon()" 
+                class="form-inline">
+                <label for="password">password <input type="password" formControlName="password" (keyup)="checkCapslock($event)"></label>
+                
+                <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid || capsLock">Log in</button>
+                </form>        
+              </div>
+        </ng-template>
+      </ngb-tab>
+    <ngb-tab id="changepwd">
+      <ng-template ngbTabTitle><b>Wachtwoordbeheer</b></ng-template>
+      <ng-template ngbTabContent>
+        <div class="changepwd">
+            <form
+              [formGroup]="changePwdForm" 
+              (ngSubmit)="onChangePwd()" 
+              class="form-inline">
+              <label for="oldpassword">old password <input type="password" formControlName="oldpassword"></label>
+              <label for="newpassword">new password <input type="password" formControlName="newpassword"></label>
+              <label for="newpassword2">repeat new password <input type="password" formControlName="newpassword2"></label>
         
-        <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid || capsLock">Log in</button>
-        </form>        
+              <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid">Wijzig</button>
+        </form>  
       </div>
-      <div class="changepwd" *ngIf="loggedOn">
-        <button class="btn btn-outline-secondary" type="button" (click)="changepwdClicked=!changepwdClicked">Wachtwoord wijzigen</button>
-        <form
-          [formGroup]="changePwdForm" 
-          (ngSubmit)="onChangePwd()" 
-          class="form-inline"
-          *ngIf="changepwdClicked">
-          <label for="oldpassword">old password <input type="password" formControlName="oldpassword"></label>
-          <label for="newpassword">new password <input type="password" formControlName="newpassword"></label>
-          <label for="newpassword2">repeat new password <input type="password" formControlName="newpassword2"></label>
-    
-          <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid">Wijzig</button>
-      </form>  
-      </div>
+  </ng-template> 
+    </ngb-tab>
+  <ngb-tab id="settings">
+    <ng-template ngbTabTitle><b>Instellingen</b></ng-template>
+    <ng-template ngbTabContent>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Naam</th>
+      <th>Waarde <img src="/assets/img/reload1.jpg" (click)="readConfig()"></th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let setting of settings">
+      <td>{{setting.name}}</td>
+      <td class="dp-smaller">{{setting.value}}</td>
+      <td [ngClass]="{'text-danger': setting.error,'text-success': !setting.error}">{{setting.error?setting.error: 'ok'}}</td>
+    </tr>
+    </tbody>
+  </table>
+  </ng-template>
+  </ngb-tab>
+  <ngb-tab id="logs">
+      <ng-template ngbTabTitle><b>Log bestanden</b></ng-template>
+      <ng-template ngbTabContent>
+      </ng-template>
+    </ngb-tab>
+
+  </ngb-tabset>
