@@ -11,6 +11,7 @@ import { ModalDaterangeSelectComponent } from '../../ng-bootstrap/modal-daterang
 import { Globals } from '../../../shared/globals';
 
 import * as moment from 'moment';
+import { BackendService } from 'src/app/services/backend.service';
 
 @Component({
   selector: 'app-booking',
@@ -21,6 +22,7 @@ import * as moment from 'moment';
 export class BookingComponent implements OnInit {
 
   constructor(
+    private _bs: BackendService, 
     private _ds: DataService, 
     private _modalService: NgbModal,
     private _ui : UIService,
@@ -60,7 +62,7 @@ export class BookingComponent implements OnInit {
     })
   }
   globDateformat(){
-    return Globals.angDateformat;
+    return Globals.angularDateformat;
   }
   datesValid(control: FormControl) : {[s: string]: boolean}{
     //PS: call as validator with bind(this)
@@ -121,7 +123,13 @@ export class BookingComponent implements OnInit {
         })
   }
   onWord(idx:number){
-    alert('Omzetten naar word (via template) komt nog! \n>Lever aub een template aan<')
+    this._bs.writeWordBooking(this.customer, this.customer.bookings[idx])
+    .then((result: {wordFilename:string, wordFolder:string})=>{
+      this._ui.info(`De boeking staat in ${result.wordFolder} and has name ${result.wordFilename}`)
+    })
+    .catch((result: {wordFilename:string, wordFolder:string})=>{
+      this._ui.error(`${result.wordFolder}, ${result.wordFilename}`)
+    })
   }
   onDelete (idx:number) {
     const modalRef = this._modalService.open(ModalConfirmComponent);
