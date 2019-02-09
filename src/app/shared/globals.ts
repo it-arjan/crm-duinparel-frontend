@@ -7,7 +7,7 @@ export class Globals {
 
   public static momDateformat:string='D MMM YY' 
   public static momDatePattern:RegExp = new RegExp(/[0-9][0-9]? [a-zA-Z][a-z][a-z] [0-9][0-9]/)
-  public static angDateformat:string='d MMM yy' 
+  public static angularDateformat:string='d MMM yy' 
   public static jsDateformat:string='D MMM YY' 
   public static bookTypes = ['week','midweek','weekend']
 
