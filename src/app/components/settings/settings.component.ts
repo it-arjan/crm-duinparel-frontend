@@ -4,6 +4,8 @@ import { ConfigSetting } from 'src/app/models/configsetting.model';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { UIService } from 'src/app/services/ui.service';
 import { NullViewportScroller } from '@angular/common/src/viewport_scroller';
+import { LogEntry } from 'src/app/models/logentry.model';
+import { Globals } from 'src/app/shared/globals';
 
 @Component({
   selector: 'app-config',
@@ -22,7 +24,9 @@ export class SettingsComponent implements OnInit {
   loggedOn = false //get from route?@!??!
   changepwdClicked=false
   capsLock=false
-  @ViewChild('tabset') tabset
+  logEntries: Array<LogEntry>=[]
+
+  //@ViewChild('tabset') tabset
 
   ngOnInit() {
   this.initForms()
@@ -32,13 +36,13 @@ export class SettingsComponent implements OnInit {
   tabs=['logon','changepwd', 'settings','logs']
   activetabNr
 
-  getActiveTab(){
+  getActiveTabID(){
     if (this.activetabNr > this.tabs.length -1)
       this._ui.error(`kan active tab nr ${this.activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
     return this.tabs[this.activetabNr]
   }
 
-  setActiveTab(){
+  setActiveTabNr(){
     let name
     if ( name = this.searchIncorrectSetting()) {
       this._ui.error(`Some settings (${name}) show errors, please correct them before logging on`)
@@ -47,7 +51,7 @@ export class SettingsComponent implements OnInit {
     else if (!this.loggedOn) this.activetabNr=0
     else this.activetabNr=2
 
-    console.log('activetab: ' +this.activetabNr)
+    //console.log('activetab: ' +this.activetabNr)
   }
 
   searchIncorrectSetting(): string {
@@ -77,7 +81,7 @@ export class SettingsComponent implements OnInit {
     .then(()=>{
       this.loggedOn =true
       this.logonForm.setValue({password:''})
-      this.setActiveTab()
+      this.setActiveTabNr()
       this._ui.success()
     })
   .catch((err)=>{
@@ -85,7 +89,19 @@ export class SettingsComponent implements OnInit {
     this._ui.error("password incorrect")
   })
   }
-  
+  globDateformat(){
+    return Globals.angularDateformat
+  }
+  getLogs(){
+    console.log('call')
+    this._bs.getLogs()
+    .then((logArray)=>{
+      console.log('call.then')
+      console.log(logArray)
+      this.logEntries.length=0
+      logArray.forEach(x => this.logEntries.push(x))
+    })
+  }
   onChangePwd(){
     let oldpass=this.changePwdForm.get('oldpassword').value
       let new1= this.changePwdForm.get('newpassword').value
@@ -98,7 +114,7 @@ export class SettingsComponent implements OnInit {
           this._bs.changePassword(oldpass, new1)
           .then(()=>{
             this.changePwdForm.setValue({oldpassword:'', newpassword:'', newpassword2:''})
-            this.setActiveTab()
+            this.setActiveTabNr()
             this._ui.success()
           })
           .catch(x=> this._ui.error("Error writing config."))
@@ -112,7 +128,7 @@ export class SettingsComponent implements OnInit {
     this._bs.readConfig()
       .then((result)=>{
         this.settings = result
-        this.setActiveTab()
+        this.setActiveTabNr()
         })
   }
 
