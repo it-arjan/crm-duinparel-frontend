@@ -6,6 +6,8 @@ import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { setCurrentQueries } from '@angular/core/src/render3/state';
 import { LogEntry } from '../models/logentry.model';
+import { Observable, from } from 'rxjs';
+import { Mailing } from '../models/mailing.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,9 +23,11 @@ export class BackendService {
     console.log(this._userPassword, pwd)
     return this._userPassword === pwd
   }
+
   isAuthenticated() : boolean {
     return this._userPassword && this._userPassword.length > 5
   }
+
   readConfig(): Promise<ConfigSetting[]>{
     //subscribe
     console.log('readConfig:')
@@ -40,20 +44,50 @@ export class BackendService {
   this._es.ipcRenderer.send('ReadConfig')
   return result;
   }
-  test(){
-    this._es.ipcRenderer.once('TestResponse', (event: Electron.IpcMessageEvent, result: Customer) => {
-      console.log('TestResponse!!');
+
+  testDb(){
+    this._es.ipcRenderer.once('TestDbResponse', (event: Electron.IpcMessageEvent, result: boolean) => {
+      console.log('TestDbResponse!!');
       console.log(result)
-      let x:Customer = new Customer(result.id, result.name, result.address,result.email, result.iban, new Array<Booking>())
-      result.bookings.forEach((bt:Booking)=>{
-        x.consumeBookingClone(bt)
-      })
-      console.log(x)
-      x.test()
-    })
-    this._es.ipcRenderer.send('Test')
-  }
   
+    })
+    this._es.ipcRenderer.send('TestDb')
+  }
+
+  createHardcodedData():  Array<Customer>{
+    let result: Array<Customer>= new Array<Customer>();
+    let bookings = new Array<Booking>();
+    bookings.push(new Booking( 1, 1, new Date("03/25/2015"), new Date("03/28/2015"),'jvg', 'week'))
+    bookings.push(new Booking( 2, 1, new Date("04/25/2014"), new Date("04/28/2014"),'jvg', 'week'))
+    result.push(new Customer(1,'jan jansen','bloemstraat 13, 1232 AJ, rotterdam', 'jjanse@hotmail.com','0034ngb1246345923', bookings))
+    return result
+  }
+
+getAllData() : Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}> {
+  var promise: Promise<any> = new Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}>((resolve,reject) => {
+  this._es.ipcRenderer.on('GetAllDataResponse', 
+      (event: Electron.IpcMessageEvent, data: {'customers':Array<Customer>, 'mailings': Array<Mailing>}) => {
+    console.log("GetAllDataResponse!!!")
+    console.log(data)
+      resolve(data)
+    })
+  })
+  .catch(()=>{
+    this._ui.error("error fetching data, check the logs")
+  })
+
+  this._es.ipcRenderer.send('GetAllData')
+  return promise
+ }
+
+persistCustomer(customer: Customer, action:string){
+  this._es.ipcRenderer.once('PersistCustomerResponse', (event: Electron.IpcMessageEvent, result: boolean) => {
+    console.log('TestResponse!!');
+    console.log(result)
+    })
+  this._es.ipcRenderer.send('PersistCustomer')
+ }
+
 writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>{
   let promise = new Promise<{wordFilename:string, wordFolder:string}>((resolve, reject)=>{
     this._es.ipcRenderer.once('WordBookingResponse', (event: Electron.IpcMessageEvent, fileStats: {wordFilename:string, wordFolder:string}) => {

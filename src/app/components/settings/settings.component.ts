@@ -3,9 +3,9 @@ import { BackendService } from 'src/app/services/backend.service';
 import { ConfigSetting } from 'src/app/models/configsetting.model';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { UIService } from 'src/app/services/ui.service';
-import { NullViewportScroller } from '@angular/common/src/viewport_scroller';
 import { LogEntry } from 'src/app/models/logentry.model';
 import { Globals } from 'src/app/shared/globals';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-config',
@@ -16,7 +16,7 @@ import { Globals } from 'src/app/shared/globals';
 })
 export class SettingsComponent implements OnInit {
 
-  constructor(private _bs : BackendService, private _ui: UIService) { 
+  constructor(private _bs : BackendService, private _ds: DataService, private _ui: UIService) { 
   }
   settings: ConfigSetting[]=[];
   logonForm: FormGroup
@@ -80,18 +80,22 @@ export class SettingsComponent implements OnInit {
     this._bs.logOn(this.logonForm.get('password').value)
     .then(()=>{
       this.loggedOn =true
+      this._ds.getData()
+
       this.logonForm.setValue({password:''})
       this.setActiveTabNr()
       this._ui.success()
     })
-  .catch((err)=>{
-    this.loggedOn =false
-    this._ui.error("password incorrect")
-  })
+    .catch((err)=>{
+      this.loggedOn =false
+      this._ui.error("password incorrect")
+    })
   }
+
   globDateformat(){
     return Globals.angularDateformat
   }
+  
   getLogs(){
     console.log('call')
     this._bs.getLogs()
@@ -102,6 +106,7 @@ export class SettingsComponent implements OnInit {
       logArray.forEach(x => this.logEntries.push(x))
     })
   }
+  
   onChangePwd(){
     let oldpass=this.changePwdForm.get('oldpassword').value
       let new1= this.changePwdForm.get('newpassword').value
@@ -136,7 +141,9 @@ export class SettingsComponent implements OnInit {
     //this._cfg.changePassword();
     this._bs.writeConfig(this.settings)
   }
-
+onTestDb(){
+  this._bs.testDb()
+}
   checkCapslock(event){
     this.capsLock=event.getModifierState("CapsLock")
     if (this.capsLock){

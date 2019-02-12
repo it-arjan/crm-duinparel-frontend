@@ -2,20 +2,29 @@ import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Booking } from '../models/booking.model';
 import { Customer } from '../models/customer.model';
+import { BackendService } from './backend.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataPersistService {
 
-  constructor(private _electronService: ElectronService) { }
+  constructor(
+    private _electronService: ElectronService,
+    private _bs: BackendService
+    ) { }
+
   checkPlatform(){
     if(!this._electronService.isElectronApp) {
       throw new Error('NodeJs cann only be approached in electron app.')
     }
   }
 
-  GetAllCustomers(): Array<Customer>{
+  GetAllData(){
+    return this._bs.getAllData()
+  }
+  
+  GetAllCustomersOld(): Array<Customer>{
     let result: Array<Customer>= new Array<Customer>();
     let bookings = new Array<Booking>();
     bookings.push(new Booking( 1, 1, new Date("03/25/2015"), new Date("03/28/2015"),'jvg', 'week'))

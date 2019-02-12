@@ -4,24 +4,37 @@ import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { EmailBatch } from '../models/emailbatch.model';
 import { Globals } from '../shared/globals';
+import { Mailing } from '../models/mailing.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private customers: Array<Customer>;
-  public searchResult: Array<Customer>; // temp, will come out of observable
   constructor(private _dataPersist: DataPersistService) { 
-    this.customers = this._dataPersist.GetAllCustomers();
     this.searchResult = new Array<Customer>();
-    this.searchResult.push(this.customers[0])
-    this.searchResult.push(this.customers[1])
+    // this.searchResult.push(this.customers[0])
+    // this.searchResult.push(this.customers[1])
     }
 
+  private customers: Array<Customer>;
+  private mailings: Array<Mailing>;
+
+  public searchResult: Array<Customer>; // temp, will come out of observable
+
+  getData(){
+    this._dataPersist.GetAllData().then((data) => {
+      console.log("DataService: data recieved")
+      this.customers=data.customers
+      this.mailings=data.mailings
+      })
+  }
+  
   searchCustomers(emailPiece:string){
+    if (this.customers){
     let temp = this.customers.filter(x=>x.email.indexOf(emailPiece) > -1)
     this.searchResult.length=0
     temp.forEach(x=>this.searchResult.push(x))
+    }
   }
 
   getAllCustomers() : Array<Customer> {
@@ -84,41 +97,43 @@ export class DataService {
               proptypesArg:Array<string>,
               bookTypesArg: Array<string>){
       
-    let custHits =this.customers.filter((cust) => cust.bookings.filter(book => {
-      let result = proptypesArg.includes(book.propcode) && bookTypesArg.includes(book.booktype)
-      if (result){
-        let diff = Globals.jsDateDiffMonths(book.arrive, new Date(Date.now()))
-        //console.log('->', diff)
-        result=diff >= monthsNotVisitedFrom
-        if (result && monthsNotVisitedUntil) result = diff < monthsNotVisitedUntil
-        if (result && monthsNotMailedFrom){
-          //todo
+    let batchArr:Array<EmailBatch>=[]
+    if (this.customers){
+      let custHits =this.customers.filter((cust) => cust.bookings.filter(book => {
+        let result = proptypesArg.includes(book.propcode) && bookTypesArg.includes(book.booktype)
+        if (result){
+          let diff = Globals.jsDateDiffMonths(book.arrive, new Date(Date.now()))
+          //console.log('->', diff)
+          result=diff >= monthsNotVisitedFrom
+          if (result && monthsNotVisitedUntil) result = diff < monthsNotVisitedUntil
+          if (result && monthsNotMailedFrom){
+            //todo
+          }
         }
-      }
-      return result
-    }).length>0
-    )
+        return result
+      }).length>0
+      )
 
-    // console.log('-----------------')
-    // console.log(proptypes)
-    // console.log(bookTypes)
-    // console.log(custHits)
-    // console.log('-----------------')
+      // console.log('-----------------')
+      // console.log(proptypes)
+      // console.log(bookTypes)
+      // console.log(custHits)
+      // console.log('-----------------')
 
-    let i=1
-    let batchsize=99
-    let result=[]
-    let batch : EmailBatch = new EmailBatch(batchsize)
-    for (let c of custHits){
-      if (i>batchsize){
-        result.push(batch)
-        batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
-        i=1
+      let i=1
+      let batchsize=99
+      let batch : EmailBatch = new EmailBatch(batchsize)
+      for (let c of custHits){
+        if (i>batchsize){
+          batchArr.push(batch)
+          batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
+          i=1
+        }
+        batch.add(c.email)
+        i++
       }
-      batch.add(c.email)
-      i++
+      batchArr.push(batch)
     }
-    result.push(batch)
-    return result
+    return batchArr
   }
 }

@@ -1,5 +1,5 @@
 
-<ngb-tabset #tabset="ngbTabset" [activeId]="getActiveTabID()" *ngIf="activetabNr >=0">
+<ngb-tabset #tabset="ngbTabset" [activeId]="getActiveTabID()" >
     <ngb-tab id="logon">
       <ng-template ngbTabTitle><b>Inloggen</b></ng-template>
         <ng-template ngbTabContent>
@@ -63,6 +63,12 @@
           <div class="col-md-1">{{ entry.modified | date:globDateformat() }}</div>
           <div class="col-md-8 small">{{ entry.fileContents }}</div>
         </div>
+       </ng-template>
+    </ngb-tab>
+    <ngb-tab id="db">
+      <ng-template ngbTabTitle><b>test db</b></ng-template>
+       <ng-template ngbTabContent>
+         <button type="button" class="btn btn-outline-secondary" (click)="onTestDb()">Test db</button>
        </ng-template>
     </ngb-tab>
   </ngb-tabset>
