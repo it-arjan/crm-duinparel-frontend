@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
 import { BackendService } from 'src/app/services/backend.service';
 import { ConfigSetting } from 'src/app/models/configsetting.model';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
@@ -29,17 +29,17 @@ export class SettingsComponent implements OnInit {
   //@ViewChild('tabset') tabset
 
   ngOnInit() {
+     console.log(`ngOnInit  - active tab is ${this.activetabNr}`);
   this.initForms()
   this.readConfig()
-  
   }
   tabs=['logon','changepwd', 'settings','logs']
   activetabNr
 
-  getActiveTabID(){
-    if (this.activetabNr > this.tabs.length -1)
-      this._ui.error(`kan active tab nr ${this.activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
-    return this.tabs[this.activetabNr]
+  getActiveTabID(activetabNr){
+    if (activetabNr > this.tabs.length -1)
+      this._ui.error(`kan active tab nr ${activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
+    return this.tabs[activetabNr]
   }
 
   setActiveTabNr(){
@@ -51,7 +51,7 @@ export class SettingsComponent implements OnInit {
     else if (!this.loggedOn) this.activetabNr=0
     else this.activetabNr=2
 
-    //console.log('activetab: ' +this.activetabNr)
+    console.log('setActiveTabNr() ' +this.activetabNr)
   }
 
   searchIncorrectSetting(): string {

@@ -54,100 +54,111 @@ export class BackendService {
     this._es.ipcRenderer.send('TestDb')
   }
 
-  createHardcodedData():  Array<Customer>{
-    let result: Array<Customer>= new Array<Customer>();
-    let bookings = new Array<Booking>();
-    bookings.push(new Booking( 1, 1, new Date("03/25/2015"), new Date("03/28/2015"),'jvg', 'week'))
-    bookings.push(new Booking( 2, 1, new Date("04/25/2014"), new Date("04/28/2014"),'jvg', 'week'))
-    result.push(new Customer(1,'jan jansen','bloemstraat 13, 1232 AJ, rotterdam', 'jjanse@hotmail.com','0034ngb1246345923', bookings))
-    return result
+  checkPlatform(){
+    if(!this._es.isElectronApp) {
+      throw new Error('NodeJs cann only be approached in electron app.')
+    }
+  }
+  getAllData() : Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}> {
+    var promise: Promise<any> = new Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}>((resolve,reject) => {
+    this._es.ipcRenderer.on('GetAllDataResponse', 
+        (event: Electron.IpcMessageEvent, data: {'customers':Array<Customer>, 'mailings': Array<Mailing>}) => {
+      console.log("GetAllDataResponse!!!")
+      console.log(data)
+        resolve(data)
+      })
+    })
+    .catch(()=>{
+      this._ui.error("error fetching data, check the logs")
+    })
+
+    this._es.ipcRenderer.send('GetAllData')
+    return promise
   }
 
-getAllData() : Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}> {
-  var promise: Promise<any> = new Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}>((resolve,reject) => {
-  this._es.ipcRenderer.on('GetAllDataResponse', 
-      (event: Electron.IpcMessageEvent, data: {'customers':Array<Customer>, 'mailings': Array<Mailing>}) => {
-    console.log("GetAllDataResponse!!!")
-    console.log(data)
-      resolve(data)
+  persistCustomer(customer: Customer, action:string){
+    this._es.ipcRenderer.once('PersistCustomerResponse', (event: Electron.IpcMessageEvent, result: boolean) => {
+      console.log('TestResponse!!');
+      console.log(result)
+      })
+    this._es.ipcRenderer.send('PersistCustomer')
+  }
+  persistBooking(booking:Booking){
+    //platform check
+    this.checkPlatform();
+    //subscribe first
+    this._es.ipcRenderer.once('StoreBookingResponse', (event: Electron.IpcMessageEvent, arg: Booking) => {
+        console.log('StoreBookingResponse!!');
+        console.log(arg)
+
+    });
+    //then send data to ipcMain
+    this._es.ipcRenderer.send('StoreBooking', booking)
+  }
+  
+ persistMailing(mailing: Mailing){
+
+  }
+  writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>{
+    let promise = new Promise<{wordFilename:string, wordFolder:string}>((resolve, reject)=>{
+      this._es.ipcRenderer.once('WordBookingResponse', (event: Electron.IpcMessageEvent, fileStats: {wordFilename:string, wordFolder:string}) => {
+        console.log('WordBookingResponse!!');
+        if (fileStats.wordFilename != 'error') resolve(fileStats)
+        else reject(fileStats)
+      })
     })
-  })
-  .catch(()=>{
-    this._ui.error("error fetching data, check the logs")
-  })
+    this._es.ipcRenderer.send('WordBooking', {customer:customer, booking:booking})
+    return promise
+  }
 
-  this._es.ipcRenderer.send('GetAllData')
-  return promise
- }
-
-persistCustomer(customer: Customer, action:string){
-  this._es.ipcRenderer.once('PersistCustomerResponse', (event: Electron.IpcMessageEvent, result: boolean) => {
-    console.log('TestResponse!!');
-    console.log(result)
-    })
-  this._es.ipcRenderer.send('PersistCustomer')
- }
-
-writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>{
-  let promise = new Promise<{wordFilename:string, wordFolder:string}>((resolve, reject)=>{
-    this._es.ipcRenderer.once('WordBookingResponse', (event: Electron.IpcMessageEvent, fileStats: {wordFilename:string, wordFolder:string}) => {
-      console.log('WordBookingResponse!!');
-      if (fileStats.wordFilename != 'error') resolve(fileStats)
-      else reject(fileStats)
-    })
-  })
-  this._es.ipcRenderer.send('WordBooking', {customer:customer, booking:booking})
-  return promise
-}
-
-getLogs(): Promise<Array<LogEntry>>{
-    
+  getLogs(): Promise<Array<LogEntry>>{
+      
   let promise: Promise<Array<LogEntry>> =  new Promise<Array<LogEntry>>((resolve, reject) => {
     this._es.ipcRenderer.once('GetLogsResponse', (event: Electron.IpcMessageEvent, result: Array<LogEntry>) => {
-   console.log('GetLogsResponse!!');
-   if (result) 
-   {
-     let result2 = result.map( x=> new LogEntry(x.fileName, x.modified, x.fileContents))
-     resolve(result2)
-   }
-   else reject({name:'errorrr', contents:'we krijgen niets terug vanuit de backend, zeer ongebruikelijk!'})
- })
- })
+      console.log('GetLogsResponse!!');
+      if (result) 
+      {
+        let result2 = result.map( x=> new LogEntry(x.fileName, x.modified, x.fileContents))
+        resolve(result2)
+      }
+      else reject({name:'errorrr', contents:'we krijgen niets terug vanuit de backend, zeer ongebruikelijk!'})
+    })
+  })
+  //console.log('send RecryptDbSecret event to ipcMain..')
+  //this.settings[0].value='changed'
+  this._es.ipcRenderer.send('GetLogs')
+  return promise;
+  }
 
- //console.log('send RecryptDbSecret event to ipcMain..')
- //this.settings[0].value='changed'
- this._es.ipcRenderer.send('GetLogs')
- return promise;
-}
-logOn(pwd:string): Promise<void>{
-  let result: Promise<void> =  new Promise((resolve, reject) => {
-  this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, success: boolean) => {
-    console.log('service.logon.result=' + success)
-    if (success) {
-      this._userPassword=pwd
-      resolve()
-    }
-    else reject()
-    })//once
-  })//promise
-  
-  //console.log( 'backend service: sending pwd ' + pwd)
-  this._es.ipcRenderer.send('Logon', pwd)
-  return result
-}
-changePassword(oldpass:string, newpass:string) : Promise<boolean>{
-  //console.log('subscribe to ChangepasswordResponse')
-  let result: Promise<boolean> =  new Promise<boolean>((resolve, reject) => {
-     this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: string) => {
-    console.log('ChangePasswordResponse!!');
-    if (result) 
-    {
-      this._userPassword = newpass
-      resolve(true)
-    }
-    else reject(false)
-  })
-  })
+  logOn(pwd:string): Promise<void>{
+    let result: Promise<void> =  new Promise((resolve, reject) => {
+    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, success: boolean) => {
+      console.log('service.logon.result=' + success)
+      if (success) {
+        this._userPassword=pwd
+        resolve()
+      }
+      else reject()
+      })//once
+    })//promise
+    
+    //console.log( 'backend service: sending pwd ' + pwd)
+    this._es.ipcRenderer.send('Logon', pwd)
+    return result
+  }
+  changePassword(oldpass:string, newpass:string) : Promise<boolean>{
+    //console.log('subscribe to ChangepasswordResponse')
+    let result: Promise<boolean> =  new Promise<boolean>((resolve, reject) => {
+      this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: string) => {
+        console.log('ChangePasswordResponse!!');
+        if (result) 
+        {
+          this._userPassword = newpass
+          resolve(true)
+        }
+        else reject(false)
+      })
+    })
 
   //console.log('send RecryptDbSecret event to ipcMain..')
   //this.settings[0].value='changed'
@@ -156,20 +167,20 @@ changePassword(oldpass:string, newpass:string) : Promise<boolean>{
   return result;
 }
 
-writeConfig(settings:ConfigSetting[]){
-  //subscribe
-  console.log('subscribe to WriteConfigResponse')
-  this._es.ipcRenderer.once('WriteConfigResponse', (event: Electron.IpcMessageEvent, result: string) => {
-    console.log('WriteConfigResponse!!');
-    if (result === 'success') 
-    {
-      console.log('WriteConfigResponse :: SUCCESS');
-      this._ui.success()
-    }
-    else this._ui.error("Error writing config: " + result)
-});  
+  writeConfig(settings:ConfigSetting[]){
+    //subscribe
+    console.log('subscribe to WriteConfigResponse')
+    this._es.ipcRenderer.once('WriteConfigResponse', (event: Electron.IpcMessageEvent, result: string) => {
+      console.log('WriteConfigResponse!!');
+      if (result === 'success') 
+      {
+        console.log('WriteConfigResponse :: SUCCESS');
+        this._ui.success()
+      }
+      else this._ui.error("Error writing config: " + result)
+    })
 
-//console.log('send WriteConfig event to ipcMain..')
-this._es.ipcRenderer.send('WriteConfig', settings)
-}
+  //console.log('send WriteConfig event to ipcMain..')
+  this._es.ipcRenderer.send('WriteConfig', settings)
+  }
 }

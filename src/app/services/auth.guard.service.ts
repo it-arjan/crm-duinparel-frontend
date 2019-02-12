@@ -19,7 +19,7 @@ export class AuthGuardService implements CanActivate {
     if (this._bs.isAuthenticated()) {
         return true;
     } else {
-      this._ui.info('onderaan de pagina aub inloggen..')
+      this._ui.info('Selecteer de login tab om in te loggen..')
       this.router.navigate(['/settings']);
     }
     return false;
