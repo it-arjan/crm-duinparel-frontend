@@ -25,29 +25,31 @@ export class SettingsComponent implements OnInit {
   changepwdClicked=false
   capsLock=false
   logEntries: Array<LogEntry>=[]
+  tabs=['logon','changepwd', 'settings','logs']
+  activetabNr
 
   //@ViewChild('tabset') tabset
 
   ngOnInit() {
-     console.log(`ngOnInit  - active tab is ${this.activetabNr}`);
-  this.initForms()
-  this.readConfig()
+    this.initForms()
+    this.readConfig()
+    this.setActiveTabNr()
   }
-  tabs=['logon','changepwd', 'settings','logs']
-  activetabNr
 
   getActiveTabID(activetabNr){
     if (activetabNr > this.tabs.length -1)
       this._ui.error(`kan active tab nr ${activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
     return this.tabs[activetabNr]
   }
-
-  setActiveTabNr(){
-    let name
-    if ( name = this.searchIncorrectSetting()) {
-      this._ui.error(`Some settings (${name}) show errors, please correct them before logging on`)
-      this.activetabNr=2
+  checkSettings():boolean{
+    let settingWithError:string
+    if ( settingWithError = this.searchIncorrectSetting()) {
+      this._ui.error(`Sommige instellingen (${settingWithError}) zijn niet goed, aub eerst corrigeren en dan pas inloggen. Klik de instellingen tab`)
     }
+    return settingWithError === undefined
+  }
+  setActiveTabNr(){
+    if (!this.checkSettings()) this.activetabNr=2
     else if (!this.loggedOn) this.activetabNr=0
     else this.activetabNr=2
 
@@ -77,23 +79,26 @@ export class SettingsComponent implements OnInit {
   }
  
   onLogon(){
-    this._bs.logOn(this.logonForm.get('password').value)
-    .then(()=>{
-      this.loggedOn =true
-      this._ds.getData()
+    console.log('onLogon')
+    if (this.checkSettings()){
+      this._bs.logOn(this.logonForm.get('password').value)
+      .then(()=>{
+        this.loggedOn =true
+        this._ds.getData()
 
-      this.logonForm.setValue({password:''})
-      this.setActiveTabNr()
-      this._ui.success()
-    })
-    .catch((err)=>{
-      this.loggedOn =false
-      this._ui.error("password incorrect")
-    })
+        this.logonForm.setValue({password:''})
+        this.setActiveTabNr()
+        this._ui.success()
+      })
+      .catch((err)=>{
+        this.loggedOn =false
+        this._ui.error("password niet goed")
+      })
+    }
   }
 
   globDateformat(){
-    return Globals.angularDateformat
+    return Globals.angularDateformatWithWeekDay
   }
   
   getLogs(){
@@ -141,9 +146,7 @@ export class SettingsComponent implements OnInit {
     //this._cfg.changePassword();
     this._bs.writeConfig(this.settings)
   }
-onTestDb(){
-  this._bs.testDb()
-}
+
   checkCapslock(event){
     this.capsLock=event.getModifierState("CapsLock")
     if (this.capsLock){
