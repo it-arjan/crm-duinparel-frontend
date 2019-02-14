@@ -19,6 +19,8 @@ import { SettingsComponent } from './components/settings/settings.component';
 import {NgbModule, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/modal-confirm.component';
 import { ModalDaterangeSelectComponent } from './components/ng-bootstrap/modal-daterange-select/modal-daterange-select.component';
+import { Nl2BrPipe } from './shared/nl2br.pipe';
+import { AssumeSafeHtmlPipe } from './shared/assumeSafeHtml.pipe';
 
 
 @NgModule({
@@ -35,6 +37,8 @@ import { ModalDaterangeSelectComponent } from './components/ng-bootstrap/modal-d
     SettingsComponent,
     ModalConfirmComponent,
     ModalDaterangeSelectComponent,
+    Nl2BrPipe,
+    AssumeSafeHtmlPipe,
   ],
   entryComponents: [
     ModalConfirmComponent,
