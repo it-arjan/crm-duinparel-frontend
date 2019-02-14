@@ -1,3 +1,3 @@
 export class Mailing {
-  constructor(private id: number,private sent: Date, private purpose: string, private customerIds:Array<number>){}
+  constructor(public id: number,public sent: Date, public purpose: string, public customerIds:Array<number>){}
 }

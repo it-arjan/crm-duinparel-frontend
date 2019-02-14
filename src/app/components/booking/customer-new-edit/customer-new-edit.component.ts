@@ -6,6 +6,7 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { UIService } from 'src/app/services/ui.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../../ng-bootstrap/modal-confirm/modal-confirm.component';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-new-edit',
@@ -73,15 +74,18 @@ export class CustomerNewEditComponent implements OnInit {
       if (this.editMode) {
         editedCustomer.bookings=this.customer.bookings
         this._dataService.updateCustomer(this.custId, editedCustomer)
+        this._ui.success()
+        this._router.navigate(['/booking'])
       }
       else {
-        this._dataService.addCustomer(editedCustomer)
+        console.log('before: ' + editedCustomer.id)
+        this._dataService.addCustomer(editedCustomer).pipe(take(1)).subscribe(x=> console.log('after: ' + editedCustomer.id))
+        this._ui.success()
+        this._router.navigate(['/booking'])
       }
-      this._ui.success()
-      this._router.navigate(['/booking'])
       }
       catch (ex){
-        this._ui.error('Opslaan mislukt')
+        this._ui.error('Opslaan mislukt ' + ex)
       }
   }
 
