@@ -150,23 +150,25 @@ export class DataService {
       
       //Refine by mailing criteria
       //Not optimal in performance but better for maintenance
-      let custHits2 =custHits1.filter((cust) => {
-        let custNotMailed=false
-        if (monthsNotMailedFrom){
-          //filter mailings on including this customer
+      if (monthsNotMailedFrom){
+        custHits1 =custHits1.filter((cust) => {
+        let included=false
+          //get mailings including this customer
           let mailings_thisCust = this.mailings.filter(m=>m.customerIds.includes(cust.id))
+          //narrow down on date sent
           if (mailings_thisCust.length > 0)
           {
-              let mostRecent = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
-              let mdiff = Globals.jsDateDiffMonths(mostRecent.sent, new Date(Date.now()))
-              custNotMailed = mdiff >= monthsNotMailedFrom
-              if (custNotMailed && monthsNotMailedUntil) {
-                custNotMailed = mdiff <= monthsNotMailedUntil
+              let lastMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
+              let mdiff = Globals.jsDateDiffMonths(lastMail.sent, new Date(Date.now()))
+              included = mdiff >= monthsNotMailedFrom
+              if (included && monthsNotMailedUntil) {
+                included = mdiff <= monthsNotMailedUntil
               }
           }
-        }
-        return custNotMailed
+        
+        return included
       })
+      }
       // console.log('-----------------')
       // console.log(proptypes)
       // console.log(bookTypes)
@@ -176,7 +178,7 @@ export class DataService {
       let i=1
       let batchsize=99
       let batch : EmailBatch = new EmailBatch(batchsize)
-      for (let c of custHits2){
+      for (let c of custHits1){
         if (i>batchsize){
           batchArr.push(batch)
           batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
