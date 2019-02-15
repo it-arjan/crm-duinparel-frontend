@@ -25,9 +25,9 @@ export class SettingsComponent implements OnInit {
   changepwdClicked=false
   capsLock=false
   logEntries: Array<LogEntry>=[]
-  tabs=['logon','changepwd', 'settings','logs']
-  activetabNr
-
+  tabIds=['logon','changepwd', 'settings','logs']
+  activetabNr=0
+  activetabId='logon'
   //@ViewChild('tabset') tabset
 
   ngOnInit() {
@@ -36,11 +36,12 @@ export class SettingsComponent implements OnInit {
     this.setActiveTabNr()
   }
 
-  getActiveTabID(activetabNr){
-    if (activetabNr > this.tabs.length -1)
-      this._ui.error(`kan active tab nr ${activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
-    return this.tabs[activetabNr]
+  getActiveTabID(){
+    if (this.activetabNr > this.tabIds.length -1)
+      this._ui.error(`kan active tab ${this.activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
+    return this.tabIds[this.activetabNr]
   }
+
   checkSettings():boolean{
     let settingWithError:string
     if ( settingWithError = this.searchIncorrectSetting()) {
@@ -48,11 +49,13 @@ export class SettingsComponent implements OnInit {
     }
     return settingWithError === undefined
   }
+
   setActiveTabNr(){
     if (!this.checkSettings()) this.activetabNr=2
     else if (!this.loggedOn) this.activetabNr=0
     else this.activetabNr=2
 
+    this.activetabId = this.getActiveTabID()
     console.log('setActiveTabNr() ' +this.activetabNr)
   }
 
