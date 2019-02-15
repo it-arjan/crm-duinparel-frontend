@@ -89,7 +89,7 @@ export class FakeBackendService implements iDataService {
   
   private dataReplay : ReplaySubject<tBulkdataResult>
 
-  getData(): ReplaySubject<tBulkdataResult> {
+  getDataFromBackend(): ReplaySubject<tBulkdataResult> {
     console.log('fake getData')
     if (!this.customers) this.createData()
     if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
@@ -125,7 +125,7 @@ export class FakeBackendService implements iDataService {
     this.mailReplay.next({error: null})
     return this.mailReplay
   }
-  cleanupData(){
+  cleanupDataCache(){
     this.dataReplay = null
   }
 }

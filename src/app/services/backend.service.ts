@@ -8,7 +8,7 @@ import { setCurrentQueries } from '@angular/core/src/render3/state';
 import { LogEntry } from '../models/logentry.model';
 import { Observable, from, ReplaySubject } from 'rxjs';
 import { Mailing } from '../models/mailing.model';
-import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultBackend } from './data.service.interfaces';
+import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultBackend, tPersistMailing, tPersistCustomer, tPersistbooking } from './data.service.interfaces';
 import { reject } from 'q';
 
 @Injectable({
@@ -23,6 +23,11 @@ export class BackendService implements iDataService {
     ) { }
 
   private _userPassword: string
+  private getData_R$ : ReplaySubject<tBulkdataResult>
+  private persistCust_R$ : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+  private persistBook_R$ : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+  private persistMail_R$ : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+
   pwdCorrect(pwd:string){
     console.log(this._userPassword, pwd)
     return this._userPassword === pwd
@@ -63,59 +68,57 @@ export class BackendService implements iDataService {
       throw new Error('NodeJs cann only be approached in electron app.')
     }
   }
-  private dataReplay : ReplaySubject<tBulkdataResult>
 
-  getData(): ReplaySubject<tBulkdataResult> {
+  getDataFromBackend(): ReplaySubject<tBulkdataResult> {
     this.checkPlatform();
-    this.dataReplay = new ReplaySubject<tBulkdataResult>(1);
+    this.getData_R$ = new ReplaySubject<tBulkdataResult>(1);
     this._es.ipcRenderer.once('GetDataResponse', 
       (event: Electron.IpcMessageEvent, data: tBulkdataResult) => {
         console.log("GetDataResponse!!!")
         console.log(data)
-      this.dataReplay.next(data)
+      this.getData_R$.next(data)
     })
     this._es.ipcRenderer.send('GetData')
-    return this.dataReplay
+    return this.getData_R$
   }
 
-  cleanupData() {
-    this.dataReplay= new ReplaySubject<tBulkdataResult>()
+  cleanupDataCache() {
+    this.getData_R$.complete()
+    this.getData_R$= new ReplaySubject<tBulkdataResult>()
   }
   
-  private custReplay : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+  
   persistCustomer(customer: Customer, type: tPersist) :  ReplaySubject<tDataResult> {
     this.checkPlatform();
     this._es.ipcRenderer.once('PersistCustomerResponse', (event: Electron.IpcMessageEvent, result: tDataResultBackend) => {
-    if (type === tPersist.Insert) {
-      customer.id= result.generatedId
-    }
-    this.custReplay.next({error:result.error})
+      if (type === tPersist.Insert) {
+        customer.id= result.generatedId
+      }
+      this.persistCust_R$.next({error:result.error})
     })
-    this._es.ipcRenderer.send('PersistCustomer')
-    return this.custReplay
+    let arg: tPersistCustomer = {customer: customer, persistType:tPersist[type]}
+    this._es.ipcRenderer.send('PersistCustomer', arg)
+    return this.persistCust_R$
   }
-
-  private bookReplay : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
 
   persistBooking(booking:Booking, type: tPersist): ReplaySubject<tDataResult>{
     //platform check
     this.checkPlatform();
     //subscribe first
     this._es.ipcRenderer.once('PersistBookingResponse', (event: Electron.IpcMessageEvent, result: tDataResultBackend) => {
-        console.log('StoreBookingResponse!!');
-        console.log(result)
+      console.log('StoreBookingResponse!!');
+      console.log(result)
       if (type === tPersist.Insert) {
         booking.id= result.generatedId
       }
-      this.bookReplay.next(result)
+      this.persistBook_R$.next(result)
     })
     //call to ipcMain
-    this._es.ipcRenderer.send('PersistBooking', booking)
-     return this.bookReplay
+    let arg: tPersistbooking = {booking: booking, persistType:tPersist[type]}
+    this._es.ipcRenderer.send('PersistBooking', arg)
+     return this.persistBook_R$
  }
  
-  private mailReplay : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-
   persistMailing(mailing: Mailing, type: tPersist) : ReplaySubject<tDataResult>{
     this.checkPlatform();
     this._es.ipcRenderer.once('PersistMailingResponse', (event: Electron.IpcMessageEvent, result: tDataResultBackend) => {
@@ -124,11 +127,12 @@ export class BackendService implements iDataService {
       if (type === tPersist.Insert) {
         mailing.id= result.generatedId
       }
-        this.bookReplay.next(result)
+        this.persistBook_R$.next(result)
       })
     //call to ipcMain
-    this._es.ipcRenderer.send('PersistMailing', mailing)
-    return this.mailReplay
+    let arg : tPersistMailing = {mailing: mailing, persistType:tPersist[type]}
+    this._es.ipcRenderer.send('PersistMailing', arg)
+    return this.persistMail_R$
   }
   
 
@@ -136,9 +140,9 @@ export class BackendService implements iDataService {
     var promise: Promise<any> = new Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}>((resolve,reject) => {
     this._es.ipcRenderer.on('GetAllDataResponse', 
         (event: Electron.IpcMessageEvent, data: {'customers':Array<Customer>, 'mailings': Array<Mailing>}) => {
-      console.log("GetAllDataResponse!!!")
-      console.log(data)
-        resolve(data)
+          //console.log("GetAllDataResponse!!!")
+          //console.log(data)
+          resolve(data)
       })
     })
     .catch((err)=>{
@@ -149,7 +153,6 @@ export class BackendService implements iDataService {
     this._es.ipcRenderer.send('GetAllData')
     return promise
   }
-
   
   writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>{
     let promise = new Promise<{wordFilename:string, wordFolder:string}>((resolve, reject)=>{
@@ -163,9 +166,8 @@ export class BackendService implements iDataService {
     return promise
   }
 
-  getLogs(): Promise<Array<LogEntry>>{
-      
-  let promise: Promise<Array<LogEntry>> =  new Promise<Array<LogEntry>>((resolve, reject) => {
+  getLogs(): Promise<Array<LogEntry>> {  
+    let promise: Promise<Array<LogEntry>> =  new Promise<Array<LogEntry>>((resolve, reject) => {
     this._es.ipcRenderer.once('GetLogsResponse', (event: Electron.IpcMessageEvent, result: Array<LogEntry>) => {
       console.log('GetLogsResponse!!');
       if (result) 
@@ -198,6 +200,7 @@ export class BackendService implements iDataService {
     this._es.ipcRenderer.send('Logon', pwd)
     return result
   }
+
   changePassword(oldpass:string, newpass:string) : Promise<boolean>{
     //console.log('subscribe to ChangepasswordResponse')
     let result: Promise<boolean> =  new Promise<boolean>((resolve, reject) => {

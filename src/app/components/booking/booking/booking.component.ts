@@ -143,7 +143,7 @@ export class BookingComponent implements OnInit {
         .then(()=>{
           try {
             //throw new Error('testen van errors!')
-            this.customer.bookings.splice(idx,1)
+            this._ds.removeBooking(this.customer.bookings[idx])
             this._ui.broadCastRemoval()
           }
           catch (err){
