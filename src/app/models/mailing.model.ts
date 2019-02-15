@@ -7,6 +7,6 @@ export class Mailing {
     this.purpose = toClone.purpose
     this.customerIds=[]
     if(toClone.customerIds) 
-      this.customerIds.concat(toClone.customerIds)
+      this.customerIds = [].concat(toClone.customerIds)
   }
 }

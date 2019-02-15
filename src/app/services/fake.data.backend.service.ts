@@ -68,11 +68,10 @@ export class FakeBackendService implements iDataService {
     this.customers.push(new Customer(9,'ms Jones aka 9','23rd st 23532, 101312323, NYC', 'jonejone@usa.today','', bookings))
 
     let custIds: number[] = []
-    custIds.concat([1,2,3,4,5])
+    custIds =[1,2,3,4,5]
     this.mailings.push(new Mailing(1, new Date("10/23/2018"), 'contains cust ids 1-5', custIds))
 
-    custIds.length=0
-    custIds.concat([6,7,8,9])
+    custIds =[6,7,8,9]
     this.mailings.push(new Mailing(1, new Date("04/23/2017"), 'contains cust ids 6.9', custIds))
     
   }
