@@ -6,7 +6,7 @@ import { Globals } from '../shared/globals';
 import { Mailing } from '../models/mailing.model';
 import { BackendService } from './backend.service';
 import { FakeBackendService } from './fake.data.backend.service';
-import { tBulkdataResult, tPersist } from './data.service.interfaces';
+import { tBulkdataResult, tPersist } from './interfaces.data';
 import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
 
@@ -154,7 +154,7 @@ export class DataService {
         custHits1 =custHits1.filter((cust) => {
         let included=false
           //get mailings including this customer
-          let mailings_thisCust = this.mailings.filter(m=>m.customerIds.includes(cust.id))
+          let mailings_thisCust = this.mailings.filter(m=>m.customerids.includes(cust.id))
           //narrow down on date sent
           if (mailings_thisCust.length > 0)
           {

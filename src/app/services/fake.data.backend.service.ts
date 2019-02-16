@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { iDataService,tBulkdataResult, tDataResult, tPersist } from './data.service.interfaces';
+import { iDataService,tBulkdataResult, tDataResult, tPersist } from './interfaces.data';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { Mailing } from '../models/mailing.model';
