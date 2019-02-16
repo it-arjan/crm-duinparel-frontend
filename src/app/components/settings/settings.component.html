@@ -1,6 +1,6 @@
 
 <ngb-tabset #tabset="ngbTabset" [activeId]="activetabId" >
-    <ngb-tab id="logon">
+    <ngb-tab id="logon" *ngIf="!loggedOn">
       <ng-template ngbTabTitle><b>Inloggen</b></ng-template>
         <ng-template ngbTabContent>
             <div class="inloggen">
@@ -46,8 +46,8 @@
   </thead>
   <tbody>
     <tr *ngFor="let setting of settings">
-      <td>{{setting.name}}</td>
-      <td class="dp-smaller">{{setting.value}}</td>
+      <td class="text-right font-weight-bold text-capitalize">{{setting.name.replace('_',' ')}}</td>
+      <td class="dp-smaller text-left">{{setting.value}}</td>
       <td [ngClass]="{'text-danger': setting.error,'text-success': !setting.error}">{{setting.error?setting.error: 'ok'}}</td>
     </tr>
     </tbody>
