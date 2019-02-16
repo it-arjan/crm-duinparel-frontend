@@ -4,37 +4,36 @@ import { ConfigSetting } from '../models/configsetting.model';
 import { UIService } from './ui.service';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
-import { setCurrentQueries } from '@angular/core/src/render3/state';
 import { LogEntry } from '../models/logentry.model';
-import { Observable, from, ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { Mailing } from '../models/mailing.model';
-import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultBackend, tPersistMailing, tPersistCustomer, tPersistbooking } from './data.service.interfaces';
-import { reject } from 'q';
+import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultBackend, tPersistMailing, tPersistCustomer, tPersistbooking } from './interfaces.data';
+//import { reject } from 'q';
+import { changePwdInput, securityResult, iSecurity } from './interfaces.security';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class BackendService implements iDataService {
+export class BackendService implements iDataService, iSecurity {
 
   constructor(
     private _es: ElectronService,
     private _ui: UIService,
-    ) { }
+    ) { 
+      console.log('constructor BackendService')
+    }
 
-  private _userPassword: string
   private getData_R$ : ReplaySubject<tBulkdataResult>
-  private persistCust_R$ : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  private persistBook_R$ : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  private persistMail_R$ : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-
-  pwdCorrect(pwd:string){
-    console.log(this._userPassword, pwd)
-    return this._userPassword === pwd
-  }
+  private persistCust_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+  private persistBook_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+  private persistMail_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+  //TODO public authResult_R$: ReplaySubject<securityResult> = new ReplaySubject<securityResult>()
+  private authenticated4Authguard = false //todo check why subscribing doesn;t work (suspect serice creation order)
 
   isAuthenticated() : boolean {
-    return this._userPassword && this._userPassword.length > 5
+    console.log('====>isAuthenticated: ' + this.authenticated4Authguard)
+    return this.authenticated4Authguard
   }
 
   readConfig(): Promise<ConfigSetting[]>{
@@ -135,25 +134,6 @@ export class BackendService implements iDataService {
     return this.persistMail_R$
   }
   
-
-  getData_Promises_NotUsed() : Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}> {
-    var promise: Promise<any> = new Promise<{'customers':Array<Customer>, 'mailings': Array<Mailing>}>((resolve,reject) => {
-    this._es.ipcRenderer.on('GetAllDataResponse', 
-        (event: Electron.IpcMessageEvent, data: {'customers':Array<Customer>, 'mailings': Array<Mailing>}) => {
-          //console.log("GetAllDataResponse!!!")
-          //console.log(data)
-          resolve(data)
-      })
-    })
-    .catch((err)=>{
-      this._ui.error("error fetching data, check the logs")
-      reject(new Error("Error getting data" + err))
-    })
-
-    this._es.ipcRenderer.send('GetAllData')
-    return promise
-  }
-  
   writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>{
     let promise = new Promise<{wordFilename:string, wordFolder:string}>((resolve, reject)=>{
       this._es.ipcRenderer.once('WordBookingResponse', (event: Electron.IpcMessageEvent, fileStats: {wordFilename:string, wordFolder:string}) => {
@@ -184,12 +164,12 @@ export class BackendService implements iDataService {
   return promise;
   }
 
-  logOn(pwd:string): Promise<void>{
+ logOn(pwd:string): Promise<void>{
     let result: Promise<void> =  new Promise((resolve, reject) => {
-    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, success: boolean) => {
+    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, success: securityResult) => {
       console.log('service.logon.result=' + success)
       if (success) {
-        this._userPassword=pwd
+        this.authenticated4Authguard=true
         resolve()
       }
       else reject()
@@ -201,23 +181,22 @@ export class BackendService implements iDataService {
     return result
   }
 
-  changePassword(oldpass:string, newpass:string) : Promise<boolean>{
+  changePassword(oldpass:string, newpass:string) : Promise<securityResult>{
     //console.log('subscribe to ChangepasswordResponse')
-    let result: Promise<boolean> =  new Promise<boolean>((resolve, reject) => {
-      this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: string) => {
+    let result: Promise<securityResult> =  new Promise<securityResult>((resolve, reject) => {
+      this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: securityResult) => {
         console.log('ChangePasswordResponse!!');
-        if (result) 
+        if (result.success)
         {
-          this._userPassword = newpass
-          resolve(true)
+          resolve(result)
         }
-        else reject(false)
+        else reject(result)
       })
     })
 
   //console.log('send RecryptDbSecret event to ipcMain..')
   //this.settings[0].value='changed'
-  let pwds = {oldpwd:oldpass, newpwd:newpass}
+  let pwds: changePwdInput = {oldpwd:oldpass, newpwd:newpass}
   this._es.ipcRenderer.send('ChangePassword', pwds)
   return result;
 }
