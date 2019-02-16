@@ -20,10 +20,10 @@ export class Customer {
     consumeCustomerDeep(cust :Customer){
         this.consumeCustomer(cust)
         this.bookings=[]
-        console.log('consumeCustomerDeep')
-        console.log(cust.bookings)
-        cust.bookings.map(x=>this.bookings.push(new Booking(x.id,x.custid,new Date(x.arrive), new Date(x.depart),x.propcode,x.booktype) ))
-        console.log(this.bookings)
+        //console.log('consumeCustomerDeep')
+        //console.log(cust.bookings)
+        cust.bookings.map(x=>this.bookings.push(new Booking(x.id,x.custid,x.arrive, x.depart,x.propcode,x.booktype) ))
+        //console.log(this.bookings)
     }
     consumeBooking(booking:Booking){
         this.bookings.unshift(booking)
