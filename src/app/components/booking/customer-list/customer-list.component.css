@@ -5,9 +5,9 @@
     cursor:pointer;
     padding:0px;
 } 
-.show-hover div {
+.highlight div {
     padding:5px;
 }
-.show-hover:hover{
+.highlight:hover{
     background:#D2E5F9;
 }
