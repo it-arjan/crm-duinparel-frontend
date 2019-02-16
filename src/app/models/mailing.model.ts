@@ -1,12 +1,12 @@
 export class Mailing {
-  constructor(public id: number,public sent: Date, public purpose: string, public customerIds:Array<number>){}
+  constructor(public id: number,public sent: Date, public purpose: string, public customerids:Array<number>){}
   
   consumeMailingDeep(toClone: Mailing){
     this.id = toClone.id
-    this.sent = new Date(toClone.sent)
+    this.sent = toClone.sent
     this.purpose = toClone.purpose
-    this.customerIds=[]
-    if(toClone.customerIds) 
-      this.customerIds = [].concat(toClone.customerIds)
+    this.customerids=[]
+    if(toClone.customerids) 
+      this.customerids = [].concat(toClone.customerids)
   }
 }
