@@ -30,21 +30,13 @@ export class DataService {
 
   getData() {
     let error: string
-    this._bs.getDataFromBackend().pipe(take(1)).subscribe((data: tBulkdataResult) => {
+    this._bs.getData().pipe(take(1)).subscribe((data: tBulkdataResult) => {
       console.log("DataService: data received")
       if (data.error) this._ui.error(data.error)
       else{
         //convert objects to get acccess to the methods defined on this side
-        this.customers = data.customers.map(jsCust => {
-          let angCust = new Customer(1, '','','','',[])
-          angCust.consumeCustomerDeep(jsCust)
-          return angCust
-        })
-        this.mailings = data.mailings.map(jsmail => {
-          let angmail = new Mailing(0, new Date(),'',[])
-          angmail.consumeMailingDeep(jsmail)
-          return angmail
-        })
+        this.customers = data.customers
+        this.mailings = data.mailings
       }
       // Data no longer needed on the backend service
       this._bs.cleanupDataCache()
@@ -84,7 +76,7 @@ export class DataService {
     console.log(realCust)
     console.log('================')
     realCust.test()
-    realCust.consumeCustomer(custCopy);
+    realCust.consumeCustomerShallow(custCopy);
     // persist
     this._bs.persistCustomer(realCust, tPersist.Update)
   
@@ -97,9 +89,10 @@ export class DataService {
     // persist
     return this._bs.persistCustomer(newCust, tPersist.Insert)
   }
-  addBooking(custId:number, booking:Booking){
-    let realCust = this.customers.find(x=>x.id==custId)
-    realCust.consumeBooking(booking);
+
+  addBooking(booking:Booking){
+    let realCust = this.customers.find(x=>x.id==booking.custid)
+    realCust.bookings.unshift(booking)
     // persist
     this._bs.persistBooking(booking, tPersist.Insert)
   }
@@ -124,7 +117,7 @@ export class DataService {
       let hasBooking = proptypesArg.includes(book.propcode) && bookTypesArg.includes(book.booktype)
       if (hasBooking){
         //Refine by calculate if cust has a booking older then  
-        let diff = Globals.jsDateDiffMonths(book.arrive, new Date(Date.now()))
+        let diff = Date.now() - book.arrive 
         hasBooking = diff >= monthsNotVisitedFrom
         if (hasBooking && monthsNotVisitedUntil) 
           hasBooking = diff < monthsNotVisitedUntil
@@ -137,14 +130,19 @@ export class DataService {
               monthsNotMailedFrom:number, monthsNotMailedUntil:number, 
               proptypesArg: string[],
               bookTypesArg: string[]){
-      
+    //convert moths to msec
+    let msecNotVisitedFrom = monthsNotVisitedFrom !== undefined ? Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : undefined
+    let msecNotMailedUntil = monthsNotVisitedFrom !== undefined ? Math.floor(monthsNotMailedUntil * 1000 * 3600 * 24 * 30.5): undefined
+    let msecNotMailedFrom = monthsNotVisitedFrom !== undefined ?  Math.floor(monthsNotMailedFrom * 1000 * 3600 * 24 * 30.5): undefined
+    let msecNotMaileduntil =monthsNotVisitedFrom !== undefined ?  Math.floor(monthsNotMailedUntil * 1000 * 3600 * 24 * 30.5): undefined
+
     let batchArr:Array<EmailBatch>=[]
     if (this.customers){
       //simply filter customers
       let custHits1 =this.customers.filter((cust: Customer) => {
         // First see if this customer has bookings of this book-type and propcode
         // any booking will do, it can be too old for the criteria
-        let matchingBookings = this.selectMatchingBookings(cust, monthsNotVisitedFrom, monthsNotVisitedUntil, proptypesArg, bookTypesArg)
+        let matchingBookings = this.selectMatchingBookings(cust, msecNotVisitedFrom, msecNotMailedUntil, proptypesArg, bookTypesArg)
         return matchingBookings.length>0
       })
       
@@ -158,11 +156,11 @@ export class DataService {
           //narrow down on date sent
           if (mailings_thisCust.length > 0)
           {
-              let lastMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
-              let mdiff = Globals.jsDateDiffMonths(lastMail.sent, new Date(Date.now()))
-              included = mdiff >= monthsNotMailedFrom
-              if (included && monthsNotMailedUntil) {
-                included = mdiff <= monthsNotMailedUntil
+              let mostRecentMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
+              let mdiff = Date.now() - mostRecentMail.sent
+              included = mdiff >= msecNotMailedFrom
+              if (included && msecNotMaileduntil) {
+                included = mdiff <= msecNotMaileduntil
               }
           }
         

@@ -61,9 +61,11 @@ export class BookingComponent implements OnInit {
       'booktype': new FormControl('',[Validators.required]),
     })
   }
+
   globDateformat(){
     return Globals.angularDateformat;
   }
+
   datesValid(control: FormControl) : {[s: string]: boolean}{
     //PS: call as validator with bind(this)
     if (this.reactiveForm &&  //needed, is somehow called before this.reactiveForm is instantiated
@@ -94,17 +96,14 @@ export class BookingComponent implements OnInit {
   
   onSubmit(){
     let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
-    let js_arrive = new Date(m_arrive.year(), m_arrive.month(), m_arrive.date());
-
     let m_depart = moment(this.reactiveForm.get('depart').value, Globals.momDateformat);
-    let js_depart = new Date(m_depart.year(), m_depart.month(), m_depart.date());
-
+    console.log(m_arrive, m_depart)
     let propcode = this.reactiveForm.get('propcode').value;
     let booktype = this.reactiveForm.get('booktype').value;
 
-    let booking = new Booking(0, this.custId, js_arrive, js_depart, propcode, booktype)
+    let booking = new Booking(0, this.custId, m_arrive.unix()*1000, m_depart.unix()*1000, propcode, booktype)
     //this.customer.bookings.push(booking)
-    this._ds.addBooking(this.custId,booking)
+    this._ds.addBooking(booking)
 
     this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
     this._ui.success()
@@ -122,6 +121,7 @@ export class BookingComponent implements OnInit {
           console.log(err)
         })
   }
+
   onWord(idx:number){
     this._bs.writeWordBooking(this.customer, this.customer.bookings[idx])
     .then((result: {wordFilename:string, wordFolder:string})=>{
@@ -132,13 +132,13 @@ export class BookingComponent implements OnInit {
     })
   }
   onDelete (idx:number) {
+    let arrive = moment(this.customer.bookings[idx].arrive).format(Globals.momDateformat)
+    let depart = moment(this.customer.bookings[idx].arrive).format(Globals.momDateformat)
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Boeking verwijderen';
     modalRef.componentInstance.message = 'Verwijder Boeking';
-    modalRef.componentInstance.messageHighlighted = 
-              this.customer.bookings[idx].propcode +
-              ' van ' + this.customer.bookings[idx].arrive.toLocaleDateString() 
-                + ' tot ' + this.customer.bookings[idx].depart.toLocaleDateString();
+    modalRef.componentInstance.messageHighlighted = `${this.customer.bookings[idx].propcode} van  ${arrive} tot ${depart}`
+
     modalRef.result
         .then(()=>{
           try {

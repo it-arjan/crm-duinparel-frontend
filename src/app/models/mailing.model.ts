@@ -1,12 +1,16 @@
 export class Mailing {
-  constructor(public id: number,public sent: Date, public purpose: string, public customerids:Array<number>){}
+  constructor(public id: number,public sent: number, public purpose: string, public customerids:Array<number>){}
   
-  consumeMailingDeep(toClone: Mailing){
-    this.id = toClone.id
-    this.sent = toClone.sent
-    this.purpose = toClone.purpose
-    this.customerids=[]
+  static consumeNodedata(toClone: jsMailing) {
+    let result =new Mailing(0, 0,'',[])
+    result.id = toClone.id
+    result.sent = toClone.sent
+    result.purpose = toClone.purpose
+    result.customerids=[]
     if(toClone.customerids) 
-      this.customerids = [].concat(toClone.customerids)
+      result.customerids = toClone.customerids.map(x=>result.customerids.push(x)) 
   }
+}
+export class jsMailing {
+    constructor(public id: number,public sent: number, public purpose: string, public customerids:Array<number>){}
 }

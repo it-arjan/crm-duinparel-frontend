@@ -7,7 +7,7 @@ import { Booking } from '../models/booking.model';
 import { LogEntry } from '../models/logentry.model';
 import { ReplaySubject } from 'rxjs';
 import { Mailing } from '../models/mailing.model';
-import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultBackend, tPersistMailing, tPersistCustomer, tPersistbooking } from './interfaces.data';
+import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultNodejs, tPersistMailing, tPersistCustomer, tPersistbooking } from './interfaces.data';
 //import { reject } from 'q';
 import { changePwdInput, securityResult, iSecurity } from './interfaces.security';
 
@@ -68,13 +68,25 @@ export class BackendService implements iDataService, iSecurity {
     }
   }
 
-  getDataFromBackend(): ReplaySubject<tBulkdataResult> {
+  getData(): ReplaySubject<tBulkdataResult> {
     this.checkPlatform();
     this.getData_R$ = new ReplaySubject<tBulkdataResult>(1);
     this._es.ipcRenderer.once('GetDataResponse', 
       (event: Electron.IpcMessageEvent, data: tBulkdataResult) => {
         console.log("GetDataResponse!!!")
-        console.log(data)
+        
+        //convert it
+        let angcustomers = data.customers.map(jsCust => {
+          let angCust = Customer.consumejsCustomerDeep(jsCust)
+          return angCust
+        })
+        let angmailings = data.mailings.map(jsmail => {
+          let angmail = Mailing.consumeNodedata(jsmail)
+          return angmail
+        })        
+        let angResult:tBulkdataResult ={customers:null, mailings:null, error:''}
+        angResult.customers=angcustomers
+        //angResult.mailings=angmailings
       this.getData_R$.next(data)
     })
     this._es.ipcRenderer.send('GetData')
@@ -89,7 +101,7 @@ export class BackendService implements iDataService, iSecurity {
   
   persistCustomer(customer: Customer, type: tPersist) :  ReplaySubject<tDataResult> {
     this.checkPlatform();
-    this._es.ipcRenderer.once('PersistCustomerResponse', (event: Electron.IpcMessageEvent, result: tDataResultBackend) => {
+    this._es.ipcRenderer.once('PersistCustomerResponse', (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
       if (type === tPersist.Insert) {
         customer.id= result.generatedId
       }
@@ -104,7 +116,7 @@ export class BackendService implements iDataService, iSecurity {
     //platform check
     this.checkPlatform();
     //subscribe first
-    this._es.ipcRenderer.once('PersistBookingResponse', (event: Electron.IpcMessageEvent, result: tDataResultBackend) => {
+    this._es.ipcRenderer.once('PersistBookingResponse', (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
       console.log('StoreBookingResponse!!');
       console.log(result)
       if (type === tPersist.Insert) {
@@ -120,7 +132,7 @@ export class BackendService implements iDataService, iSecurity {
  
   persistMailing(mailing: Mailing, type: tPersist) : ReplaySubject<tDataResult>{
     this.checkPlatform();
-    this._es.ipcRenderer.once('PersistMailingResponse', (event: Electron.IpcMessageEvent, result: tDataResultBackend) => {
+    this._es.ipcRenderer.once('PersistMailingResponse', (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
       console.log('PersistBookingResponse!!');
       console.log(result)
       if (type === tPersist.Insert) {
