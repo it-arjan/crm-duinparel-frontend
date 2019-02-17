@@ -11,9 +11,9 @@ import { AppComponent } from './app.component';
 const appRoutes: Routes = [
     {path: '', component: AppComponent, canActivate: [AuthGuardService]},
     {path: 'booking', component: BookingWrapComponent, canActivate: [AuthGuardService], children: [
-        {path:'cust/new', component: CustomerNewEditComponent, canActivate: [AuthGuardService]}, 
-        {path:'cust/:custid', component: CustomerNewEditComponent, canActivate: [AuthGuardService]},
-        {path:'cust/:custid/bookings', component: BookingComponent, canActivate: [AuthGuardService]},
+        {path:'cust/new', pathMatch: 'full', component: CustomerNewEditComponent, canActivate: [AuthGuardService]}, 
+        {path:'cust/:custid', pathMatch: 'full', component: CustomerNewEditComponent, canActivate: [AuthGuardService]},
+        {path:'cust/:custid/bookings', pathMatch: 'full', component: BookingComponent, canActivate: [AuthGuardService]},
     ]},
     {path: 'mailing', component: MailingComponent, canActivate: [AuthGuardService]},
     {path: 'settings', component: SettingsComponent},

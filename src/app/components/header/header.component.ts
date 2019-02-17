@@ -41,7 +41,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   UserFeedback:string;
 
   ngOnInit() {
-    this._ui.notifyHelper.subscribe((msg:UserFeedback)=>{
+    this._ui.notifications().subscribe((msg:UserFeedback)=>{
       this.notificationState = 'in'
       this.processFeedback(msg)
       //Trigger state change after view is rendered
@@ -49,7 +49,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     })
   }
   ngOnDestroy(){
-    this._ui.notifyHelper.unsubscribe()
+    this._ui.notifications().unsubscribe()
   }
   processFeedback(feedback:UserFeedback){
     switch (feedback.type){
@@ -85,7 +85,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.message = 'Programma afsluiten?';
     modalRef.result
     .then(()=>{
-      this._es.ipcRenderer.send('ExitProgram')
+      this._es.ipcRenderer.send('ExitProgram') //todo make method
     })
     .catch(()=>{
       console.log('modal cancelled')

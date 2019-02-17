@@ -144,7 +144,7 @@ export class BookingComponent implements OnInit {
           try {
             //throw new Error('testen van errors!')
             this._ds.removeBooking(this.customer.bookings[idx])
-            this._ui.broadCastRemoval()
+            this._ui.deleted()
           }
           catch (err){
             this._ui.error('verwijderen mislukt: ' + err)

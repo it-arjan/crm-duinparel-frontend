@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UIService } from 'src/app/services/ui.service';
+import { tGuistate } from 'src/app/services/interfaces.ui';
 
 @Component({
   selector: 'app-customer-search',
@@ -10,7 +12,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class CustomerSearchComponent implements OnInit {
 
-  constructor(private _router: Router, private _ds: DataService) { }
+  constructor(private _router: Router, private _ds: DataService, private _ui: UIService) { }
   reactiveForm: FormGroup;
   ngOnInit() {
     this.initForm()
@@ -21,10 +23,12 @@ export class CustomerSearchComponent implements OnInit {
     })
   }
   onSubmit(){
+    this._ui.notify(tGuistate.searchCustomer)
     this._ds.searchCustomers(this.reactiveForm.get('email').value)
   }
-onNewCustomer(){
-  this._ds.clearCustomerSearch();
-  this._router.navigate(['booking','cust','new'])
-}
+  onNewCustomer(){
+    this._ui.notify(tGuistate.newCustomer)
+    //this._ds.clearCustomerSearch();
+    this._router.navigate(['booking','cust','new'])
+  }
 }

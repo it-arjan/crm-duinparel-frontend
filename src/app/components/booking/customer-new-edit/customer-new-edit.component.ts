@@ -7,6 +7,7 @@ import { UIService } from 'src/app/services/ui.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../../ng-bootstrap/modal-confirm/modal-confirm.component';
 import { take } from 'rxjs/operators';
+import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
 
 @Component({
   selector: 'app-customer-new-edit',
@@ -22,7 +23,7 @@ export class CustomerNewEditComponent implements OnInit {
     private _ui : UIService,
     private _modalService: NgbModal,
     ) { }
-
+  name: tComponentNames.newEditCustomer
   reactiveForm: FormGroup;
   editMode:boolean;
   custId:number;
@@ -40,8 +41,7 @@ export class CustomerNewEditComponent implements OnInit {
           this.custId=-1
         }
         this.initForm()
-      }
-    )
+      })
   }
 
   private initForm(){
@@ -104,7 +104,7 @@ export class CustomerNewEditComponent implements OnInit {
       try {
         //throw new Error('testen van errors!')
         this._dataService.removeCustomer(this.customer);
-        this._ui.broadCastRemoval()
+        this._ui.deleted()
         this._router.navigate(['/booking'])
       }
       catch (err){
