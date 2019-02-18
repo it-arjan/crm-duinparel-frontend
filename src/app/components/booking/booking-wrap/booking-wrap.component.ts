@@ -10,13 +10,13 @@ import { tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui'
 export class BookingWrapComponent implements OnInit, OnDestroy { //todo rename to  customer-booking-wrap
 
   constructor(private _ui: UIService) { }
-  routeActive=true
-  outlet_names:tComponentNames[]=[tComponentNames.newEditCustomer, tComponentNames.listBooking]
+  outletActive=true
+  outlet_componentnames:tComponentNames[]=[tComponentNames.newEditCustomer, tComponentNames.listBooking]
   ngOnInit() {
         this._ui.guidance().subscribe((guidance: tGuiguidance)=>{
-          this.outlet_names.forEach(name => {
-            if (guidance.timeToGo.includes(name)) this.routeActive=false
-            else if (guidance.wakeUp.includes(name)) this.routeActive=true
+          this.outlet_componentnames.forEach(name => {
+            if (guidance.timeToGo.includes(name)) this.outletActive=false
+            else if (guidance.wakeUp.includes(name)) this.outletActive=true
           })
       })
 
