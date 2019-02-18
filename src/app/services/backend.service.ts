@@ -221,7 +221,7 @@ export class BackendService implements iDataService, iSecurity {
       if (result === 'success') 
       {
         console.log('WriteConfigResponse :: SUCCESS');
-        this._ui.success()
+        this._ui.successIcon()
       }
       else this._ui.error("Error writing config: " + result)
     })

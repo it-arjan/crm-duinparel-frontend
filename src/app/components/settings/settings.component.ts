@@ -91,7 +91,7 @@ export class SettingsComponent implements OnInit {
 
         this.logonForm.setValue({password:''})
         this.setActiveTabNr()
-        this._ui.success()
+        this._ui.successIcon()
       })
       .catch((err)=>{
         this.loggedOn =false
@@ -128,7 +128,7 @@ export class SettingsComponent implements OnInit {
           .then(()=>{
             this.changePwdForm.setValue({oldpassword:'', newpassword:'', newpassword2:''})
             this.setActiveTabNr()
-            this._ui.success()
+            this._ui.successIcon()
           })
           .catch(x=> this._ui.error("Error writing config."))
         }

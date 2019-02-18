@@ -58,13 +58,13 @@ export class UIService implements iGuidance{
   }
   
 
-  deleted(){
+  deletedIcon(){
     this.notifySender.next(new UserFeedback('Removed', null))
   }
-  cancelled(){
+  cancelledIcon(){
     this.notifySender.next(new UserFeedback('Cancelled', null))
   }
-  success(){
+  successIcon(){
     this.notifySender.next(new UserFeedback('Success', null))
   }
   info(msg:string){

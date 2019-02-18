@@ -106,7 +106,7 @@ export class BookingComponent implements OnInit {
     this._ds.addBooking(booking)
 
     this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
-    this._ui.success()
+    this._ui.successIcon()
   }
 
   openModalCalendar(){
@@ -144,7 +144,7 @@ export class BookingComponent implements OnInit {
           try {
             //throw new Error('testen van errors!')
             this._ds.removeBooking(this.customer.bookings[idx])
-            this._ui.deleted()
+            this._ui.deletedIcon()
           }
           catch (err){
             this._ui.error('verwijderen mislukt: ' + err)
