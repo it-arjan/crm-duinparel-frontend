@@ -5,7 +5,7 @@ import { Booking } from '../models/booking.model';
 import { Observable, ReplaySubject } from 'rxjs';
 
 // export interface tBulkdataResult {
-//   customers: {name:string,address:string,email:string,iban:string,}[]
+//   customers: {name:string,address:string,email:string,country:string,}[]
 //   mailings: {}[]
 //   error: string
 // }

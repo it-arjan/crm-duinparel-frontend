@@ -5,7 +5,7 @@ export class jsCustomer {
         public name: string, 
         public address:string, 
         public email:string, 
-        public iban:string,
+        public country:string,
         public bookings: Array<Booking>){
     }
 }
@@ -15,7 +15,7 @@ export class Customer {
         public name: string, 
         public address:string, 
         public email:string, 
-        public iban:string,
+        public country:string,
         public bookings: Array<Booking>){
     }
 
@@ -24,7 +24,7 @@ export class Customer {
         this.name=cust.name
         this.address=cust.address
         this.email=cust.email
-        this.iban=cust.iban
+        this.country=cust.country
     }
     static consumejsCustomerDeep(toClone :jsCustomer):Customer{
       let clone = new Customer(1, '','','','',[])
@@ -32,7 +32,7 @@ export class Customer {
         clone.name=toClone.name
         clone.address=toClone.address
         clone.email=toClone.email
-        clone.iban=toClone.iban
+        clone.country=toClone.country
         clone.bookings=[]
         if (toClone.bookings)
           toClone.bookings.map(x=>clone.bookings.push(new Booking(x.id,x.custid,x.arrive, x.depart,x.propcode,x.booktype) ))

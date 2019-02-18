@@ -45,19 +45,19 @@ export class CustomerNewEditComponent implements OnInit {
   }
 
   private initForm(){
-    let name='', address='', email='', iban='';
+    let name='', address='', email='', country='';
     if (this.editMode){
       name=this.customer.name
       address = this.customer.address
       email = this.customer.email
-      iban = this.customer.iban  
+      country = this.customer.country  
    }
 
    this.reactiveForm = new FormGroup({
     'name': new FormControl(name, Validators.required),
     'address': new FormControl(address, Validators.required), 
     'email': new FormControl(email, [Validators.required, Validators.email]), 
-    'iban': new FormControl(iban), 
+    'country': new FormControl(country), 
   })
   }
 
@@ -67,20 +67,20 @@ export class CustomerNewEditComponent implements OnInit {
         this.reactiveForm.get('name').value, 
         this.reactiveForm.get('address').value, 
         this.reactiveForm.get('email').value,
-        this.reactiveForm.get('iban').value,
+        this.reactiveForm.get('country').value,
         []
         )
 
       if (this.editMode) {
         editedCustomer.bookings=this.customer.bookings
         this._dataService.updateCustomer(this.custId, editedCustomer)
-        this._ui.success()
+        this._ui.successIcon()
         this._router.navigate(['/booking'])
       }
       else {
         console.log('before: ' + editedCustomer.id)
         this._dataService.addCustomer(editedCustomer).pipe(take(1)).subscribe(x=> console.log('after: ' + editedCustomer.id))
-        this._ui.success()
+        this._ui.successIcon()
         this._router.navigate(['/booking'])
       }
       }
@@ -90,7 +90,7 @@ export class CustomerNewEditComponent implements OnInit {
   }
 
   onCancel(){
-    this._ui.cancelled()
+    this._ui.cancelledIcon()
     this._router.navigate(['/booking'])
   }
 
@@ -104,7 +104,7 @@ export class CustomerNewEditComponent implements OnInit {
       try {
         //throw new Error('testen van errors!')
         this._dataService.removeCustomer(this.customer);
-        this._ui.deleted()
+        this._ui.deletedIcon()
         this._router.navigate(['/booking'])
       }
       catch (err){
