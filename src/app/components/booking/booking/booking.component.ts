@@ -12,6 +12,7 @@ import { Globals } from '../../../shared/globals';
 
 import * as moment from 'moment';
 import { BackendService } from 'src/app/services/backend.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-booking',
@@ -104,9 +105,17 @@ export class BookingComponent implements OnInit {
     let booking = new Booking(0, this.custId, m_arrive.unix()*1000, m_depart.unix()*1000, propcode, booktype)
     //this.customer.bookings.push(booking)
     this._ds.addBooking(booking)
+    .pipe(take(1)).subscribe((result)=>{
+      if (result.error) {
+        this._ui.error('Fout bij opslaan booking: ' + result.error)
+      }
+      else {
+        this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
+        this._ui.successIcon()
+      }
+      
+    })
 
-    this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
-    this._ui.successIcon()
   }
 
   openModalCalendar(){
@@ -144,14 +153,22 @@ export class BookingComponent implements OnInit {
           try {
             //throw new Error('testen van errors!')
             this._ds.removeBooking(this.customer.bookings[idx])
-            this._ui.deletedIcon()
+            .pipe(take(1)).subscribe((result)=>{
+              if (result.error) {
+                this._ui.error('Fout bij verwijderen boeking: ' + result.error)
+              }
+              else {
+                this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
+                    this._ui.deletedIcon()
+              }
+            })
           }
           catch (err){
             this._ui.error('verwijderen mislukt: ' + err)
             console.log(err)
           }
         })
-        .catch(()=>{
+        .catch(()=>{ //catch van de modal popup then
           console.log('modal cancelled')
 
         })

@@ -85,8 +85,12 @@ export class BackendService implements iDataService, iSecurity {
           return angmail
         })        
         let angResult:tBulkdataResult ={customers:null, mailings:null, error:''}
+        
         angResult.customers = angcustomers
         angResult.mailings = angmailings
+        // backend call always succeeds, error holds the errors
+        angResult.error = data.error
+
         this.getData_R$.next(angResult)
     })
     this._es.ipcRenderer.send('GetData')
@@ -100,6 +104,7 @@ export class BackendService implements iDataService, iSecurity {
   
   persist(object: Customer | Booking |Mailing, type: tPersist) : ReplaySubject<tDataResult>{
     this.checkPlatform();
+
     let objecttype = object.constructor.name
     let subject = objecttype ==='Customer' 
       ? this.persistCust_R$ 
@@ -110,7 +115,7 @@ export class BackendService implements iDataService, iSecurity {
       :null 
     
     if (!subject){
-      this._ui.error(`invalid objecttype ${objecttype} for operation ${tPersist[type]}. Dit is niet goed`)
+      this._ui.error(`invalid objecttype ${objecttype} for operation ${tPersist[type]}. Dit is niet goed`!!)
       return
     }
     let returnChannelName = `Persist${objecttype}Response`

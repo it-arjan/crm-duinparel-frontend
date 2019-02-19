@@ -17,7 +17,7 @@ import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/inter
 export class CustomerNewEditComponent implements OnInit {
 
   constructor(
-    private _dataService: DataService, 
+    private _ds: DataService, 
     private _router: Router, 
     private _activatedRoute: ActivatedRoute,
     private _ui : UIService,
@@ -36,7 +36,7 @@ export class CustomerNewEditComponent implements OnInit {
         if (this.editMode){
           //console.log('editMode')
           this.custId = +params['custid'];
-          this.customer = this._dataService.getCustomer(this.custId);  
+          this.customer = this._ds.getCustomer(this.custId);  
         } else{
           this.custId=-1
         }
@@ -73,16 +73,33 @@ export class CustomerNewEditComponent implements OnInit {
 
       if (this.editMode) {
         editedCustomer.bookings=this.customer.bookings
-        this._dataService.updateCustomer(this.custId, editedCustomer)
+        this._ds.updateCustomer(this.custId, editedCustomer)
+          .pipe(take(1)).subscribe((result)=>{
+            if (result.error) {
+              this._ui.error('Fout bij opslaan klant: ' + result.error)
+            }
+            else {
+              this._ui.successIcon()
+              this._router.navigate(['/booking'])
+            }
+          })
+
         this._ui.successIcon()
         this._router.navigate(['/booking'])
       }
       else {
         console.log('before: ' + editedCustomer.id)
-        this._dataService.addCustomer(editedCustomer).pipe(take(1)).subscribe(x=> console.log('after: ' + editedCustomer.id))
-        this._ui.successIcon()
-        this._router.navigate(['/booking'])
-      }
+        this._ds.addCustomer(editedCustomer)
+          .pipe(take(1)).subscribe((result)=>{
+              if (result.error) {
+                this._ui.error('Fout bij opslaan klant: ' + result.error)
+              }
+              else {
+                this._ui.successIcon()
+                this._router.navigate(['/booking'])
+              }
+            })
+        }
       }
       catch (ex){
         this._ui.error('Opslaan mislukt ' + ex)
@@ -103,9 +120,18 @@ export class CustomerNewEditComponent implements OnInit {
     .then(()=>{
       try {
         //throw new Error('testen van errors!')
-        this._dataService.removeCustomer(this.customer);
-        this._ui.deletedIcon()
-        this._router.navigate(['/booking'])
+        this._ds.removeCustomerCascading(this.customer)
+          .pipe(take(1)).subscribe((result)=>{
+            if (result.error) {
+              this._ui.error('Fout bij verwijderen klant: ' + result.error)
+            }
+            else {
+                this._ui.deletedIcon()
+                this._router.navigate(['/booking'])
+            }
+          })
+
+
       }
       catch (err){
         this._ui.error('verwijderen mislukt: ' + err)

@@ -6,9 +6,10 @@ import { Globals } from '../shared/globals';
 import { Mailing } from '../models/mailing.model';
 import { BackendService } from './backend.service';
 import { FakeBackendService } from './fake.data.backend.service';
-import { tBulkdataResult, tPersist } from './interfaces.data';
+import { tBulkdataResult, tPersist, tDataResult } from './interfaces.data';
 import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
+import { ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,30 +19,31 @@ export class DataService {
     private _bs: BackendService,
     private _ui: UIService
     ) { 
-    this.searchResult = new Array<Customer>();
-    // this.searchResult.push(this.customers[0])
-    // this.searchResult.push(this.customers[1])
+      this.searchResult = new Array<Customer>();
+      // this.searchResult.push(this.customers[0])
+      // this.searchResult.push(this.customers[1])
     }
 
   private customers: Array<Customer>;
   private mailings: Array<Mailing>;
-
   public searchResult: Array<Customer>; // temp, will come out of observable
 
-  getData() {
+  private dataReady$ = new ReplaySubject<tDataResult>()
+
+  getData(): ReplaySubject<tDataResult> {
     let error: string
-    this._bs.getData().pipe(take(1)).subscribe((data: tBulkdataResult) => {
+    this._bs.getData()
+    .pipe(take(1)).subscribe((data: tBulkdataResult) => {
       console.log("DataService: data received")
-      if (data.error) this._ui.error(data.error)
-      else{
         //convert objects to get acccess to the methods defined on this side
         this.customers = data.customers
         this.mailings = data.mailings
-      }
       // Data no longer needed on the backend service
       this._bs.cleanupDataCache()
+      let result: tDataResult = {error:data.error}
+      this.dataReady$.next(result)
     }) //TODO emit data-ready on another Observable
-
+    return this.dataReady$
   }
   
   searchCustomers(emailPiece:string){
@@ -60,29 +62,26 @@ export class DataService {
     return this.customers.find(x=>x.id === id)
   }
   
-  removeCustomer(cust: Customer){
+  removeCustomerCascading(cust: Customer){
     let idx = this.customers.indexOf(cust)
     if (idx >=0) this.customers.splice(idx, 1)
     //remove from searchresult as well
     idx = this.searchResult.indexOf(cust)
     if (idx >=0) this.searchResult.splice(idx, 1)
+
+    return this._bs.persistCustomer(cust, tPersist.Delete)
   }
 
-  updateCustomer(id:number, custCopy:Customer){
+  updateCustomer(id:number, custCopy:Customer): ReplaySubject<tDataResult>{
     //object is same everywhere, only update it in customers
     let realCust: Customer = this.customers.find(x=>x.id==custCopy.id)
-    console.log('================')
-    console.log(custCopy)
-    console.log(realCust)
-    console.log('================')
     realCust.test()
     realCust.consumeCustomerShallow(custCopy);
     // persist
-    this._bs.persistCustomer(realCust, tPersist.Update)
-  
+    return this._bs.persistCustomer(realCust, tPersist.Update)
   }
   
-  addCustomer(newCust:Customer){
+  addCustomer(newCust:Customer): ReplaySubject<tDataResult>{
     this.customers.push(newCust);
     //add to beginning of searchresult
     this.searchResult.unshift(newCust)
@@ -90,19 +89,19 @@ export class DataService {
     return this._bs.persistCustomer(newCust, tPersist.Insert)
   }
 
-  addBooking(booking:Booking){
+  addBooking(booking:Booking): ReplaySubject<tDataResult> {
     let realCust = this.customers.find(x=>x.id==booking.custid)
     realCust.bookings.unshift(booking)
     // persist
-    this._bs.persistBooking(booking, tPersist.Insert)
+    return this._bs.persistBooking(booking, tPersist.Insert)
   }
 
-  removeBooking(booking:Booking){
+  removeBooking(booking:Booking) : ReplaySubject<tDataResult> {
     let cust = this.customers.find(x=>x.id === booking.custid)
     let idx = cust.bookings.indexOf(booking)
     if (idx >=0) cust.bookings.splice(idx, 1)
     // persist
-    this._bs.persistBooking(booking, tPersist.Delete)
+    return this._bs.persistBooking(booking, tPersist.Delete)
   }
 
   clearCustomerSearch(){

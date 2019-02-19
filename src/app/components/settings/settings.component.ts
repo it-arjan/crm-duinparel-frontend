@@ -88,10 +88,15 @@ export class SettingsComponent implements OnInit {
       .then(()=>{
         this.loggedOn =true
         this._ds.getData()
-
-        this.logonForm.setValue({password:''})
-        this.setActiveTabNr()
-        this._ui.successIcon()
+          .subscribe((result)=>{
+            if (result.error) {
+              this._ui.error('Fout bij ophalen data: ' + result.error)
+            } else {
+              this.logonForm.setValue({password:''})
+              this.setActiveTabNr()
+              this._ui.successIcon()
+            }
+          })
       })
       .catch((err)=>{
         this.loggedOn =false
@@ -117,14 +122,14 @@ export class SettingsComponent implements OnInit {
   
   onChangePwd(){
     let oldpass=this.changePwdForm.get('oldpassword').value
-      let new1= this.changePwdForm.get('newpassword').value
-      let new2= this.changePwdForm.get('newpassword2').value
+      let newpwd1= this.changePwdForm.get('newpassword').value
+      let newpwd2= this.changePwdForm.get('newpassword2').value
       
       this._bs.logOn(oldpass).then(()=>{ //compare with pwd on file
-        if (new1.length < 6) this._ui.error("nieuw wachtwoord moet minimaal 6 karakters lang")
-        else if (new1 != new2) this._ui.error("nieuwe wachtwoorden niet hetzelfde")
+        if (newpwd1.length < 6) this._ui.error("nieuw wachtwoord moet minimaal 6 karakters lang")
+        else if (newpwd1 != newpwd2) this._ui.error("nieuwe wachtwoorden niet hetzelfde")
         else {
-          this._bs.changePassword(oldpass, new1)
+          this._bs.changePassword(oldpass, newpwd1)
           .then(()=>{
             this.changePwdForm.setValue({oldpassword:'', newpassword:'', newpassword2:''})
             this.setActiveTabNr()
@@ -155,5 +160,11 @@ export class SettingsComponent implements OnInit {
     if (this.capsLock){
       this._ui.error('Caps Lock is on!!')
     }
+  }
+  testUiBug(){
+    this._ui.successIcon()
+    setTimeout(() => {
+    this._ui.error('deze melding zie ik niet!!!!')
+    }, 1000);
   }
 }
