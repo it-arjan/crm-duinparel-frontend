@@ -23,21 +23,15 @@ export interface tDataResult {
   error: string
 }
 export interface tDataResultNodejs {
-  generatedId: number
+  generatedid: number
   error: string
 }
-export interface tPersistCustomer {
-  customer: Customer
-  persistType: string
+export interface tPersistBag {
+  objecttype: string 
+  object: Customer | Booking | Mailing
+  persisttype: string
 }
-export interface tPersistbooking {
-  booking: Booking
-  persistType: string
-}
-export interface tPersistMailing {
-  mailing: Mailing
-  persistType: string
-}
+
 export enum tPersist {Insert, Update, Delete}
 
 export interface iDataService {

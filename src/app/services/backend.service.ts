@@ -7,7 +7,7 @@ import { Booking } from '../models/booking.model';
 import { LogEntry } from '../models/logentry.model';
 import { ReplaySubject } from 'rxjs';
 import { Mailing } from '../models/mailing.model';
-import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultNodejs, tPersistMailing, tPersistCustomer, tPersistbooking } from './interfaces.data';
+import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultNodejs, tPersistBag } from './interfaces.data';
 //import { reject } from 'q';
 import { changePwdInput, securityResult, iSecurity } from './interfaces.security';
 
@@ -81,13 +81,13 @@ export class BackendService implements iDataService, iSecurity {
           return angCust
         })
         let angmailings = data.mailings.map(jsmail => {
-          let angmail = Mailing.consumeNodedata(jsmail)
+          let angmail = Mailing.consumeJsMailing(jsmail)
           return angmail
         })        
         let angResult:tBulkdataResult ={customers:null, mailings:null, error:''}
-        angResult.customers=angcustomers
-        //angResult.mailings=angmailings
-      this.getData_R$.next(data)
+        angResult.customers = angcustomers
+        angResult.mailings = angmailings
+        this.getData_R$.next(angResult)
     })
     this._es.ipcRenderer.send('GetData')
     return this.getData_R$
@@ -98,52 +98,46 @@ export class BackendService implements iDataService, iSecurity {
     this.getData_R$= new ReplaySubject<tBulkdataResult>()
   }
   
-  
-  persistCustomer(customer: Customer, type: tPersist) :  ReplaySubject<tDataResult> {
+  persist(object: Customer | Booking |Mailing, type: tPersist) : ReplaySubject<tDataResult>{
     this.checkPlatform();
-    this._es.ipcRenderer.once('PersistCustomerResponse', (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
-      if (type === tPersist.Insert) {
-        customer.id= result.generatedId
-      }
-      this.persistCust_R$.next({error:result.error})
-    })
-    let arg: tPersistCustomer = {customer: customer, persistType:tPersist[type]}
-    this._es.ipcRenderer.send('PersistCustomer', arg)
-    return this.persistCust_R$
-  }
-
-  persistBooking(booking:Booking, type: tPersist): ReplaySubject<tDataResult>{
-    //platform check
-    this.checkPlatform();
-    //subscribe first
-    this._es.ipcRenderer.once('PersistBookingResponse', (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
-      console.log('StoreBookingResponse!!');
-      console.log(result)
-      if (type === tPersist.Insert) {
-        booking.id= result.generatedId
-      }
-      this.persistBook_R$.next(result)
-    })
-    //call to ipcMain
-    let arg: tPersistbooking = {booking: booking, persistType:tPersist[type]}
-    this._es.ipcRenderer.send('PersistBooking', arg)
-     return this.persistBook_R$
- }
- 
-  persistMailing(mailing: Mailing, type: tPersist) : ReplaySubject<tDataResult>{
-    this.checkPlatform();
-    this._es.ipcRenderer.once('PersistMailingResponse', (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
+    let objecttype = object.constructor.name
+    let subject = objecttype ==='Customer' 
+      ? this.persistCust_R$ 
+      :objecttype ==='Booking' 
+        ?this.persistBook_R$ 
+        :objecttype ==='Mailing' 
+        ?this.persistMail_R$ 
+      :null 
+    
+    if (!subject){
+      this._ui.error(`invalid objecttype ${objecttype} for operation ${tPersist[type]}. Dit is niet goed`)
+      return
+    }
+    let returnChannelName = `Persist${objecttype}Response`
+    this._es.ipcRenderer.once(returnChannelName, (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
       console.log('PersistBookingResponse!!');
       console.log(result)
       if (type === tPersist.Insert) {
-        mailing.id= result.generatedId
+        object.id= result.generatedid
       }
-        this.persistBook_R$.next(result)
+      subject.next(result)
       })
     //call to ipcMain
-    let arg : tPersistMailing = {mailing: mailing, persistType:tPersist[type]}
-    this._es.ipcRenderer.send('PersistMailing', arg)
-    return this.persistMail_R$
+    let arg : tPersistBag = {objecttype: objecttype, object: object, persisttype:tPersist[type]}
+    this._es.ipcRenderer.send('Persist', arg)
+    return subject
+  }
+
+  persistCustomer(customer: Customer, type: tPersist) :  ReplaySubject<tDataResult> {
+    return this.persist(customer, type)
+  }
+
+  persistBooking(booking:Booking, type: tPersist): ReplaySubject<tDataResult>{
+    return this.persist(booking, type)
+ }
+ 
+  persistMailing(mailing: Mailing, type: tPersist) : ReplaySubject<tDataResult>{
+    return this.persist(mailing, type)
   }
   
   writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>{

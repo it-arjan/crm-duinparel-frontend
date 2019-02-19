@@ -16,8 +16,7 @@ export class Customer {
         public address:string, 
         public email:string, 
         public country:string,
-        public bookings: Array<Booking>){
-    }
+        public bookings: Array<Booking>){}
 
     consumeCustomerShallow(cust :Customer){
         this.id=cust.id
