@@ -3,7 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 @Pipe({
   name: 'nl2br',
-  pure: false
+  pure: true
 })
 export class Nl2BrPipe implements PipeTransform {
   constructor(private sanitizer:DomSanitizer){}
@@ -12,7 +12,7 @@ export class Nl2BrPipe implements PipeTransform {
     if (value.length == 0)
       return value
     if (typeof value === "string"){
-      return value.replace('\n', '<br/>')
+      return value.replace(/\r?\n/g, '<br/>')
     }
     else throw new Error('invalid type' + typeof value)
   }
