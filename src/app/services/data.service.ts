@@ -9,7 +9,7 @@ import { FakeBackendService } from './fake.data.backend.service';
 import { tBulkdataResult, tPersist, tDataResult } from './interfaces.data';
 import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -24,34 +24,51 @@ export class DataService {
       // this.searchResult.push(this.customers[1])
     }
 
-  private customers: Array<Customer>;
-  private mailings: Array<Mailing>;
-  public searchResult: Array<Customer>; // temp, will come out of observable
+  private customers: Array<Customer>=[];
+  private mailings: Array<Mailing>=[];
+  public searchResult: Array<Customer>=[]; // temp, will come out of observable
 
   private dataReady$ = new ReplaySubject<tDataResult>()
+  searchCompleted$: BehaviorSubject<Customer[]>= new BehaviorSubject<Customer[]>([])
 
-  getData(): ReplaySubject<tDataResult> {
+  getData(): void {
     let error: string
-    this._bs.getData()
-    .pipe(take(1)).subscribe((data: tBulkdataResult) => {
-      console.log("DataService: data received")
-        //convert objects to get acccess to the methods defined on this side
-        this.customers = data.customers
-        this.mailings = data.mailings
-      // Data no longer needed on the backend service
-      this._bs.cleanupDataCache()
-      let result: tDataResult = {error:data.error}
-      this.dataReady$.next(result)
-    }) //TODO emit data-ready on another Observable
-    return this.dataReady$
+    this._bs.getData().pipe(take(1))  
+    .subscribe((data: tBulkdataResult) => {
+      this.customers = data.customers
+      this.mailings = data.mailings
+      //this._bs.cleanupDataCache()
+      let err = data.error?'data.error': null
+      let datareadyresult : tDataResult = {error:err}
+      //emit next on data ready
+      console.log("DataService: emitting dataReady")
+      this.dataReadyReplay().next(datareadyresult)
+    }) 
+ 
   }
-  
-  searchCustomers(emailPiece:string){
-    if (this.customers){
-    let temp = this.customers.filter(x=>x.email.indexOf(emailPiece) > -1)
-    this.searchResult.length=0
-    temp.forEach(x=>this.searchResult.push(x))
-    }
+  //Replays will always emit the last value on subscribe, when tehre is one
+  dataReadyReplay(): ReplaySubject<tDataResult>{
+       return this.dataReady$
+  }
+  searchResults(): BehaviorSubject<Customer[]>{
+       return this.searchCompleted$
+  }
+  searchCustomers(emailPiece:string){ 
+    this.dataReadyReplay().pipe(take(1))
+      .subscribe(x =>{
+        if (this.customers.length > 0){
+          console.log('data ready, set the search result')
+          let temp = this.customers.filter(x=>x.email.indexOf(emailPiece) > -1)
+          this.searchResult.length=0 //copy it to update view automatically, only this no longer works with the dataReady observable
+          temp.forEach(x=>this.searchResult.push(x))
+          // console.log('this.searchResult.length === '+this.searchResult.length)
+          this.searchCompleted$.next(temp)
+        }
+        else {
+          this._ui.error('no data available, check the logs please (settings)')
+          this.searchCompleted$.next([])
+        }
+      })
   }
 
   // getAllCustomers() : Array<Customer> {

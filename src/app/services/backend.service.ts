@@ -32,7 +32,7 @@ export class BackendService implements iDataService, iSecurity {
   private authenticated4Authguard = false //todo check why subscribing doesn;t work (suspect serice creation order)
 
   isAuthenticated() : boolean {
-    console.log('====>isAuthenticated: ' + this.authenticated4Authguard)
+    //console.log('====>isAuthenticated: ' + this.authenticated4Authguard)
     return this.authenticated4Authguard
   }
 
@@ -84,7 +84,7 @@ export class BackendService implements iDataService, iSecurity {
           let angmail = Mailing.consumeJsMailing(jsmail)
           return angmail
         })        
-        let angResult:tBulkdataResult ={customers:null, mailings:null, error:''}
+        let angResult:tBulkdataResult ={customers:null, mailings:null, error:null}
         
         angResult.customers = angcustomers
         angResult.mailings = angmailings
@@ -102,10 +102,11 @@ export class BackendService implements iDataService, iSecurity {
     this.getData_R$= new ReplaySubject<tBulkdataResult>()
   }
   
-  persist(object: Customer | Booking |Mailing, type: tPersist) : ReplaySubject<tDataResult>{
+  persist(object: Customer | Booking |Mailing, persisttype: tPersist) : ReplaySubject<tDataResult>{
     this.checkPlatform();
 
     let objecttype = object.constructor.name
+
     let subject = objecttype ==='Customer' 
       ? this.persistCust_R$ 
       :objecttype ==='Booking' 
@@ -115,21 +116,21 @@ export class BackendService implements iDataService, iSecurity {
       :null 
     
     if (!subject){
-      this._ui.error(`invalid objecttype ${objecttype} for operation ${tPersist[type]}. Dit is niet goed`!!)
+      this._ui.error(`invalid objecttype ${objecttype} for operation ${tPersist[persisttype]}. Dit is niet goed`!!)
       return
     }
     let returnChannelName = `Persist${objecttype}Response`
     this._es.ipcRenderer.once(returnChannelName, (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
-      console.log('PersistBookingResponse!!');
-      console.log(result)
-      if (type === tPersist.Insert) {
+      console.log(returnChannelName + '!!');
+      if (persisttype === tPersist.Insert) {
         object.id= result.generatedid
       }
       subject.next(result)
-      })
+    })
     //call to ipcMain
-    let arg : tPersistBag = {objecttype: objecttype, object: object, persisttype:tPersist[type]}
-    this._es.ipcRenderer.send('Persist', arg)
+    let sendarg : tPersistBag = {objecttype: objecttype, object: object, persisttype:tPersist[persisttype]}
+    this._es.ipcRenderer.send('Persist', sendarg)
+
     return subject
   }
 

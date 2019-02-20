@@ -45,15 +45,16 @@ export class UIService implements iGuidance{
     }//case
     return result
   }
+  guider(): Subject<tGuiguidance> {
+    console.log("guidance: subscriber request")
+    return this.naviSender
+  }
   notify(state:tGuistate) {
     console.log("notified: "+tGuistate[state])
     this.naviListener.next(state)
   }
-  guidance(): Subject<tGuiguidance> {
-    console.log("guidance: subscriber request")
-    return this.naviSender
-  }
-  notifications():Subject<UserFeedback> {
+  
+  notifier():Subject<UserFeedback> {
     return this.notifySender
   }
   

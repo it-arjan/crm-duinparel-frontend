@@ -16,6 +16,8 @@ export class CustomerSearchComponent implements OnInit {
   reactiveForm: FormGroup;
   ngOnInit() {
     this.initForm()
+    this._ds.getData() //emits on dataReady() when done
+
   }
   initForm(){
     this.reactiveForm = new FormGroup({

@@ -9,5 +9,5 @@ export interface tGuiguidance {
 }
 export interface iGuidance {
   notify(state:tGuistate)
-  guidance(): Subject<tGuiguidance>
+  guider(): Subject<tGuiguidance>
 }

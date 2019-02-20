@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnChanges, NgZone } from '@angular/core';
 import { BackendService } from 'src/app/services/backend.service';
 import { ConfigSetting } from 'src/app/models/configsetting.model';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
@@ -6,6 +6,11 @@ import { UIService } from 'src/app/services/ui.service';
 import { LogEntry } from 'src/app/models/logentry.model';
 import { Globals } from 'src/app/shared/globals';
 import { DataService } from 'src/app/services/data.service';
+import { take } from 'rxjs/operators';
+import { ReplaySubject } from 'rxjs';
+import { tDataResult } from 'src/app/services/interfaces.data';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-config',
@@ -16,7 +21,9 @@ import { DataService } from 'src/app/services/data.service';
 })
 export class SettingsComponent implements OnInit {
 
-  constructor(private _bs : BackendService, private _ds: DataService, private _ui: UIService) { 
+  constructor(private _bs : BackendService, private _ds: DataService, 
+              private _router: Router, private ngZone: NgZone,
+              private _ui: UIService) { 
   }
   settings: ConfigSetting[]=[];
   logonForm: FormGroup
@@ -28,20 +35,24 @@ export class SettingsComponent implements OnInit {
   tabIds=['logon','changepwd', 'settings','logs']
   activetabNr=0
   activetabId='logon'
+  getdataSubs: ReplaySubject<tDataResult>
   //@ViewChild('tabset') tabset
 
   ngOnInit() {
     this.initForms()
     this.readConfig()
+    this.loggedOn = this._bs.isAuthenticated()
     this.setActiveTabNr()
   }
 
   getActiveTabID(){
-    if (this.activetabNr > this.tabIds.length -1)
-      this._ui.error(`kan active tab ${this.activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
+    // if (this.activetabNr > this.tabIds.length -1)
+    //   this._ui.error(`kan active tab ${this.activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
     return this.tabIds[this.activetabNr]
   }
-
+public navigate(commands: any[]): void {
+    this.ngZone.run(() => this._router.navigate(commands)).then();
+}
   checkSettings():boolean{
     let settingWithError:string
     if ( settingWithError = this.searchIncorrectSetting()) {
@@ -56,7 +67,7 @@ export class SettingsComponent implements OnInit {
     else this.activetabNr=2
 
     this.activetabId = this.getActiveTabID()
-    console.log('setActiveTabNr() ' +this.activetabNr)
+    console.log('setActiveTab sets ' +this.activetabId)
   }
 
   searchIncorrectSetting(): string {
@@ -87,24 +98,23 @@ export class SettingsComponent implements OnInit {
       this._bs.logOn(this.logonForm.get('password').value)
       .then(()=>{
         this.loggedOn =true
-        this._ds.getData()
-          .subscribe((result)=>{
-            if (result.error) {
-              this._ui.error('Fout bij ophalen data: ' + result.error)
-            } else {
-              this.logonForm.setValue({password:''})
-              this.setActiveTabNr()
-              this._ui.successIcon()
-            }
-          })
+        this.logonForm.setValue({password:''})
+        this.setActiveTabNr() 
+        this._ui.successIcon()
+        this.navigate(['/','booking'])
+         
       })
       .catch((err)=>{
         this.loggedOn =false
         this._ui.error("password niet goed")
       })
+
     }
   }
 
+  ngOnDestroy(){
+  }
+  
   globDateformat(){
     return Globals.angularDateformatWithWeekDay
   }
@@ -164,7 +174,11 @@ export class SettingsComponent implements OnInit {
   testUiBug(){
     this._ui.successIcon()
     setTimeout(() => {
-    this._ui.error('deze melding zie ik niet!!!!')
+    this._ui.info('deze melding zie ik ')
     }, 1000);
+     setTimeout(() => {
+    this._ui.error('deze melding zie ik ook!!!!')
+    }, 2000);
   }
+
 }

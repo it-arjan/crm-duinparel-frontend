@@ -1,4 +1,4 @@
-export class IconFeedabck{
+export class IconFeedback{
     constructor(iconType:string){
         this.iconClasses=this.getIcon(iconType)
     }

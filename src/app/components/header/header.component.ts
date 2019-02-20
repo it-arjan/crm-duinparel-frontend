@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { UIService } from 'src/app/services/ui.service';
 import { UserFeedback } from 'src/app/models/UserFeedback.model';
 import {
@@ -8,11 +8,14 @@ import {
   animate,
   transition
 } from '@angular/animations';
-import { IconFeedabck } from 'src/app/models/icon-feedback';
-import { MessageFeedabck } from 'src/app/models/message-feedback';
+import { IconFeedback } from 'src/app/models/icon-feedback';
+import { MessageFeedback } from 'src/app/models/message-feedback';
 import { ElectronService } from 'ngx-electron';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../ng-bootstrap/modal-confirm/modal-confirm.component';
+import { take } from 'rxjs/operators';
+import { DataService } from 'src/app/services/data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -30,62 +33,92 @@ import { ModalConfirmComponent } from '../ng-bootstrap/modal-confirm/modal-confi
 export class HeaderComponentComponent implements OnInit, OnDestroy {
 
   constructor(
-    private _ui : UIService, 
-    private _modalService: NgbModal,
-    private _es: ElectronService
+    private _ui : UIService, private _modalService: NgbModal,
+    private _es: ElectronService,
+    private _ds: DataService, private _router: Router
     ) { }
   notificationState:string;
-  iconFeedback:IconFeedabck;
-  msgFeedback:MessageFeedabck;
+
+  iconFeedback:IconFeedback;
+  showIconFeedback: boolean
+  
+  msgFeedback:MessageFeedback;
+  showMsgFeedback: boolean
   msgType:string;
-  UserFeedback:string;
+  
+  //UserFeedback:string;
 
   ngOnInit() {
-    this._ui.notifications().subscribe((msg:UserFeedback)=>{
-      this.notificationState = 'in'
-      this.processFeedback(msg)
-      //Trigger state change after view is rendered
-      setTimeout(()=>{ this.notificationState = 'out' },2000)
+    console.log('ngOnInit ')
+    this._ui.notifier()
+      .subscribe((msg:UserFeedback)=>{
+        this.notificationState = 'in'
+        this.processFeedback(msg)
+        //Trigger state change after view is rendered
+        setTimeout(()=>{ this.notificationState = 'out' },1000)
     })
+
+    //TODO figure out why msgs not show
+    //something seems to freeze in angular
+    this._ds.dataReadyReplay().pipe(take(1))
+      .subscribe((result)=>{
+          if (result.error) { //TODO this error doesn't display
+              console.log('Fout bij ophalen data!' + result.error)
+              console.log(result)
+              this._ui.error('Fout bij ophalen data: ')// + result.error 
+          } else {
+            console.log('HeaderComponentComponent: data ophalen success!')
+          }
+    })    
   }
+  // ngDoCheck(){
+  //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
+  //   console.log()
+  // }
   ngOnDestroy(){
-    this._ui.notifications().unsubscribe()
+    this._ui.notifier().unsubscribe()
+    //this._ds.dataReady().unsubscribe()
   }
+
   processFeedback(feedback:UserFeedback){
     switch (feedback.type){
       case 'Removed':
       case 'Cancelled':
       case 'Success': 
-        this.iconFeedback=new IconFeedabck(feedback.type);
-        this.msgFeedback=undefined
+        this.showIconFeedback=true
+        this.showMsgFeedback=false
+        this.iconFeedback=new IconFeedback(feedback.type);
         break;
       case 'Info':
-        this.msgFeedback=new MessageFeedabck('info',feedback.message);
-        this.iconFeedback=undefined
+        this.showIconFeedback=false
+        this.showMsgFeedback=true
+        this.msgFeedback=new MessageFeedback('info',feedback.message);
         break;
       case 'Warn':
-        this.msgFeedback=new MessageFeedabck('warning ',feedback.message);
-        this.iconFeedback=undefined
+        this.showIconFeedback=false
+        this.showMsgFeedback=true
+        this.msgFeedback=new MessageFeedback('warning ',feedback.message);
         break;
       case 'Error': 
-        this.msgFeedback=new MessageFeedabck('danger',feedback.message);
-        this.iconFeedback=undefined
+        this.showIconFeedback=false
+        this.showMsgFeedback=true
+        this.msgFeedback=new MessageFeedback('danger',feedback.message);
         break;
     }
 
-    this.UserFeedback=feedback.message
-    this.msgType=feedback.type
-    // console.log(this.msgType)
+    // this.UserFeedback=feedback.message
+    // this.msgType=feedback.type
+    // // console.log(this.msgType)
     // console.log('iconFeedback: '+this.iconFeedback)
     // console.log('msgFeedback: '+this.msgFeedback)
   }
-  exitElectron(){
+  exitElectron(){ //todo make method on service 
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Programma afsluiten';
     modalRef.componentInstance.message = 'Programma afsluiten?';
     modalRef.result
     .then(()=>{
-      this._es.ipcRenderer.send('ExitProgram') //todo make method
+      this._es.ipcRenderer.send('ExitProgram') 
     })
     .catch(()=>{
       console.log('modal cancelled')
