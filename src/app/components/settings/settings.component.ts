@@ -104,9 +104,9 @@ public navigate(commands: any[]): void {
         this.navigate(['/','booking'])
          
       })
-      .catch((err)=>{
+      .catch((errmsg)=>{
         this.loggedOn =false
-        this._ui.error("password niet goed")
+        this._ui.error("Inloggen niet gelukt: " + errmsg)
       })
 
     }

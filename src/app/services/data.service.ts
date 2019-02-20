@@ -38,7 +38,7 @@ export class DataService {
       this.customers = data.customers
       this.mailings = data.mailings
       //this._bs.cleanupDataCache()
-      let err = data.error?'data.error': null
+      let err = data.error?data.error: null
       let datareadyresult : tDataResult = {error:err}
       //emit next on data ready
       console.log("DataService: emitting dataReady")
@@ -46,10 +46,11 @@ export class DataService {
     }) 
  
   }
-  //Replays will always emit the last value on subscribe, when tehre is one
-  dataReadyReplay(): ReplaySubject<tDataResult>{
+  // Replays always emit the last value on subscribe, but only when there is one
+  dataReadyReplay(): ReplaySubject<tDataResult> {
        return this.dataReady$
   }
+  // BehaviorSubjects start with initial value, subscribers will get get most recent value upon subscription
   searchResults(): BehaviorSubject<Customer[]>{
        return this.searchCompleted$
   }

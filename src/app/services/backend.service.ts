@@ -177,14 +177,17 @@ export class BackendService implements iDataService, iSecurity {
   }
 
  logOn(pwd:string): Promise<void>{
-    let result: Promise<void> =  new Promise((resolve, reject) => {
-    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, success: securityResult) => {
-      console.log('service.logon.result=' + success)
-      if (success) {
+    let result: Promise<string> =  new Promise<string>((resolve, reject) => {
+    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, result: securityResult) => {
+      console.log('service.logon.result=' + result.success)
+      if (result.success) {
         this.authenticated4Authguard=true
-        resolve()
+        resolve('')
       }
-      else reject()
+      else {
+        console.log('logon failed: ' + result.error)
+        reject(result.error)
+      }
       })//once
     })//promise
     
