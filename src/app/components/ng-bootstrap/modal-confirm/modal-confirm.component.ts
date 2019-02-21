@@ -16,7 +16,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     </p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Stop</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Nee</button>
     <button type="button" ngbAutofocus class="btn btn-outline-danger" (click)="modal.close('Ok click')">Doen</button>
   </div>
   `,

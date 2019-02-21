@@ -115,8 +115,8 @@ public navigate(commands: any[]): void {
   ngOnDestroy(){
   }
   
-  globDateformat(){
-    return Globals.angularDateformatWithWeekDay
+  globDateTime(){
+    return Globals.angularDateTimeformat
   }
   
   getLogs(){

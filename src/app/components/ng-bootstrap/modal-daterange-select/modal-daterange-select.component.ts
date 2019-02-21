@@ -4,9 +4,10 @@ import { NgbDate, NgbCalendar, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap
 @Component({
   selector: 'app-modal-daterange-select',
   template: `
+  <p  class="text-center" style="margin-top:5px"><button type="button" class="btn btn-outline-dark" *ngIf="dateSelected" (click)="activeModal.close({'fromNgb': fromDate, 'toNgb': toDate})">Selecteer</button></p>
   <ngb-datepicker #dp (select)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t" outsideDays="hidden">
   </ngb-datepicker>
-  <ng-template #t let-date let-focused="focused">
+ <ng-template #t let-date let-focused="focused">
           <span class="custom-day"
                 [class.focused]="focused"
                 [class.range]="isRange(date)"
@@ -16,8 +17,7 @@ import { NgbDate, NgbCalendar, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap
             {{ date.day }}
           </span>
         </ng-template>
-        <p  class="text-center" style="margin-top:5px"><button type="button" class="btn btn-outline-dark" *ngIf="dateSelected" (click)="activeModal.close({'fromNgb': fromDate, 'toNgb': toDate})">Selecteer</button></p>
-  `,
+   `,
   styles: [`
   .custom-day {
     text-align: center;

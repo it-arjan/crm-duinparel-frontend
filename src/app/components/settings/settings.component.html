@@ -60,7 +60,7 @@
         <button type="button" class="btn btn-outline-secondary" (click)="getLogs()">Get logs</button>
         <div class="row small" *ngFor="let entry of logEntries">
           <div class="col-md-3">{{ entry.fileName }}</div>
-          <div class="col-md-1" >{{ entry.modified | date:globDateformat() }}</div>
+          <div class="col-md-1" >{{ entry.modified | date:globDateTime() }}</div>
           <div class="col-md-8 " [innerHtml]="entry.fileContents | nl2br | assumeSafeHtml"></div>
         </div>
        </ng-template>

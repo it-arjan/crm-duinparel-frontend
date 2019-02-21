@@ -91,6 +91,9 @@ export class BackendService {
   return promise;
   }
 
+  exitProgram(){
+    this._es.ipcRenderer.send('ExitProgram')
+  }
 
 
   

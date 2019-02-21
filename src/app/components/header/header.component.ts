@@ -8,14 +8,15 @@ import {
   animate,
   transition
 } from '@angular/animations';
+
 import { IconFeedback } from 'src/app/models/icon-feedback';
 import { MessageFeedback } from 'src/app/models/message-feedback';
-import { ElectronService } from 'ngx-electron';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../ng-bootstrap/modal-confirm/modal-confirm.component';
 import { take } from 'rxjs/operators';
 import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
+import { BackendService } from 'src/app/services/backend.service';
 
 @Component({
   selector: 'app-header',
@@ -30,11 +31,11 @@ import { Router } from '@angular/router';
       transition('out =>in',animate('1ms')),
     ])
   ]})
-export class HeaderComponentComponent implements OnInit, OnDestroy {
+export class HeaderComponentComponent implements OnInit, OnDestroy {  
 
   constructor(
     private _ui : UIService, private _modalService: NgbModal,
-    private _es: ElectronService,
+    private _bs: BackendService,
     private _ds: DataService, private _router: Router
     ) { }
   notificationState:string;
@@ -46,8 +47,6 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   showMsgFeedback: boolean
   msgType:string;
   
-  //UserFeedback:string;
-
   ngOnInit() {
     console.log('ngOnInit ')
     this._ui.notifier()
@@ -58,15 +57,16 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         setTimeout(()=>{ this.notificationState = 'out' },1000)
     })
 
-    //TODO figure out why msgs not show
-    //something seems to freeze in angular
-    this._ds.dataReadyReplay().pipe(take(1))
+    //TODO messages doesn't display
+    //something seems to freeze in angular change detection
+    this._ds.dataReadyReplay().pipe(take(1)) //auto-unsubscribe
       .subscribe((result)=>{
-          if (result.error) { //TODO this error doesn't display
+          if (result.error) { 
               console.log('Fout bij ophalen data!' + result.error)
               console.log(result)
-              this._ui.error('Fout bij ophalen data: ')// + result.error 
+              this._ui.error('Fout bij ophalen data: '+ result.error )// 
           } else {
+            this._ui.info('de database is beschikbaar' )
             console.log('HeaderComponentComponent: data ophalen success!')
           }
     })    
@@ -118,7 +118,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.message = 'Programma afsluiten?';
     modalRef.result
     .then(()=>{
-      this._es.ipcRenderer.send('ExitProgram') 
+      this._bs.exitProgram() 
     })
     .catch(()=>{
       console.log('modal cancelled')

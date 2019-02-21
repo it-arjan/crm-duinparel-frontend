@@ -33,8 +33,10 @@ export class Customer {
         clone.email=toClone.email
         clone.country=toClone.country
         clone.bookings=[]
-        if (toClone.bookings)
+        if (toClone.bookings){
+          toClone.bookings.sort((b1,b2)=>{return b2.arrive-b1.arrive})
           toClone.bookings.map(x=>clone.bookings.push(new Booking(x.id,x.custid,x.arrive, x.depart,x.propcode,x.booktype) ))
+        }
         // todo else ??
         return clone
     }

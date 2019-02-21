@@ -9,7 +9,7 @@ import { AuthGuardService } from './services/auth.guard.service';
 import { AppComponent } from './app.component';
 
 const appRoutes: Routes = [
-    {path: '', component: AppComponent, canActivate: [AuthGuardService]},
+    {path: '',  pathMatch: 'full', redirectTo: 'booking', canActivate: [AuthGuardService]},
     {path: 'booking', component: BookingWrapComponent, canActivate: [AuthGuardService], children: [
         {path:'cust/new', pathMatch: 'full', component: CustomerNewEditComponent, canActivate: [AuthGuardService]}, 
         {path:'cust/:custid', pathMatch: 'full', component: CustomerNewEditComponent, canActivate: [AuthGuardService]},
