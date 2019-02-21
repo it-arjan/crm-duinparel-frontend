@@ -10,6 +10,7 @@ import { ReplaySubject } from 'rxjs';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 
 @Component({
   selector: 'app-config',

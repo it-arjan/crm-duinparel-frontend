@@ -5,15 +5,28 @@ import { Booking } from '../models/booking.model';
 import { Mailing } from '../models/mailing.model';
 import { Observable, Observer, ReplaySubject } from 'rxjs';
 import { createLViewData } from '@angular/core/src/render3/instructions';
+import { iSecurity, securityResult } from './interfaces.security';
+import { UIService } from './ui.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FakeBackendService implements iDataPersist {
-  
-  constructor() { 
-  
+export class FakeBackendService implements iDataPersist, iSecurity {
+  constructor(
+    private _ui: UIService
+
+  ){}
+  isAuthenticated(): boolean {
+    this._ui.info('running fake auth')
+    return true
   }
+  logOn(pwd: string): Promise<string> {
+    throw new Error("Method not implemented.");
+  }
+  changePassword(oldpass: string, newpass: string): Promise<securityResult> {
+    throw new Error("Method not implemented.");
+  }
+  
   customers: Customer[]
   mailings: Mailing[]
 
@@ -90,6 +103,8 @@ export class FakeBackendService implements iDataPersist {
 
   getData(): ReplaySubject<tBulkdataResult> {
     console.log('fake getData')
+    this._ui.info('fake Data')
+
     if (!this.customers) this.createData()
     if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
 

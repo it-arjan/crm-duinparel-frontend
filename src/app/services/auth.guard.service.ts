@@ -4,6 +4,7 @@ import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/ro
 import { BackendService } from './backend.service';
 import { UIService } from './ui.service';
 import { AuthService } from './auth.service';
+import { FakeBackendService } from './fake.data.backend.service';
 
 @Injectable({
   providedIn: 'root'
