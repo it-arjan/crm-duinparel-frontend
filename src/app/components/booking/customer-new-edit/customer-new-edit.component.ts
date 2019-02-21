@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { Customer } from 'src/app/models/customer.model';
@@ -8,6 +8,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../../ng-bootstrap/modal-confirm/modal-confirm.component';
 import { take } from 'rxjs/operators';
 import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
+import { TData } from '@angular/core/src/render3/interfaces/view';
+import { tDataResult } from 'src/app/services/interfaces.persist';
 
 @Component({
   selector: 'app-customer-new-edit',
@@ -21,6 +23,7 @@ export class CustomerNewEditComponent implements OnInit {
     private _router: Router, 
     private _activatedRoute: ActivatedRoute,
     private _ui : UIService,
+    private ngZone: NgZone,
     private _modalService: NgbModal,
     ) { }
   name: tComponentNames.newEditCustomer
@@ -73,44 +76,42 @@ export class CustomerNewEditComponent implements OnInit {
 
       if (this.editMode) {
         editedCustomer.bookings=this.customer.bookings
-        this._ds.updateCustomer(this.custId, editedCustomer)
-          .pipe(take(1)).subscribe((result)=>{
-            if (result.error) {
-              this._ui.error('Fout bij opslaan klant: ' + result.error)
-            }
-            else {
-              this._ui.successIcon()
-              this._router.navigate(['/booking'])
-            }
-          })
+        this._ds.updateCustomer(this.custId, editedCustomer).pipe(take(1))
+          .subscribe((result)=>{
+               this.handlePersistResponse(result)
+            })
 
-        this._ui.successIcon()
-        this._router.navigate(['/booking'])
       }
       else {
         console.log('before: ' + editedCustomer.id)
-        this._ds.addCustomer(editedCustomer)
-          .pipe(take(1)).subscribe((result)=>{
-              if (result.error) {
-                this._ui.error('Fout bij opslaan klant: ' + result.error)
-              }
-              else {
-                this._ui.successIcon()
-                this._router.navigate(['/booking'])
-              }
-            })
+        this._ds.addCustomer(editedCustomer, '/booking').pipe(take(1))
+         .subscribe((result: tDataResult)=>{
+              this.handlePersistResponse(result)
+          })
         }
       }
       catch (ex){
-        this._ui.error('Opslaan mislukt ' + ex)
+        this._ui.error('Opslaan mislukttt ' + ex)
       }
+  }
+
+  handlePersistResponse(result: tDataResult){
+    if (result.error) {
+      this._ui.error('Fout bij opslaan klant: ' + result.error)
+    }
+    else {
+        this._ui.successIcon()
+        this.navigate(['/booking'])
+    }   
   }
 
   onCancel(){
     this._ui.cancelledIcon()
     this._router.navigate(['/booking'])
   }
-
+public navigate(commands: any[]): void {
+    this.ngZone.run(() => this._router.navigate(commands)).then();
+}
   onDelete () {
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Klant verwijderen';
@@ -120,18 +121,11 @@ export class CustomerNewEditComponent implements OnInit {
     .then(()=>{
       try {
         //throw new Error('testen van errors!')
-        this._ds.removeCustomerCascading(this.customer)
-          .pipe(take(1)).subscribe((result)=>{
-            if (result.error) {
-              this._ui.error('Fout bij verwijderen klant: ' + result.error)
-            }
-            else {
-                this._ui.deletedIcon()
-                this._router.navigate(['/booking'])
-            }
+        this._ds.removeCustomerCascading(this.customer).pipe(take(1))
+          .subscribe((result)=>{
+            console.log('removeCustomerCascading.subscribe')
+            this.handlePersistResponse(result)
           })
-
-
       }
       catch (err){
         this._ui.error('verwijderen mislukt: ' + err)

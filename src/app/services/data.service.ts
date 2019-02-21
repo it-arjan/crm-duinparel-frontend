@@ -11,6 +11,7 @@ import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
 import { ReplaySubject, Subject, BehaviorSubject } from 'rxjs';
 import { PersistService } from './persist.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,9 @@ import { PersistService } from './persist.service';
 export class DataService {
   constructor(
     private _ps: PersistService,
-    private _ui: UIService
-    ) { 
+    private _ui: UIService,
+    private _router: Router 
+   ) { 
       this.searchResult = new Array<Customer>();
       // this.searchResult.push(this.customers[0])
       // this.searchResult.push(this.customers[1])
@@ -30,8 +32,10 @@ export class DataService {
   public searchResult: Array<Customer>=[]; // temp, will come out of observable
 
   private dataReady$ = new ReplaySubject<tDataResult>()
+  private persistReady$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
   searchCompleted$: BehaviorSubject<Customer[]>= new BehaviorSubject<Customer[]>([])
-
+  emailSearchTerm:string 
+  
   getData(): void {
     let error: string
     this._ps.getData().pipe(take(1))  
@@ -55,7 +59,8 @@ export class DataService {
   searchResults(): BehaviorSubject<Customer[]>{
        return this.searchCompleted$
   }
-  searchCustomers(emailPiece:string){ 
+  searchCustomers(emailPiece:string){
+    this.emailSearchTerm= emailPiece
     this.dataReadyReplay().pipe(take(1))
       .subscribe(x =>{
         if (this.customers.length > 0){
@@ -64,10 +69,10 @@ export class DataService {
           this.searchResult.length=0 //copy it to update view automatically, only this no longer works with the dataReady observable
           temp.forEach(x=>this.searchResult.push(x))
           // console.log('this.searchResult.length === '+this.searchResult.length)
-          this.searchCompleted$.next(temp)
+          this.searchCompleted$.next(this.searchResult)
         }
         else {
-          this._ui.error('no data available, check the logs please (settings)')
+          this._ui.error('no data available, check the logs please (from settings).')
           this.searchCompleted$.next([])
         }
       })
@@ -81,46 +86,81 @@ export class DataService {
     return this.customers.find(x=>x.id === id)
   }
   
-  removeCustomerCascading(cust: Customer){
-    let idx = this.customers.indexOf(cust)
-    if (idx >=0) this.customers.splice(idx, 1)
-    //remove from searchresult as well
-    idx = this.searchResult.indexOf(cust)
-    if (idx >=0) this.searchResult.splice(idx, 1)
+  removeCustomerCascading(cust: Customer): ReplaySubject<tDataResult>{
 
-    return this._ps.persistCustomer(cust, tPersist.Delete)
+    this._ps.persistCustomer(cust, tPersist.Delete).pipe(take(1))
+    .subscribe(result=>{
+      if (!result.error) {
+        //remove from searchresult as well
+        let idx = this.searchResult.indexOf(cust)
+        if (idx >=0) {
+          this.searchResult.splice(idx, 1)
+          this.searchCompleted$.next(this.searchResult)
+        }
+        
+        idx = this.customers.indexOf(cust)
+        if (idx >=0) this.customers.splice(idx, 1)
+ 
+      }
+      this.persistReady$.next(result)
+    })
+    return this.persistReady$
   }
 
-  updateCustomer(id:number, custCopy:Customer): ReplaySubject<tDataResult>{
+  updateCustomer(id:number, custCopy:Customer): ReplaySubject<tDataResult> {
     //object is same everywhere, only update it in customers
     let realCust: Customer = this.customers.find(x=>x.id==custCopy.id)
-    realCust.test()
-    realCust.consumeCustomerShallow(custCopy);
-    // persist
-    return this._ps.persistCustomer(realCust, tPersist.Update)
+    custCopy.id=realCust.id
+      // persist the copy, if succes update the object
+    this._ps.persistCustomer(custCopy, tPersist.Update).pipe(take(1))
+            .subscribe((result)=>{
+              if (!result.error) {
+                realCust.consumeCustomerShallow(custCopy)
+              }
+              this.persistReady$.next(result)
+            })
+    return  this.persistReady$
   }
   
-  addCustomer(newCust:Customer): ReplaySubject<tDataResult>{
-    this.customers.push(newCust);
-    //add to beginning of searchresult
-    this.searchResult.unshift(newCust)
+  addCustomer(newCust:Customer, navigateTo: string) : ReplaySubject<tDataResult>{
     // persist
-    return this._ps.persistCustomer(newCust, tPersist.Insert)
-  }
+    this._ps.persistCustomer(newCust, tPersist.Insert).pipe(take(1))
+      .subscribe((result)=>{
+          if (!result.error) {
+            this.customers.push(newCust);
+              //add to beginning of searchresult
+              this.searchResult.unshift(newCust)
+          }
+          this.persistReady$.next(result)
+      })
+      return this.persistReady$
+    }
 
   addBooking(booking:Booking): ReplaySubject<tDataResult> {
-    let realCust = this.customers.find(x=>x.id==booking.custid)
-    realCust.bookings.unshift(booking)
     // persist
-    return this._ps.persistBooking(booking, tPersist.Insert)
+    this._ps.persistBooking(booking, tPersist.Insert).pipe(take(1))
+    .subscribe((result) =>{
+        if (!result.error) {
+          let realCust = this.customers.find(x=>x.id==booking.custid)
+          realCust.bookings.unshift(booking)
+        }
+        this.persistReady$.next(result)
+    })
+    return this.persistReady$
   }
 
   removeBooking(booking:Booking) : ReplaySubject<tDataResult> {
-    let cust = this.customers.find(x=>x.id === booking.custid)
-    let idx = cust.bookings.indexOf(booking)
-    if (idx >=0) cust.bookings.splice(idx, 1)
     // persist
-    return this._ps.persistBooking(booking, tPersist.Delete)
+    this._ps.persistBooking(booking, tPersist.Delete).pipe(take(1))
+    .subscribe((result) =>{
+        if (!result.error) {
+          let cust = this.customers.find(x=>x.id === booking.custid)
+          let idx = cust.bookings.indexOf(booking)
+          if (idx >=0) cust.bookings.splice(idx, 1)
+        }
+      this.persistReady$.next(result)
+    })
+    return  this.persistReady$
   }
 
   clearCustomerSearch(){
@@ -144,6 +184,7 @@ export class DataService {
     })
     return matchingBookings
   }
+
   searchEmails(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
               monthsNotMailedFrom:number, monthsNotMailedUntil:number, 
               proptypesArg: string[],

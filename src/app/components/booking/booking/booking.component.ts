@@ -104,8 +104,8 @@ export class BookingComponent implements OnInit {
 
     let booking = new Booking(0, this.custId, m_arrive.unix()*1000, m_depart.unix()*1000, propcode, booktype)
     //this.customer.bookings.push(booking)
-    this._ds.addBooking(booking)
-    .pipe(take(1)).subscribe((result)=>{
+    this._ds.addBooking(booking).pipe(take(1))
+    .subscribe((result)=>{
       if (result.error) {
         this._ui.error('Fout bij opslaan booking: ' + result.error)
       }
@@ -152,8 +152,8 @@ export class BookingComponent implements OnInit {
         .then(()=>{
           try {
             //throw new Error('testen van errors!')
-            this._ds.removeBooking(this.customer.bookings[idx])
-            .pipe(take(1)).subscribe((result)=>{
+            this._ds.removeBooking(this.customer.bookings[idx]).pipe(take(1))
+            .subscribe((result)=>{
               if (result.error) {
                 this._ui.error('Fout bij verwijderen boeking: ' + result.error)
               }
