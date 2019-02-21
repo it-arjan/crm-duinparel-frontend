@@ -35,7 +35,7 @@ export class DataService {
   private persistReady$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
   searchCompleted$: BehaviorSubject<Customer[]>= new BehaviorSubject<Customer[]>([])
   emailSearchTerm:string 
-  
+
   getData(): void {
     let error: string
     this._ps.getData().pipe(take(1))  
@@ -47,7 +47,7 @@ export class DataService {
       let datareadyresult : tDataResult = {error:err}
       //emit next on data ready
       console.log("DataService: emitting dataReady")
-      this.dataReadyReplay().next(datareadyresult)
+      this.dataReady$.next(datareadyresult)
     }) 
  
   }

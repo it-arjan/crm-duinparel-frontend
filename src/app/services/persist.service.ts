@@ -34,24 +34,14 @@ export class PersistService  implements iDataPersist {
     this.getData_R$ = new ReplaySubject<tBulkdataResult>(1);
     this._es.ipcRenderer.once('GetDataResponse', 
       (event: Electron.IpcMessageEvent, data: tBulkdataResult) => {
-        console.log("GetDataResponse!!!")
-        
-        //convert it
-        let angcustomers = data.customers.map(jsCust => {
-          let angCust = Customer.consumejsCustomerDeep(jsCust)
-          return angCust
-        })
-        let angmailings = data.mailings.map(jsmail => {
-          let angmail = Mailing.consumeJsMailing(jsmail)
-          return angmail
-        })        
-        let angResult:tBulkdataResult ={customers:null, mailings:null, error:null}
-        
-        angResult.customers = angcustomers
-        angResult.mailings = angmailings
-        // backend call always succeeds, error holds the errors
-        angResult.error = data.error
-
+        console.log("GetDataResponse")
+        if (data.error) console.log("...errors! " + data.error)
+        //convert
+        let angResult:tBulkdataResult = {
+          customers: data.customers.map(jsCust => Customer.consumejsCustomerDeep(jsCust)), 
+          mailings: data.mailings.map(jsmail => Mailing.consumeJsMailing(jsmail)), 
+          error: data.error
+        }
         this.getData_R$.next(angResult)
     })
     this._es.ipcRenderer.send('GetData')
