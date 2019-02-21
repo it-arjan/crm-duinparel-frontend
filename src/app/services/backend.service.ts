@@ -5,17 +5,12 @@ import { UIService } from './ui.service';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { LogEntry } from '../models/logentry.model';
-import { ReplaySubject } from 'rxjs';
-import { Mailing } from '../models/mailing.model';
-import { iDataService, tBulkdataResult, tDataResult, tPersist, tDataResultNodejs, tPersistBag } from './interfaces.data';
-//import { reject } from 'q';
-import { changePwdInput, securityResult, iSecurity } from './interfaces.security';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class BackendService implements iDataService, iSecurity {
+export class BackendService {
 
   constructor(
     private _es: ElectronService,
@@ -24,17 +19,7 @@ export class BackendService implements iDataService, iSecurity {
       console.log('constructor BackendService')
     }
 
-  private getData_R$ : ReplaySubject<tBulkdataResult>
-  private persistCust_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  private persistBook_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  private persistMail_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
   //TODO public authResult_R$: ReplaySubject<securityResult> = new ReplaySubject<securityResult>()
-  private authenticated4Authguard = false //todo check why subscribing doesn;t work (suspect serice creation order)
-
-  isAuthenticated() : boolean {
-    //console.log('====>isAuthenticated: ' + this.authenticated4Authguard)
-    return this.authenticated4Authguard
-  }
 
   readConfig(): Promise<ConfigSetting[]>{
     //subscribe
@@ -52,14 +37,22 @@ export class BackendService implements iDataService, iSecurity {
   this._es.ipcRenderer.send('ReadConfig')
   return result;
   }
-
-  testDb(){
-    this._es.ipcRenderer.once('TestDbResponse', (event: Electron.IpcMessageEvent, result: boolean) => {
-      console.log('TestDbResponse!!');
-      console.log(result)
   
+  writeConfig(settings:ConfigSetting[]){
+    //subscribe
+    console.log('subscribe to WriteConfigResponse')
+    this._es.ipcRenderer.once('WriteConfigResponse', (event: Electron.IpcMessageEvent, result: string) => {
+      console.log('WriteConfigResponse!!');
+      if (result === 'success') 
+      {
+        console.log('WriteConfigResponse :: SUCCESS');
+        this._ui.successIcon()
+      }
+      else this._ui.error("Error writing config: " + result)
     })
-    this._es.ipcRenderer.send('TestDb')
+
+  //console.log('send WriteConfig event to ipcMain..')
+  this._es.ipcRenderer.send('WriteConfig', settings)
   }
 
   checkPlatform(){
@@ -68,84 +61,6 @@ export class BackendService implements iDataService, iSecurity {
     }
   }
 
-  getData(): ReplaySubject<tBulkdataResult> {
-    this.checkPlatform();
-    this.getData_R$ = new ReplaySubject<tBulkdataResult>(1);
-    this._es.ipcRenderer.once('GetDataResponse', 
-      (event: Electron.IpcMessageEvent, data: tBulkdataResult) => {
-        console.log("GetDataResponse!!!")
-        
-        //convert it
-        let angcustomers = data.customers.map(jsCust => {
-          let angCust = Customer.consumejsCustomerDeep(jsCust)
-          return angCust
-        })
-        let angmailings = data.mailings.map(jsmail => {
-          let angmail = Mailing.consumeJsMailing(jsmail)
-          return angmail
-        })        
-        let angResult:tBulkdataResult ={customers:null, mailings:null, error:null}
-        
-        angResult.customers = angcustomers
-        angResult.mailings = angmailings
-        // backend call always succeeds, error holds the errors
-        angResult.error = data.error
-
-        this.getData_R$.next(angResult)
-    })
-    this._es.ipcRenderer.send('GetData')
-    return this.getData_R$
-  }
-
-  cleanupDataCache() {
-    this.getData_R$.complete()
-    this.getData_R$= new ReplaySubject<tBulkdataResult>()
-  }
-  
-  persist(object: Customer | Booking |Mailing, persisttype: tPersist) : ReplaySubject<tDataResult>{
-    this.checkPlatform();
-
-    let objecttype = object.constructor.name
-
-    let subject = objecttype ==='Customer' 
-      ? this.persistCust_R$ 
-      :objecttype ==='Booking' 
-        ?this.persistBook_R$ 
-        :objecttype ==='Mailing' 
-        ?this.persistMail_R$ 
-      :null 
-    
-    if (!subject){
-      this._ui.error(`invalid objecttype ${objecttype} for operation ${tPersist[persisttype]}. Dit is niet goed`!!)
-      return
-    }
-    let returnChannelName = `Persist${objecttype}Response`
-    this._es.ipcRenderer.once(returnChannelName, (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
-      console.log(returnChannelName + '!!');
-      if (persisttype === tPersist.Insert) {
-        object.id= result.generatedid
-      }
-      subject.next(result)
-    })
-    //call to ipcMain
-    let sendarg : tPersistBag = {objecttype: objecttype, object: object, persisttype:tPersist[persisttype]}
-    this._es.ipcRenderer.send('Persist', sendarg)
-
-    return subject
-  }
-
-  persistCustomer(customer: Customer, type: tPersist) :  ReplaySubject<tDataResult> {
-    return this.persist(customer, type)
-  }
-
-  persistBooking(booking:Booking, type: tPersist): ReplaySubject<tDataResult>{
-    return this.persist(booking, type)
- }
- 
-  persistMailing(mailing: Mailing, type: tPersist) : ReplaySubject<tDataResult>{
-    return this.persist(mailing, type)
-  }
-  
   writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>{
     let promise = new Promise<{wordFilename:string, wordFolder:string}>((resolve, reject)=>{
       this._es.ipcRenderer.once('WordBookingResponse', (event: Electron.IpcMessageEvent, fileStats: {wordFilename:string, wordFolder:string}) => {
@@ -176,60 +91,7 @@ export class BackendService implements iDataService, iSecurity {
   return promise;
   }
 
- logOn(pwd:string): Promise<void>{
-    let result: Promise<string> =  new Promise<string>((resolve, reject) => {
-    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, result: securityResult) => {
-      console.log('service.logon.result=' + result.success)
-      if (result.success) {
-        this.authenticated4Authguard=true
-        resolve('')
-      }
-      else {
-        console.log('logon failed: ' + result.error)
-        reject(result.error)
-      }
-      })//once
-    })//promise
-    
-    //console.log( 'backend service: sending pwd ' + pwd)
-    this._es.ipcRenderer.send('Logon', pwd)
-    return result
-  }
 
-  changePassword(oldpass:string, newpass:string) : Promise<securityResult>{
-    //console.log('subscribe to ChangepasswordResponse')
-    let result: Promise<securityResult> =  new Promise<securityResult>((resolve, reject) => {
-      this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: securityResult) => {
-        console.log('ChangePasswordResponse!!');
-        if (result.success)
-        {
-          resolve(result)
-        }
-        else reject(result)
-      })
-    })
 
-  //console.log('send RecryptDbSecret event to ipcMain..')
-  //this.settings[0].value='changed'
-  let pwds: changePwdInput = {oldpwd:oldpass, newpwd:newpass}
-  this._es.ipcRenderer.send('ChangePassword', pwds)
-  return result;
-}
-
-  writeConfig(settings:ConfigSetting[]){
-    //subscribe
-    console.log('subscribe to WriteConfigResponse')
-    this._es.ipcRenderer.once('WriteConfigResponse', (event: Electron.IpcMessageEvent, result: string) => {
-      console.log('WriteConfigResponse!!');
-      if (result === 'success') 
-      {
-        console.log('WriteConfigResponse :: SUCCESS');
-        this._ui.successIcon()
-      }
-      else this._ui.error("Error writing config: " + result)
-    })
-
-  //console.log('send WriteConfig event to ipcMain..')
-  this._es.ipcRenderer.send('WriteConfig', settings)
-  }
+  
 }

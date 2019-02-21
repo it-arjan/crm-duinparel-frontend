@@ -6,17 +6,18 @@ import { Globals } from '../shared/globals';
 import { Mailing } from '../models/mailing.model';
 import { BackendService } from './backend.service';
 import { FakeBackendService } from './fake.data.backend.service';
-import { tBulkdataResult, tPersist, tDataResult } from './interfaces.data';
+import { tBulkdataResult, tPersist, tDataResult } from './interfaces.persist';
 import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
 import { ReplaySubject, Subject, BehaviorSubject } from 'rxjs';
+import { PersistService } from './persist.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   constructor(
-    private _bs: BackendService,
+    private _ps: PersistService,
     private _ui: UIService
     ) { 
       this.searchResult = new Array<Customer>();
@@ -33,7 +34,7 @@ export class DataService {
 
   getData(): void {
     let error: string
-    this._bs.getData().pipe(take(1))  
+    this._ps.getData().pipe(take(1))  
     .subscribe((data: tBulkdataResult) => {
       this.customers = data.customers
       this.mailings = data.mailings
@@ -87,7 +88,7 @@ export class DataService {
     idx = this.searchResult.indexOf(cust)
     if (idx >=0) this.searchResult.splice(idx, 1)
 
-    return this._bs.persistCustomer(cust, tPersist.Delete)
+    return this._ps.persistCustomer(cust, tPersist.Delete)
   }
 
   updateCustomer(id:number, custCopy:Customer): ReplaySubject<tDataResult>{
@@ -96,7 +97,7 @@ export class DataService {
     realCust.test()
     realCust.consumeCustomerShallow(custCopy);
     // persist
-    return this._bs.persistCustomer(realCust, tPersist.Update)
+    return this._ps.persistCustomer(realCust, tPersist.Update)
   }
   
   addCustomer(newCust:Customer): ReplaySubject<tDataResult>{
@@ -104,14 +105,14 @@ export class DataService {
     //add to beginning of searchresult
     this.searchResult.unshift(newCust)
     // persist
-    return this._bs.persistCustomer(newCust, tPersist.Insert)
+    return this._ps.persistCustomer(newCust, tPersist.Insert)
   }
 
   addBooking(booking:Booking): ReplaySubject<tDataResult> {
     let realCust = this.customers.find(x=>x.id==booking.custid)
     realCust.bookings.unshift(booking)
     // persist
-    return this._bs.persistBooking(booking, tPersist.Insert)
+    return this._ps.persistBooking(booking, tPersist.Insert)
   }
 
   removeBooking(booking:Booking) : ReplaySubject<tDataResult> {
@@ -119,7 +120,7 @@ export class DataService {
     let idx = cust.bookings.indexOf(booking)
     if (idx >=0) cust.bookings.splice(idx, 1)
     // persist
-    return this._bs.persistBooking(booking, tPersist.Delete)
+    return this._ps.persistBooking(booking, tPersist.Delete)
   }
 
   clearCustomerSearch(){

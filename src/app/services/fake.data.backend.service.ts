@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { iDataService,tBulkdataResult, tDataResult, tPersist } from './interfaces.data';
+import { iDataPersist,tBulkdataResult, tDataResult, tPersist } from './interfaces.persist';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { Mailing } from '../models/mailing.model';
@@ -9,7 +9,7 @@ import { createLViewData } from '@angular/core/src/render3/instructions';
 @Injectable({
   providedIn: 'root'
 })
-export class FakeBackendService implements iDataService {
+export class FakeBackendService implements iDataPersist {
   
   constructor() { 
   

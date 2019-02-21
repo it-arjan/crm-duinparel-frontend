@@ -6,11 +6,10 @@ import { UIService } from 'src/app/services/ui.service';
 import { LogEntry } from 'src/app/models/logentry.model';
 import { Globals } from 'src/app/shared/globals';
 import { DataService } from 'src/app/services/data.service';
-import { take } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
-import { tDataResult } from 'src/app/services/interfaces.data';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { tDataResult } from 'src/app/services/interfaces.persist';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-config',
@@ -22,6 +21,7 @@ import { Router } from '@angular/router';
 export class SettingsComponent implements OnInit {
 
   constructor(private _bs : BackendService, private _ds: DataService, 
+              private _auth: AuthService,
               private _router: Router, private ngZone: NgZone,
               private _ui: UIService) { 
   }
@@ -41,7 +41,7 @@ export class SettingsComponent implements OnInit {
   ngOnInit() {
     this.initForms()
     this.readConfig()
-    this.loggedOn = this._bs.isAuthenticated()
+    this.loggedOn = this._auth.isAuthenticated()
     this.setActiveTabNr()
   }
 
@@ -95,7 +95,7 @@ public navigate(commands: any[]): void {
   onLogon(){
     console.log('onLogon')
     if (this.checkSettings()){
-      this._bs.logOn(this.logonForm.get('password').value)
+      this._auth.logOn(this.logonForm.get('password').value)
       .then(()=>{
         this.loggedOn =true
         this.logonForm.setValue({password:''})
@@ -135,11 +135,12 @@ public navigate(commands: any[]): void {
       let newpwd1= this.changePwdForm.get('newpassword').value
       let newpwd2= this.changePwdForm.get('newpassword2').value
       
-      this._bs.logOn(oldpass).then(()=>{ //compare with pwd on file
+      this._auth.logOn(oldpass)
+      .then(()=>{ //compare with pwd on file
         if (newpwd1.length < 6) this._ui.error("nieuw wachtwoord moet minimaal 6 karakters lang")
         else if (newpwd1 != newpwd2) this._ui.error("nieuwe wachtwoorden niet hetzelfde")
         else {
-          this._bs.changePassword(oldpass, newpwd1)
+          this._auth.changePassword(oldpass, newpwd1)
           .then(()=>{
             this.changePwdForm.setValue({oldpassword:'', newpassword:'', newpassword2:''})
             this.setActiveTabNr()
@@ -157,7 +158,7 @@ public navigate(commands: any[]): void {
       .then((result)=>{
         this.settings = result
         this.setActiveTabNr()
-        })
+      })
   }
 
   writeConfig(){
@@ -171,6 +172,7 @@ public navigate(commands: any[]): void {
       this._ui.error('Caps Lock is on!!')
     }
   }
+
   testUiBug(){
     this._ui.successIcon()
     setTimeout(() => {

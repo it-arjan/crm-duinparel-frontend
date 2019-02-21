@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
 import { Customer, jsCustomer } from '../models/customer.model';
 import { Mailing, jsMailing } from '../models/mailing.model';
 import { Booking } from '../models/booking.model';
-import { Observable, ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 // export interface tBulkdataResult {
 //   customers: {name:string,address:string,email:string,country:string,}[]
@@ -34,7 +33,7 @@ export interface tPersistBag {
 
 export enum tPersist {Insert, Update, Delete}
 
-export interface iDataService {
+export interface iDataPersist {
    getData(): ReplaySubject<tBulkdataResult>
    persistCustomer(cust: Customer, type: tPersist): ReplaySubject<tDataResult>
    persistBooking(book: Booking, type: tPersist): ReplaySubject<tDataResult>

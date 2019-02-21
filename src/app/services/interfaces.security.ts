@@ -8,6 +8,7 @@ export interface changePwdInput {
 }
 
 export interface iSecurity {
- logOn(pwd:string): Promise<void>
+  isAuthenticated() : boolean 
+  logOn(pwd:string): Promise<string>
   changePassword(oldpass:string, newpass:string) : Promise<securityResult>
 }
