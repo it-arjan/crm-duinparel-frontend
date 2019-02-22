@@ -112,7 +112,7 @@ export class DataService {
     let realCust: Customer = this.customers.find(x=>x.id==custCopy.id)
     custCopy.id=realCust.id
       // persist the copy, if succes update the object
-    this._ps.persistCustomer(custCopy, tPersist.Update).pipe(take(1))
+    this._ps.persistCustomer(custCopy, tPersist.Update).pipe(take(1)) 
             .subscribe((result)=>{
               if (!result.error) {
                 realCust.consumeCustomerShallow(custCopy)
@@ -130,6 +130,7 @@ export class DataService {
             this.customers.push(newCust);
               //add to beginning of searchresult
               this.searchResult.unshift(newCust)
+              this.searchCompleted$.next(this.searchResult)
           }
           this.persistReady$.next(result)
       })
