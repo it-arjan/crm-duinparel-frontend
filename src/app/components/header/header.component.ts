@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { UIService } from 'src/app/services/ui.service';
 import { UserFeedback } from 'src/app/models/UserFeedback.model';
 import {
@@ -35,7 +35,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
 
   constructor(
     private _ui : UIService, private _modalService: NgbModal,
-    private _bs: BackendService,
+    private _bs: BackendService, private _cd: ChangeDetectorRef,
     private _ds: DataService, private _router: Router
     ) { }
   notificationState:string;
@@ -47,6 +47,10 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   showMsgFeedback: boolean
   msgType:string;
   
+  resetAnimation(){
+     this.notificationState = 'in'
+     setTimeout(()=>{ this.notificationState = 'out' },1000)
+  }
   ngOnInit() {
     console.log('ngOnInit ')
     this._ui.notifier()
@@ -55,8 +59,9 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         this.processFeedback(msg)
         //Trigger state change after view is rendered
         setTimeout(()=>{ this.notificationState = 'out' },1000)
+        this._cd.detectChanges()
     })
-
+ 
     //TODO messages doesn't display
     //something seems to freeze in angular change detection
     this._ds.dataReadyReplay().pipe(take(1)) //auto-unsubscribe
@@ -104,13 +109,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         this.showMsgFeedback=true
         this.msgFeedback=new MessageFeedback('danger',feedback.message);
         break;
-    }
-
-    // this.UserFeedback=feedback.message
-    // this.msgType=feedback.type
-    // // console.log(this.msgType)
-    // console.log('iconFeedback: '+this.iconFeedback)
-    // console.log('msgFeedback: '+this.msgFeedback)
+    } 
   }
   exitElectron(){ //todo make method on service 
     const modalRef = this._modalService.open(ModalConfirmComponent);
