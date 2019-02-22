@@ -86,6 +86,7 @@ export class CustomerNewEditComponent implements OnInit {
         console.log('before: ' + editedCustomer.id)
         this._ds.addCustomer(editedCustomer, '/booking').pipe(take(1))
          .subscribe((result: tDataResult)=>{
+           console.log('Cust comp: Receiving addCustomer response')
               this.handlePersistResponse(result)
           })
         }
@@ -95,12 +96,14 @@ export class CustomerNewEditComponent implements OnInit {
       }
   }
 
-  handlePersistResponse(result: tDataResult){
+  handlePersistResponse(result: tDataResult, remove?:string){
     if (result.error) {
-      this._ui.error('Fout bij opslaan klant: ' + result.error)
+      let placeholder= remove? 'verwijderen ': 'opslaan'
+      this._ui.error(`Fout bij ${placeholder} klant:  + ${result.error}`)
     }
     else {
-        this._ui.successIcon()
+        if (remove) this._ui.deletedIcon()
+        else this._ui.successIcon()
         this.navigate(['/booking'])
     }   
   }
@@ -118,23 +121,17 @@ public navigate(commands: any[]): void {
     modalRef.componentInstance.message = 'Verwijder klant';
     modalRef.componentInstance.messageHighlighted = this.customer.name;
     modalRef.result
-    .then(()=>{
-      try {
+    .then(()=>{ //Modal closed appropriately
+
         //throw new Error('testen van errors!')
         this._ds.removeCustomerCascading(this.customer).pipe(take(1))
           .subscribe((result)=>{
             console.log('removeCustomerCascading.subscribe')
-            this.handlePersistResponse(result)
+            this.handlePersistResponse(result, 'remove')
           })
-      }
-      catch (err){
-        this._ui.error('verwijderen mislukt: ' + err)
-        console.log(err)
-      }
     })
     .catch(()=>{
       console.log('modal cancelled')
-
     })
   }
 }
