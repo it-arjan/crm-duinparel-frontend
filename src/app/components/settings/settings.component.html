@@ -57,7 +57,8 @@
   <ngb-tab id="logs">
       <ng-template ngbTabTitle><b>Log bestanden</b></ng-template>
       <ng-template ngbTabContent>
-        <button type="button" class="btn btn-outline-secondary" (click)="getLogs()">Get logs</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="getLogs()">Ophalen</button>
+        <br/>
         <div class="row small" *ngFor="let entry of logEntries">
           <div class="col-md-3">{{ entry.fileName }}</div>
           <div class="col-md-1" >{{ entry.modified | date:globDateTime() }}</div>
