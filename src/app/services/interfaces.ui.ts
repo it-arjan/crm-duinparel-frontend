@@ -8,6 +8,15 @@ export interface tGuiguidance {
   wakeUp: tComponentNames[]
 }
 export interface iGuidance {
-  notify(state:tGuistate)
+
   guider(): Subject<tGuiguidance>
+  checkin(state:tGuistate)
+  notifier()
+  getMessageHistory()
+  deletedIcon()
+  cancelledIcon()
+  successIcon()
+  info(msg:string)
+  warning(msg:string)
+  error(msg:string)
 }
