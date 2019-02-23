@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { BackendService } from 'src/app/services/backend.service';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { AuthService } from 'src/app/services/auth.service';
+import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 
 @Component({
   selector: 'app-header',
@@ -30,8 +31,8 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
 
   constructor(
     private _ui : UIService, private _modalService: NgbModal,
-    private _bs: BackendService, private _cd: ChangeDetectorRef,
-    private _auth: AuthService,
+    private _bs: FakeBackendService, private _cd: ChangeDetectorRef,
+    private _auth: FakeBackendService,
     private _ds: DataService, private _r2: Renderer2
     ) { }
   notificationState:string

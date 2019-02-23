@@ -7,17 +7,23 @@ import { Observable, Observer, ReplaySubject } from 'rxjs';
 import { createLViewData } from '@angular/core/src/render3/instructions';
 import { iSecurity, securityResult } from './interfaces.security';
 import { UIService } from './ui.service';
+import { iBackendTasks } from './interfaces.backend';
+import { resolve } from 'q';
+import { ConfigSetting } from '../models/configsetting.model';
+import { LogEntry } from '../models/logentry.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FakeBackendService implements iDataPersist, iSecurity {
+
+export class FakeBackendService implements iDataPersist, iSecurity, iBackendTasks {
+
   constructor(
-    private _ui: UIService
+    //private _ui: UIService
 
   ){}
   isAuthenticated(): boolean {
-    this._ui.info('running fake auth')
+    //this._ui.info('running fake auth')
     return true
   }
   logOn(pwd: string): Promise<string> {
@@ -103,7 +109,7 @@ export class FakeBackendService implements iDataPersist, iSecurity {
 
   getData(): ReplaySubject<tBulkdataResult> {
     console.log('fake getData')
-    this._ui.info('fake Data')
+    //this._ui.info('fake Data')
 
     if (!this.customers) this.createData()
     if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
@@ -139,7 +145,36 @@ export class FakeBackendService implements iDataPersist, iSecurity {
     this.mailReplay.next({error: null})
     return this.mailReplay
   }
+
   cleanupDataCache(){
     this.dataReplay = null
   }
+  
+  /// ================= iBackendTasks ====================
+  readConfig(): Promise<ConfigSetting[]> {
+    let promise: Promise<ConfigSetting[]> =  new Promise<ConfigSetting[]>((resolve, reject) => {
+      let result: ConfigSetting[] = [new ConfigSetting('You are running','on a fake backend!', null)]
+      resolve(result)
+    })
+    return promise
+  }
+  
+  writeConfig(settings: ConfigSetting[]) {
+    console.log("writeConfig not implemented in fake backend.");
+  }
+
+  writeWordBooking(customer: Customer, booking: Booking): Promise<{ wordFilename: string, wordFolder: string; }> {
+    let promise =  new Promise<{ wordFilename: string, wordFolder: string }>((resolve, reject) => {
+      resolve({ wordFilename: 'writeWordBooking not implemented', wordFolder: 'in fake backend.' })
+    })
+    return promise
+  }
+
+  getLogs(): Promise<LogEntry[]> {
+    let promise =  new Promise<LogEntry[]>((resolve, reject) => {
+      let result = [new LogEntry('fake file','','No log files in a fake backend!')]
+      resolve(result)
+    })
+    return promise    
+  }  
 }

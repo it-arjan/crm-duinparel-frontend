@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { EmailBatch } from '../models/emailbatch.model';
-import { Globals } from '../shared/globals';
 import { Mailing } from '../models/mailing.model';
-import { BackendService } from './backend.service';
 import { FakeBackendService } from './fake.data.backend.service';
 import { tBulkdataResult, tPersist, tDataResult } from './interfaces.persist';
 import { take } from 'rxjs/operators';
@@ -18,7 +16,7 @@ import { Router } from '@angular/router';
 })
 export class DataService {
   constructor(
-    private _ps: PersistService,
+    private _ps: FakeBackendService,
     private _ui: UIService,
     private _router: Router 
    ) { 

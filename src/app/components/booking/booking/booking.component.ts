@@ -13,6 +13,7 @@ import { Globals } from '../../../shared/globals';
 import * as moment from 'moment';
 import { BackendService } from 'src/app/services/backend.service';
 import { take } from 'rxjs/operators';
+import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 
 @Component({
   selector: 'app-booking',
@@ -23,7 +24,7 @@ import { take } from 'rxjs/operators';
 export class BookingComponent implements OnInit {
 
   constructor(
-    private _bs: BackendService, 
+    private _bs: FakeBackendService, 
     private _ds: DataService, 
     private _modalService: NgbModal,
     private _ui : UIService,

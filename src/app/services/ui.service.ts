@@ -3,6 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { UserFeedback } from '../models/UserFeedback.model';
 import { tGuistate, tGuiguidance, tComponentNames, iGuidance } from './interfaces.ui';
 import { AuthService } from './auth.service';
+import { FakeBackendService } from './fake.data.backend.service';
 
 
 @Injectable({
@@ -10,7 +11,7 @@ import { AuthService } from './auth.service';
 })
 
 export class UIService implements iGuidance {
-  
+
   private naviSender:Subject<tGuiguidance> = new Subject<tGuiguidance>();
   private notifySender:Subject<UserFeedback> = new Subject<UserFeedback>();
   private naviListener:Subject<tGuistate> = new Subject<tGuistate>();
@@ -20,7 +21,7 @@ export class UIService implements iGuidance {
 
   feedbackHistory: UserFeedback[] =[]
   constructor(
-    private _auth: AuthService
+    private _auth: FakeBackendService
   ) {
     this.listenForCheckins()
   }
