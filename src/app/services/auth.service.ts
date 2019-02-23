@@ -9,7 +9,6 @@ import { UIService } from './ui.service';
 export class AuthService implements iSecurity {
   constructor(
     private _es: ElectronService,
-    private _ui: UIService,
   ) { }
   
 authenticated:boolean
