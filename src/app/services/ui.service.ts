@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { UserFeedback } from '../models/UserFeedback.model';
 import { tGuistate, tGuiguidance, tComponentNames, iGuidance } from './interfaces.ui';
+import { AuthService } from './auth.service';
 
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' 
 })
 
-export class UIService implements iGuidance{
+export class UIService implements iGuidance {
+  
   private naviSender:Subject<tGuiguidance> = new Subject<tGuiguidance>();
   private notifySender:Subject<UserFeedback> = new Subject<UserFeedback>();
   private naviListener:Subject<tGuistate> = new Subject<tGuistate>();
@@ -16,17 +18,13 @@ export class UIService implements iGuidance{
   
   private mininterval=1500
 
-  msgHistory: UserFeedback[] =[]
-  constructor() { 
-    this.naviListener.subscribe((guistate:tGuistate)=>{
-      //add logic
-      let guidance = this.createGuidance(guistate) 
-       
-      console.log('sending guidance ')
-      this.naviSender.next(guidance )  
-      
-    })
+  feedbackHistory: UserFeedback[] =[]
+  constructor(
+    private _auth: AuthService
+  ) {
+    this.listenForCheckins()
   }
+
   createGuidance(state:tGuistate):tGuiguidance{
     let result:tGuiguidance
     switch (state){
@@ -56,6 +54,17 @@ export class UIService implements iGuidance{
     return this.naviSender
   }
 
+  listenForCheckins(){
+    this.naviListener.subscribe((guistate:tGuistate)=>{
+      if (this._auth.isAuthenticated()){
+        let guidance = this.createGuidance(guistate) 
+        
+        console.log('sending guidance ')
+        this.naviSender.next(guidance )  
+      }
+    })
+  }
+
   checkin(state:tGuistate) {
     console.log("notified: "+tGuistate[state])
     this.naviListener.next(state)
@@ -65,21 +74,32 @@ export class UIService implements iGuidance{
     return this.notifySender
   }
   
-  getMessageHistory(): UserFeedback[]{
-    return this.msgHistory
-  }
-  
-  nextNotification(feedback: UserFeedback){
+  // addToHistory(feedback: UserFeedback){
+  //    if (this._auth.isAuthenticated() && feedback.message)
+  //       this.feedbackHistory.unshift(feedback) //add reverse order
+  // }
+
+  // getMessageHistory():UserFeedback[]{
+  //   return this.feedbackHistory.filter(x=>x.message !== undefined)
+  // }
+
+  ensureMinTimeInBetween(): number{
      let interval =  Date.now() - this.timeLastMsg
-      let timeout=interval > this.mininterval ? 0: this.mininterval - interval 
-      this.timeLastMsg=Date.now()
-    console.log("notfying after "+timeout)
-      setTimeout(() => {
-        this.notifySender.next(feedback)
-      }, timeout);
-      if (feedback.message)
-        this.msgHistory.unshift(feedback)
+     let timeout=interval > this.mininterval ? 0: this.mininterval - interval 
+     //keep admin asap
+     this.timeLastMsg=Date.now() + timeout
+
+     return timeout
   }
+
+  nextNotification(feedback: UserFeedback){
+    let timeout = this.ensureMinTimeInBetween()
+    console.log("notfying after " + timeout)
+    setTimeout(()=> this.notifySender.next(feedback), timeout)
+
+ //   this.addToHistory(feedback)
+  }
+
   deletedIcon(){
     this.nextNotification(new UserFeedback('Removed', null))
   }

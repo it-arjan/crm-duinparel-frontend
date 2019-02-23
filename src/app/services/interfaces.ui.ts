@@ -12,7 +12,7 @@ export interface iGuidance {
   guider(): Subject<tGuiguidance>
   checkin(state:tGuistate)
   notifier()
-  getMessageHistory()
+  //getMessageHistory()
   deletedIcon()
   cancelledIcon()
   successIcon()
