@@ -8,4 +8,5 @@ export interface iBackendTasks {
     writeConfig(settings:ConfigSetting[])
     writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>
     getLogs(): Promise<Array<LogEntry>> 
+    exitProgram()
 }

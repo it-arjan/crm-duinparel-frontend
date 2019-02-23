@@ -70,7 +70,11 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     if (this._auth.isAuthenticated){
       this.notificationState = 'in'
       this.processFeedback(feedback)
-      //Trigger state change after view is rendered
+      // Start adding warnings/ errors to history after logon
+      if (this._auth.isAuthenticated() && feedback.message && feedback.type !='info') {
+        this.mfList.unshift(this.msgFeedback) 
+      }
+            //Trigger state change after view is rendered
       setTimeout(()=>{ this.notificationState = 'out' },1000)
       this._cd.detectChanges() //hack to pickup the first message
     }
@@ -129,9 +133,6 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         this.msgFeedback=new MessageFeedback('danger',feedback.message);
         break;
     }
-    // Start adding warnings/ errors to history after logon
-    if (this._auth.isAuthenticated() && this.msgFeedback && this.msgType !='info') 
-      this.mfList.unshift(this.msgFeedback) 
   }
 
   exitElectron(){ //todo make method on service 

@@ -25,6 +25,7 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
     let result:number=Math.random() * 2000
     return result
   }
+
   isAuthenticated(): boolean {
     //this._ui.info('running fake auth')
     return true
@@ -206,4 +207,8 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
     })
     return promise    
   }  
+  
+  exitProgram(){
+    //do nothing
+  }
 }
