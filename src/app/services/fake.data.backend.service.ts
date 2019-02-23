@@ -18,19 +18,34 @@ import { LogEntry } from '../models/logentry.model';
 
 export class FakeBackendService implements iDataPersist, iSecurity, iBackendTasks {
 
-  constructor(
-    //private _ui: UIService
-
-  ){}
+  constructor(){} //do not add UiService becuase of circular dependency with AuthService
+  
+  //exec all methods with random delay between 0-2sec
+  computeDelay(): number {
+    let result:number=Math.random() * 2000
+    return result
+  }
   isAuthenticated(): boolean {
     //this._ui.info('running fake auth')
     return true
   }
   logOn(pwd: string): Promise<string> {
-    throw new Error("Method not implemented.");
-  }
+      let promise=  new Promise<string>((resolve, reject) => {
+        let result = ''
+        setTimeout(() => {
+          resolve(result)
+        }, this.computeDelay()); 
+      })
+      return promise
+    }
   changePassword(oldpass: string, newpass: string): Promise<securityResult> {
-    throw new Error("Method not implemented.");
+      let promise=  new Promise<securityResult>((resolve, reject) => {
+        let result:securityResult = {success: true, error: null}
+        setTimeout(() => {
+          resolve(result)
+        }, this.computeDelay()); 
+      })
+      return promise
   }
   
   customers: Customer[]
@@ -114,7 +129,7 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
     if (!this.customers) this.createData()
     if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
 
-    setTimeout(x=> this.dataReplay.next({customers: this.customers, mailings: this.mailings, error: null}), 2000) 
+    setTimeout(x=> this.dataReplay.next({customers: this.customers, mailings: this.mailings, error: null}), this.computeDelay()) 
     
     return this.dataReplay
   }
@@ -127,14 +142,18 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
     
     setTimeout(x=> {
       this.custReplay.next({error: null})
-    }, 2000) 
+    }, this.computeDelay()) 
+    
     return this.custReplay
   }
 
   private bookReplay : ReplaySubject<tDataResult>= new ReplaySubject<tDataResult>()
   persistBooking(book: Booking, type: tPersist): ReplaySubject<tDataResult>  {
     //we dont use booking.id in FE
-    this.bookReplay.next({error: null})
+    setTimeout(() => {
+      this.bookReplay.next({error: null})
+    }, this.computeDelay())
+
     return this.bookReplay
   }
 
@@ -142,7 +161,11 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
   persistMailing(mail: Mailing, type: tPersist): ReplaySubject<tDataResult> {
     //set a new id on insert
     if (type === tPersist.Insert) mail.id=this.getNextAvailableMailingId()
-    this.mailReplay.next({error: null})
+
+    setTimeout(() => {
+      this.mailReplay.next({error: null})
+    }, this.computeDelay());
+
     return this.mailReplay
   }
 
@@ -154,7 +177,9 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
   readConfig(): Promise<ConfigSetting[]> {
     let promise: Promise<ConfigSetting[]> =  new Promise<ConfigSetting[]>((resolve, reject) => {
       let result: ConfigSetting[] = [new ConfigSetting('You are running','on a fake backend!', null)]
-      resolve(result)
+      setTimeout(() => {
+          resolve(result)
+        }, this.computeDelay());
     })
     return promise
   }
@@ -165,7 +190,9 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
 
   writeWordBooking(customer: Customer, booking: Booking): Promise<{ wordFilename: string, wordFolder: string; }> {
     let promise =  new Promise<{ wordFilename: string, wordFolder: string }>((resolve, reject) => {
-      resolve({ wordFilename: 'writeWordBooking not implemented', wordFolder: 'in fake backend.' })
+      setTimeout(() => {
+        resolve({ wordFilename: 'writeWordBooking not implemented', wordFolder: 'in fake backend.' })
+      }, this.computeDelay());
     })
     return promise
   }
@@ -173,7 +200,9 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
   getLogs(): Promise<LogEntry[]> {
     let promise =  new Promise<LogEntry[]>((resolve, reject) => {
       let result = [new LogEntry('fake file','','No log files in a fake backend!')]
-      resolve(result)
+      setTimeout(() => {
+        resolve(result)
+      }, this.computeDelay());
     })
     return promise    
   }  
