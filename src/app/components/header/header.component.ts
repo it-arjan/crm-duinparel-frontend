@@ -128,8 +128,8 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         this.msgFeedback=new MessageFeedback('danger',feedback.message);
         break;
     }
-    // Start adding msgs to history after logon
-    if (this._auth.isAuthenticated() && this.msgFeedback) 
+    // Start adding warnings/ errors to history after logon
+    if (this._auth.isAuthenticated() && this.msgFeedback && this.msgType !='info') 
       this.mfList.unshift(this.msgFeedback) 
   }
 
