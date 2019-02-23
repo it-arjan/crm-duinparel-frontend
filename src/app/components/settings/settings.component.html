@@ -16,7 +16,7 @@
               </div>
         </ng-template>
       </ngb-tab>
-    <ngb-tab id="changepwd">
+    <ngb-tab id="changepwd" *ngIf="loggedOn">
       <ng-template ngbTabTitle><b>Wachtwoordbeheer</b></ng-template>
       <ng-template ngbTabContent>
         <div class="changepwd">
@@ -66,10 +66,10 @@
         </div>
        </ng-template>
     </ngb-tab>
-    <ngb-tab id="db">
-      <ng-template ngbTabTitle><b>test db</b></ng-template>
+    <ngb-tab id="Csv" *ngIf="loggedOn">
+      <ng-template ngbTabTitle><b>Csv Import</b></ng-template>
        <ng-template ngbTabContent>
-         <button type="button" class="btn btn-outline-secondary" (click)="testUiBug()">Test db</button>
+         <p>komt na de job</p>
        </ng-template>
     </ngb-tab>
   </ngb-tabset>
