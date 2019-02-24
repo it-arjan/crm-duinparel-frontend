@@ -1,16 +1,12 @@
+import { ufType } from '../services/interfaces.ui';
+
 export class IconFeedback{
-    constructor(iconType:string){
-        this.iconClasses=this.getIcon(iconType)
+    constructor(iconType:ufType){
     }
-    iconClasses:string;
-    getIcon(iconType:string){
+    classList:string;
+    getClassList(iconType:ufType){
         switch (iconType){
-          case 'Success': 
-            return 'fa-check crm-success'
-          case 'Cancelled': 
-            return 'fa-hand-paper-o crm-success'
-          case 'Removed': 
-            return 'fa-hand-o-down crm-success'
+
         }
     }
 }

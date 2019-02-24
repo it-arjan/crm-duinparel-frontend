@@ -7,6 +7,12 @@ export interface tGuiguidance {
   timeToGo: tComponentNames[]
   wakeUp: tComponentNames[]
 }
+export enum ufType {
+  iconRemoved, iconCancelled, iconSuccess, msgInfo, msgWarn, msgError
+}
+export enum mfType {
+  info, warning, danger
+}
 export interface iGuidance {
 
   guider(): Subject<tGuiguidance>

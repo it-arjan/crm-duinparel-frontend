@@ -49,8 +49,8 @@ export class BookingComponent implements OnInit {
   ngOnInit() {
   this._activatedRoute.params.subscribe( //route subscriptions are cleaned up automatically
     (params: Params) => {
-      this.custId = +params['custid'];
-      this.customer = this._ds.getCustomer(this.custId);  
+      this.custId = +params['custid']
+      this.customer = this._ds.getCustomer(this.custId)
     });
     this.initForm()
   }

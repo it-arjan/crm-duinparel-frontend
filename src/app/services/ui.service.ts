@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { UserFeedback } from '../models/UserFeedback.model';
-import { tGuistate, tGuiguidance, tComponentNames, iGuidance } from './interfaces.ui';
+import { tGuistate, tGuiguidance, tComponentNames, iGuidance, ufType } from './interfaces.ui';
 import { AuthService } from './auth.service';
 import { FakeBackendService } from './fake.data.backend.service';
 
@@ -75,15 +75,6 @@ export class UIService implements iGuidance {
     return this.notifySender
   }
   
-  // addToHistory(feedback: UserFeedback){
-  //    if (this._auth.isAuthenticated() && feedback.message)
-  //       this.feedbackHistory.unshift(feedback) //add reverse order
-  // }
-
-  // getMessageHistory():UserFeedback[]{
-  //   return this.feedbackHistory.filter(x=>x.message !== undefined)
-  // }
-
   ensureMinTimeInBetween(): number{
      let interval =  Date.now() - this.timeLastMsg
      let timeout=interval > this.mininterval ? 0: this.mininterval - interval 
@@ -97,26 +88,24 @@ export class UIService implements iGuidance {
     let timeout = this.ensureMinTimeInBetween()
     console.log("notfying after " + timeout)
     setTimeout(()=> this.notifySender.next(feedback), timeout)
-
- //   this.addToHistory(feedback)
   }
 
   deletedIcon(){
-    this.nextNotification(new UserFeedback('Removed', null))
+    this.nextNotification(new UserFeedback(ufType.iconRemoved, null))
   }
   cancelledIcon(){
-    this.nextNotification(new UserFeedback('Cancelled', null))
+    this.nextNotification(new UserFeedback(ufType.iconCancelled, null))
   }
   successIcon(){
-    this.nextNotification(new UserFeedback('Success', null))
+    this.nextNotification(new UserFeedback(ufType.iconSuccess, null))
   }
   info(msg:string){
-    this.nextNotification(new UserFeedback('Info', msg))
+    this.nextNotification(new UserFeedback(ufType.msgInfo, msg))
   }
   warning(msg:string){
-    this.nextNotification(new UserFeedback('Warn', msg))
+    this.nextNotification(new UserFeedback(ufType.msgWarn, msg))
   }
   error(msg:string){
-    this.nextNotification(new UserFeedback('Error', msg))
+    this.nextNotification(new UserFeedback(ufType.msgError, msg))
   }
 }

@@ -13,6 +13,7 @@ import { BackendService } from 'src/app/services/backend.service';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { AuthService } from 'src/app/services/auth.service';
 import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
+import { ufType } from 'src/app/services/interfaces.ui';
 
 @Component({
   selector: 'app-header',
@@ -37,14 +38,11 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     ) { }
   notificationState:string
 
-  iconFeedback:IconFeedback
-  showIconFeedback: boolean
-  
-  msgFeedback:MessageFeedback
-  showMsgFeedback: boolean
-  msgType:string
+  currentFeedback:UserFeedback
+  showAsIcon: boolean
+  showAsMsg: boolean
 
-  mfList:MessageFeedback[]=[]
+  ufList:UserFeedback[]=[]
   @ViewChild('notifications') notifRef: ElementRef
   notifClicked=false
 
@@ -57,7 +55,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     console.log('ngOnInit ')
     this._ui.notifier()
       .subscribe((feedback:UserFeedback)=>{
-        this.onUINotification(feedback)
+        if (this._auth.isAuthenticated) this.onUINotification(feedback)
     })
 
     this._ds.dataReadyReplay().pipe(take(1)) //auto-unsubscribe
@@ -67,17 +65,16 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   }
 
   onUINotification(feedback:UserFeedback){
-    if (this._auth.isAuthenticated){
       this.notificationState = 'in'
-      this.processFeedback(feedback)
+      this.currentFeedback=feedback
+      //this.processFeedback(feedback)
       // Start adding warnings/ errors to history after logon
-      if (this._auth.isAuthenticated() && feedback.message && feedback.type !='info') {
-        this.mfList.unshift(this.msgFeedback) 
+      if (feedback.toHistory()) {
+        this.ufList.unshift(feedback) 
       }
             //Trigger state change after view is rendered
       setTimeout(()=>{ this.notificationState = 'out' },1000)
       this._cd.detectChanges() //hack to pickup the first message
-    }
   }
 
   onClickNotifications(){
@@ -108,32 +105,28 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     //this._ds.dataReady().unsubscribe()
   }
 
-  processFeedback(feedback:UserFeedback){
-    switch (feedback.type){
-      case 'Removed':
-      case 'Cancelled':
-      case 'Success': 
-        this.showIconFeedback=true
-        this.showMsgFeedback=false
-        this.iconFeedback=new IconFeedback(feedback.type);
-        break;
-      case 'Info':
-        this.showIconFeedback=false
-        this.showMsgFeedback=true
-        this.msgFeedback=new MessageFeedback('info',feedback.message);
-        break;
-      case 'Warn':
-        this.showIconFeedback=false
-        this.showMsgFeedback=true
-        this.msgFeedback=new MessageFeedback('warning ',feedback.message);
-        break;
-      case 'Error': 
-        this.showIconFeedback=false
-        this.showMsgFeedback=true
-        this.msgFeedback=new MessageFeedback('danger',feedback.message);
-        break;
-    }
-  }
+  // processFeedback(feedback:UserFeedback){
+  //   switch (feedback.type){
+  //     case ufType.iconRemoved:
+  //     case ufType.iconCancelled:
+  //     case ufType.iconSuccess: 
+  //       this.showAsIcon=true
+  //       this.showAsMsg=false
+  //       break;
+  //     case ufType.msgInfo:
+  //       this.showAsIcon=false
+  //       this.showAsMsg=true
+  //       break;
+  //     case ufType.msgWarn:
+  //       this.showAsIcon=false
+  //       this.showAsMsg=true
+  //       break;
+  //     case ufType.msgError: 
+  //       this.showAsIcon=false
+  //       this.showAsMsg=true
+  //       break;
+  //   }
+  // }
 
   exitElectron(){ //todo make method on service 
     const modalRef = this._modalService.open(ModalConfirmComponent);

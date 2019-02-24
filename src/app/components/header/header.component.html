@@ -26,25 +26,25 @@
       <div class="dropdown">
         <i 
         (click)="onClickNotifications()" 
-        *ngIf="mfList.length > 0"
+        *ngIf="ufList.length > 0"
         class="fa fa-info-circle" aria-hidden="true"></i>
         <div id="myDropdown" #notifications class="dropdown-content" >
-          <a *ngFor="let mf of mfList">{{mf.message}}</a>
+          <a *ngFor="let mf of ufList">{{mf.message}}</a>
         </div>
       </div>
     </div>
 
     <div>
-        <ngb-alert [type]="msgFeedback.type" 
+        <ngb-alert [type]="currentFeedback.classList" 
         [dismissible]="false"
-        *ngIf="showMsgFeedback == true"
+        *ngIf="currentFeedback && currentFeedback.showAsMsg"
         [@feedbackAnimation]="notificationState"
-        >{{msgFeedback.message}}</ngb-alert>
+        >{{currentFeedback.message}}</ngb-alert>
       <span></span>
       <i class="fa crm-icon" 
-      [ngClass]="iconFeedback.iconClasses" 
+      [ngClass]="currentFeedback.classList" 
       [@feedbackAnimation]="notificationState" 
-      *ngIf="showIconFeedback == true"
+      *ngIf="currentFeedback && currentFeedback.showAsIcon"
       aria-hidden="true"></i>
 
     </div>
