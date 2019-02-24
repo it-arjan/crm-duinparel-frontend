@@ -50,7 +50,10 @@ export class BookingComponent implements OnInit {
   this._activatedRoute.params.subscribe( //route subscriptions are cleaned up automatically
     (params: Params) => {
       this.custId = +params['custid']
-      this.customer = this._ds.getCustomer(this.custId)
+      this._ds.dataReadyReplay().pipe(take(1))
+       .subscribe(()=>{
+          this.customer = this._ds.getCustomer(this.custId)
+       })
     });
     this.initForm()
   }

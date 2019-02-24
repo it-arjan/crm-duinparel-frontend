@@ -80,7 +80,7 @@ export class DataService {
   //     return this.customers.slice();
   // }
   
-  getCustomer(id:number): Customer{
+  getCustomer(id:number): Customer {
     return this.customers.find(x=>x.id === id)
   }
   

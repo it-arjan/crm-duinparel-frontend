@@ -4,7 +4,7 @@
 <ng-template #insertMode>
   <h2>Invoeren nieuwe klant</h2>
 </ng-template>
-<form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()" *ngIf="dataAvailable">
     <div class="row">
         <div class="col-md-5">
           <div class="form-group">

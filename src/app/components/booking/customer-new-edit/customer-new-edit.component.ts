@@ -31,19 +31,26 @@ export class CustomerNewEditComponent implements OnInit {
   editMode:boolean;
   custId:number;
   customer: Customer;
-  
+  dataAvailable=false
   ngOnInit() {
+    //this.initForm()
     this._activatedRoute.params.subscribe( //subscription is cleanedup automatically in this case
       (params: Params) => {
         this.editMode = params['custid'] != null;
         if (this.editMode){
           //console.log('editMode')
           this.custId = +params['custid'];
-          this.customer = this._ds.getCustomer(this.custId);  
+          this._ds.dataReadyReplay().pipe(take(1))
+          .subscribe(()=>{
+              this.customer = this._ds.getCustomer(this.custId)
+              this.initForm()
+              this.dataAvailable=true
+          })
         } else{
+          this.initForm()
+          this.dataAvailable=true
           this.custId=-1
         }
-        this.initForm()
       })
   }
 
