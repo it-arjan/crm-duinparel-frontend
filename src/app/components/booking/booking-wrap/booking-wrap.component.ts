@@ -11,7 +11,7 @@ import { take } from 'rxjs/operators';
 export class BookingWrapComponent implements OnInit, OnDestroy { //todo rename to  customer-booking-wrap
 
   constructor(private _ui: UIService) { }
-  outletActive=true
+  outletActive=false
   outlet_componentnames:tComponentNames[]=[tComponentNames.newEditCustomer, tComponentNames.listBooking]
   ngOnInit() {
     this._ui.guider()//.pipe(take(1)) 
