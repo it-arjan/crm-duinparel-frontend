@@ -166,48 +166,58 @@ export class DataService {
     this.searchResult.length=0;
   }
 
-  selectMatchingBookings( cust: Customer, 
-            monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
-            proptypesArg: string[], bookTypesArg: string[]) {
- 
+  bookingMatches(book: Booking,
+            matchingProptypes: string[], 
+            matchingBooktypes: string[],
+            msecNotVisitedFrom: number, 
+            msecNotVisitedUntil: number): boolean {
+
+    let hasMachingBookings = matchingProptypes.includes(book.propcode) && matchingBooktypes.includes(book.booktype)
+    if (hasMachingBookings){
+      //Refine by calculate if cust has a booking older then  
+      let diff_msec = Date.now() - book.arrive 
+      hasMachingBookings = diff_msec > msecNotVisitedFrom
+      if (hasMachingBookings && msecNotVisitedUntil > 0) 
+        hasMachingBookings = diff_msec < msecNotVisitedUntil
+    }
+    return hasMachingBookings
+  }
+
+  selectMatchingBookings( cust: Customer, msecNotVisitedFrom: number, msecNotVisitedUntil: number, 
+                          allowedProptypes: string[], allowedBooktypes: string[]) {
       let matchingBookings = cust.bookings.filter((book) => {
-      let hasBooking = proptypesArg.includes(book.propcode) && bookTypesArg.includes(book.booktype)
-      if (hasBooking){
-        //Refine by calculate if cust has a booking older then  
-        let diff = Date.now() - book.arrive 
-        hasBooking = diff >= monthsNotVisitedFrom
-        if (hasBooking && monthsNotVisitedUntil) 
-          hasBooking = diff < monthsNotVisitedUntil
-      }
-      return hasBooking
-    })
-    return matchingBookings
+        return this.bookingMatches(book, allowedProptypes, allowedBooktypes, msecNotVisitedFrom, msecNotVisitedUntil)
+      }) //cust.bookings.filter
+    return matchingBookings 
   }
 
   searchEmails(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
-              monthsNotMailedFrom:number, monthsNotMailedUntil:number, 
+              monthsNotMailedFrom:number, totalVisits:number, 
               proptypesArg: string[],
               bookTypesArg: string[]){
     //convert moths to msec
-    let msecNotVisitedFrom = monthsNotVisitedFrom !== undefined ? Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : undefined
-    let msecNotMailedUntil = monthsNotVisitedFrom !== undefined ? Math.floor(monthsNotMailedUntil * 1000 * 3600 * 24 * 30.5): undefined
-    let msecNotMailedFrom = monthsNotVisitedFrom !== undefined ?  Math.floor(monthsNotMailedFrom * 1000 * 3600 * 24 * 30.5): undefined
-    let msecNotMaileduntil =monthsNotVisitedFrom !== undefined ?  Math.floor(monthsNotMailedUntil * 1000 * 3600 * 24 * 30.5): undefined
+    let msecNotVisitedFrom = monthsNotVisitedFrom   ?  Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : -1
+    let msecNotVisitedUntil = monthsNotVisitedUntil   ? Math.floor(totalVisits * 1000 * 3600 * 24 * 30.5) : -1
+    let msecNotMailedFrom = monthsNotMailedFrom     ?  Math.floor(monthsNotMailedFrom * 1000 * 3600 * 24 * 30.5) : -1
+    let visitCount = totalVisits || -1
 
     let batchArr:Array<EmailBatch>=[]
     if (this.customers){
-      //simply filter customers
-      let custHits1 =this.customers.filter((cust: Customer) => {
+      // simply filter customers
+      let custHits =this.customers.filter((cust: Customer) => {
         // First see if this customer has bookings of this book-type and propcode
         // any booking will do, it can be too old for the criteria
-        let matchingBookings = this.selectMatchingBookings(cust, msecNotVisitedFrom, msecNotMailedUntil, proptypesArg, bookTypesArg)
-        return matchingBookings.length>0
+        let hasVisitedEnough = visitCount < 0 || cust.bookings.length >= visitCount
+        let matchingBookings = hasVisitedEnough  
+                              ? this.selectMatchingBookings(cust, msecNotVisitedFrom, msecNotVisitedUntil, proptypesArg, bookTypesArg)
+                              : []
+        return matchingBookings.length > 0
       })
       
       //Refine by mailing criteria
       //Not optimal in performance but better for maintenance
       if (monthsNotMailedFrom){
-        custHits1 =custHits1.filter((cust) => {
+        custHits =custHits.filter((cust) => {
         let included=false
           //get mailings including this customer
           let mailings_thisCust = this.mailings.filter(m=>m.customerids.includes(cust.id))
@@ -217,9 +227,6 @@ export class DataService {
               let mostRecentMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
               let mdiff = Date.now() - mostRecentMail.sent
               included = mdiff >= msecNotMailedFrom
-              if (included && msecNotMaileduntil) {
-                included = mdiff <= msecNotMaileduntil
-              }
           }
         
         return included
@@ -234,7 +241,7 @@ export class DataService {
       let i=1
       let batchsize=99
       let batch : EmailBatch = new EmailBatch(batchsize)
-      for (let c of custHits1){
+      for (let c of custHits){
         if (i>batchsize){
           batchArr.push(batch)
           batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting

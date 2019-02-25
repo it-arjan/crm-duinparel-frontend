@@ -30,10 +30,10 @@ export class MailingComponent implements OnInit {
   bookTypes = Globals.bookTypes
   selectedPropCodes: Array<string> = []
   selectedBookTypes: Array<string> = []
-  visitedSinceFrom=24 //todo maak setting
-  visitedSinceUntil=0 //todo maak setting
+  visitedFrom=24 //todo maak setting
+  visitedUntil=0 //todo maak setting
   mailedSinceFrom=0  //todo maak setting
-  mailedSinceUntil=0 //todo maak setting
+  totalVisists=0 //todo maak setting
   mailingRemembered=false
   batchesCopied_Idx: number[] = []
 
@@ -70,10 +70,10 @@ export class MailingComponent implements OnInit {
 
   initForm(){
     this.reactiveForm = new FormGroup({
-      'visitedSinceFrom': new FormControl(this.visitedSinceFrom,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
-      'visitedSinceUntil': new FormControl(this.visitedSinceUntil>0?this.visitedSinceUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
+      'visitedFrom': new FormControl(this.visitedFrom,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
+      'visitedUntil': new FormControl(this.visitedUntil>0?this.visitedUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'mailedSinceFrom': new FormControl(this.mailedSinceFrom>0?this.mailedSinceFrom:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
-      'mailedSinceUntil': new FormControl(this.mailedSinceUntil>0?this.mailedSinceUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
+      'totalVisists': new FormControl(this.totalVisists>0?this.totalVisists:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'propType': new FormControl('',[Validators.required]),
       'bookTypeCheckboxes': new FormGroup({
        
@@ -94,20 +94,20 @@ export class MailingComponent implements OnInit {
   }
 
   onSubmit(){
-    this.visitedSinceFrom = this.reactiveForm.get('visitedSinceFrom').value;
-    this.visitedSinceUntil = this.reactiveForm.get('visitedSinceUntil').value;
+    this.visitedFrom = this.reactiveForm.get('visitedFrom').value;
+    this.visitedUntil = this.reactiveForm.get('visitedUntil').value;
     this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value;
-    this.mailedSinceUntil = this.reactiveForm.get('mailedSinceUntil').value;
+    this.totalVisists = this.reactiveForm.get('totalVisists').value;
 
     this.selectedPropCodes = Globals.propType2PropCode(this.reactiveForm.get('propType').value )
     this.setSelectedBooktypes(<FormGroup>this.reactiveForm.get('bookTypeCheckboxes'))
 
-    // console.log(this.visitedSinceFrom,this.visitedSinceUntil,
-    //   this.mailedSinceFrom,this.mailedSinceUntil,
+    // console.log(this.visitedFrom,this.visitedUntil,
+    //   this.mailedSinceFrom,this.totalVisists,
     //   this.selectedPropCodes, this.selectedBookTypes)
       
-    this.selectedEmails = this._ds.searchEmails(this.visitedSinceFrom,this.visitedSinceUntil,
-                                                this.mailedSinceFrom,this.mailedSinceUntil,
+    this.selectedEmails = this._ds.searchEmails(this.visitedFrom,this.visitedUntil,
+                                                this.mailedSinceFrom,this.totalVisists,
                                                 this.selectedPropCodes, this.selectedBookTypes)
    // console.log(this.selectedEmails)
     }
