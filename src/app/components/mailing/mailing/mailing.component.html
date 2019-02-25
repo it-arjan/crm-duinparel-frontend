@@ -57,19 +57,19 @@
         <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Zoek</button></div>
       </div>
     </form>
-<div class="row border-top pt-2 vcenter rounded" *ngIf="selectedEmails">
-    <div class="col-md-6 pad">Deze selectie bestaat uit {{countSelectedEmails()}} adressen, onderverdeeld in {{selectedEmails.length}} batches.</div> 
+<div class="row border-top pt-2 vcenter rounded" *ngIf="selectionAsBatches">
+    <div class="col-md-6 pad">Deze selectie bestaat uit {{countSelectedEmails()}} adressen, onderverdeeld in {{selectionAsBatches.length}} batches.</div> 
     <div class="col-md-4" >
       <button #b1 class="btn btn-outline-primary pad space" type="button" 
-        *ngIf="!mailingRemembered" (click)="rememberMailing()" 
+        *ngIf="selectionAsBatches.length > 0 && !mailingRemembered" (click)="rememberMailing()" 
         data-toggle="tooltip" title="Klik hierop als je daadwerkelijk een mail stuurt naar deze adressen, niet vergeten!">Onthoud deze selectie</button>
       <button #b2 class="btn btn-outline-primary pad space" type="button" 
         *ngIf="mailingRemembered" (click)="undoRememberMailing()" 
         data-toggle="tooltip" title="Dit kan alleen nu nog">Maak onthouden ongedaan</button>
     </div>
 </div>
-<div class="row border-top pt-2 vcenter rounded" *ngFor="let batch of selectedEmails; let idx=index">
-    <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.emails}}</div>
+<div class="row border-top pt-2 vcenter rounded" *ngFor="let batch of selectionAsBatches; let idx=index">
+    <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.getEmailCsv()}}</div>
   <div class="col-md-4" >
     <button 
         class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)" 

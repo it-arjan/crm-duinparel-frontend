@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
-import { EmailBatch } from '../models/emailbatch.model';
+import { CustomerBatch } from '../models/customerbatch.model';
 import { Mailing } from '../models/mailing.model';
 import { FakeBackendService } from './fake.data.backend.service';
 import { tBulkdataResult, tPersist, tDataResult } from './interfaces.persist';
@@ -162,6 +162,37 @@ export class DataService {
     return  this.persistReady$
   }
 
+  addMailing(custList: number[]) : ReplaySubject<tDataResult>{
+   let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+    let mail = new Mailing(-1, Date.now(), '', custList.slice())
+    this._ps.persistMailing(mail, tPersist.Insert).pipe(take(1))
+      .subscribe((dataResult)=>{
+        if (!dataResult.error) {
+          this.mailings.push(mail)
+        }
+        result$.next(dataResult)
+      })
+      return result$
+  }
+  getLastMailing():Mailing {
+    this.mailings.sort((m1,m2) =>{
+      return m1.id-m2.id
+    })
+    console.log(this.mailings)
+    return this.mailings[this.mailings.length-1]
+  }
+  removeMailing(mail:Mailing) : ReplaySubject<tDataResult>{
+    let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+    this._ps.persistMailing(mail, tPersist.Delete).pipe(take(1))
+      .subscribe((dataResult)=>{
+        if (!dataResult.error) {
+          let idx = this.mailings.indexOf(mail)
+          this.mailings.splice(idx,1)
+        }
+        result$.next(dataResult)
+      })
+      return result$
+  }
   clearCustomerSearch(){
     this.searchResult.length=0;
   }
@@ -232,10 +263,11 @@ export class DataService {
       } //if (this.customers)
       return result
   }
+
   searchEmails(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
               monthsNotMailedFrom:number, totalVisits:number, 
               selectedProptypes: string[],
-              selectedBooktypes: string[]){
+              selectedBooktypes: string[]) : CustomerBatch[]{
     //convert moths to msec
     let msecNotVisitedFrom = monthsNotVisitedFrom   ?  Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : -1
     let msecNotVisitedUntil = monthsNotVisitedUntil   ? Math.floor(totalVisits * 1000 * 3600 * 24 * 30.5) : -1
@@ -246,22 +278,20 @@ export class DataService {
     custHits = this.findCustomers(msecNotVisitedFrom, msecNotVisitedUntil, msecNotMailedFrom, visitCount, selectedProptypes, selectedBooktypes)
 
     
-    let batchArr:EmailBatch[]=[]
+    let batchArr:CustomerBatch[]=[]
 
     let i=1
     let batchsize=99
-    let batch : EmailBatch = new EmailBatch(batchsize)
+    let batch : CustomerBatch = new CustomerBatch(batchsize)
     for (let c of custHits){
-      if (i>batchsize){
+      if (!batch.hasSpace()){
         batchArr.push(batch)
-        batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
-        i=1
+        batch = new CustomerBatch(batchsize)// 100 = max size hotmail. todo make config setting
       }
-      batch.add(c.email)
-      i++
+      batch.add(c)
     } // for
     // add last open batch
-    if (batch.emails.length > 0) batchArr.push(batch)
+    if (batch.hasItems()) batchArr.push(batch)
 
     return batchArr
   }
