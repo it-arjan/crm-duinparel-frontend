@@ -30,8 +30,7 @@ export class DataService {
   public searchResult: Array<Customer>=[]; // temp, will come out of observable
 
   private dataReady$ = new ReplaySubject<tDataResult>()
-  private persistReady$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  searchCompleted$: BehaviorSubject<Customer[]>= new BehaviorSubject<Customer[]>([])
+  private searchCompleted$: BehaviorSubject<Customer[]>= new BehaviorSubject<Customer[]>([])
   emailSearchTerm:string 
 
   getData(): void {
@@ -83,30 +82,36 @@ export class DataService {
   getCustomer(id:number): Customer {
     return this.customers.find(x=>x.id === id)
   }
-  
+
+  removeFromSearchResult(cust: Customer){
+    let idx = this.searchResult.indexOf(cust)
+    if (idx >=0) {
+      this.searchResult.splice(idx, 1)
+      this.searchCompleted$.next(this.searchResult)
+    }
+  }
+
   removeCustomerCascading(cust: Customer): ReplaySubject<tDataResult>{
+    let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
 
     this._ps.persistCustomer(cust, tPersist.Delete).pipe(take(1))
     .subscribe(result=>{
       if (!result.error) {
         //remove from searchresult as well
-        let idx = this.searchResult.indexOf(cust)
-        if (idx >=0) {
-          this.searchResult.splice(idx, 1)
-          this.searchCompleted$.next(this.searchResult)
-        }
-        
-        idx = this.customers.indexOf(cust)
+        this.removeFromSearchResult(cust)
+        //remove object
+        let idx = this.customers.indexOf(cust)
         if (idx >=0) this.customers.splice(idx, 1)
  
       }
-      this.persistReady$.next(result)
+      result$.next(result)
     })
-    return this.persistReady$
+    return result$
   }
 
   updateCustomer(id:number, custCopy:Customer): ReplaySubject<tDataResult> {
     //object is same everywhere, only update it in customers
+    let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
     let realCust: Customer = this.customers.find(x=>x.id==custCopy.id)
     custCopy.id=realCust.id
       // persist the copy, if succes update the object
@@ -115,14 +120,15 @@ export class DataService {
               if (!result.error) {
                 realCust.consumeCustomerShallow(custCopy)
               }
-              this.persistReady$.next(result)
+              result$.next(result)
             })
-    return  this.persistReady$
+    return  result$
   }
   
   addCustomer(newCust:Customer, navigateTo: string) : ReplaySubject<tDataResult>{
     // persist
-    this._ps.persistCustomer(newCust, tPersist.Insert).pipe(take(1))
+    let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+   this._ps.persistCustomer(newCust, tPersist.Insert).pipe(take(1))
       .subscribe((result)=>{
           if (!result.error) {
             this.customers.push(newCust);
@@ -130,26 +136,28 @@ export class DataService {
               this.searchResult.unshift(newCust)
               this.searchCompleted$.next(this.searchResult)
           }
-          this.persistReady$.next(result)
+          result$.next(result)
       })
-      return this.persistReady$
+      return result$
     }
 
   addBooking(booking:Booking): ReplaySubject<tDataResult> {
     // persist
+   let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
     this._ps.persistBooking(booking, tPersist.Insert).pipe(take(1))
     .subscribe((result) =>{
         if (!result.error) {
           let realCust = this.customers.find(x=>x.id==booking.custid)
           realCust.bookings.unshift(booking)
         }
-        this.persistReady$.next(result)
+        result$.next(result)
     })
-    return this.persistReady$
+    return result$
   }
 
   removeBooking(booking:Booking) : ReplaySubject<tDataResult> {
     // persist
+   let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
     this._ps.persistBooking(booking, tPersist.Delete).pipe(take(1))
     .subscribe((result) =>{
         if (!result.error) {
@@ -157,9 +165,9 @@ export class DataService {
           let idx = cust.bookings.indexOf(booking)
           if (idx >=0) cust.bookings.splice(idx, 1)
         }
-      this.persistReady$.next(result)
+      result$.next(result)
     })
-    return  this.persistReady$
+    return  result$
   }
 
   addMailing(custList: number[]) : ReplaySubject<tDataResult>{
