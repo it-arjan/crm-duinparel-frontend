@@ -167,14 +167,15 @@ export class DataService {
   }
 
   bookingMatches(book: Booking,
-            matchingProptypes: string[], 
-            matchingBooktypes: string[],
+            allowedProptypes: string[], 
+            allowedBooktypes: string[],
             msecNotVisitedFrom: number, 
             msecNotVisitedUntil: number): boolean {
 
-    let hasMachingBookings = matchingProptypes.includes(book.propcode) && matchingBooktypes.includes(book.booktype)
+    //does property/bookType match?
+    let hasMachingBookings = allowedProptypes.includes(book.propcode) && allowedBooktypes.includes(book.booktype)
     if (hasMachingBookings){
-      //Refine by calculate if cust has a booking older then  
+      //Refine by date  
       let diff_msec = Date.now() - book.arrive 
       hasMachingBookings = diff_msec > msecNotVisitedFrom
       if (hasMachingBookings && msecNotVisitedUntil > 0) 
@@ -190,68 +191,78 @@ export class DataService {
       }) //cust.bookings.filter
     return matchingBookings 
   }
-
+  findCustomers(msecNotVisitedFrom: number, 
+                msecNotVisitedUntil: number, 
+                msecNotMailedFrom:number, 
+                visitCount:number, 
+                selectedProptypes: string[],
+                selectedBooktypes: string[]):Customer[] {
+    let result:Customer[]=[]                
+    if (this.customers){
+      // simply filter customers
+        let custHits =this.customers.filter((cust: Customer) => {
+          // First see if this customer has bookings of this book-type and propcode
+          // any booking will do, it can be too old for the criteria
+          let hasVisitedEnough = visitCount < 0 || cust.bookings.length >= visitCount
+          let matchingBookings = hasVisitedEnough  
+                                ? this.selectMatchingBookings(cust, msecNotVisitedFrom, msecNotVisitedUntil, selectedProptypes, selectedBooktypes)
+                                : []
+          return matchingBookings.length > 0
+        })
+        
+        //Refine by mailing criteria
+        //Not optimal in performance but better for maintenance
+        if (msecNotMailedFrom > 0){
+          custHits =custHits.filter((cust) => {
+          let included=false
+            //get mailings including this customer
+            let mailings_thisCust = this.mailings.filter(m=>m.customerids.includes(cust.id))
+            //narrow down on date sent
+            if (mailings_thisCust.length > 0)
+            {
+                let mostRecentMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
+                let mdiff = Date.now() - mostRecentMail.sent
+                included = mdiff >= msecNotMailedFrom
+            }
+          
+          return included
+        })
+        } // if monthsNotMailedFrom
+        result = custHits
+      } //if (this.customers)
+      return result
+  }
   searchEmails(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
               monthsNotMailedFrom:number, totalVisits:number, 
-              proptypesArg: string[],
-              bookTypesArg: string[]){
+              selectedProptypes: string[],
+              selectedBooktypes: string[]){
     //convert moths to msec
     let msecNotVisitedFrom = monthsNotVisitedFrom   ?  Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : -1
     let msecNotVisitedUntil = monthsNotVisitedUntil   ? Math.floor(totalVisits * 1000 * 3600 * 24 * 30.5) : -1
     let msecNotMailedFrom = monthsNotMailedFrom     ?  Math.floor(monthsNotMailedFrom * 1000 * 3600 * 24 * 30.5) : -1
     let visitCount = totalVisits || -1
+    console.log(msecNotVisitedFrom, msecNotVisitedUntil, msecNotMailedFrom, visitCount)
+    let custHits:Customer[]
+    custHits = this.findCustomers(msecNotVisitedFrom, msecNotVisitedUntil, msecNotMailedFrom, visitCount, selectedProptypes, selectedBooktypes)
 
-    let batchArr:Array<EmailBatch>=[]
-    if (this.customers){
-      // simply filter customers
-      let custHits =this.customers.filter((cust: Customer) => {
-        // First see if this customer has bookings of this book-type and propcode
-        // any booking will do, it can be too old for the criteria
-        let hasVisitedEnough = visitCount < 0 || cust.bookings.length >= visitCount
-        let matchingBookings = hasVisitedEnough  
-                              ? this.selectMatchingBookings(cust, msecNotVisitedFrom, msecNotVisitedUntil, proptypesArg, bookTypesArg)
-                              : []
-        return matchingBookings.length > 0
-      })
-      
-      //Refine by mailing criteria
-      //Not optimal in performance but better for maintenance
-      if (monthsNotMailedFrom){
-        custHits =custHits.filter((cust) => {
-        let included=false
-          //get mailings including this customer
-          let mailings_thisCust = this.mailings.filter(m=>m.customerids.includes(cust.id))
-          //narrow down on date sent
-          if (mailings_thisCust.length > 0)
-          {
-              let mostRecentMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
-              let mdiff = Date.now() - mostRecentMail.sent
-              included = mdiff >= msecNotMailedFrom
-          }
-        
-        return included
-      })
-      }
-      // console.log('-----------------')
-      // console.log(proptypes)
-      // console.log(bookTypes)
-      // console.log(custHits)
-      // console.log('-----------------')
+    
+    let batchArr:EmailBatch[]=[]
 
-      let i=1
-      let batchsize=99
-      let batch : EmailBatch = new EmailBatch(batchsize)
-      for (let c of custHits){
-        if (i>batchsize){
-          batchArr.push(batch)
-          batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
-          i=1
-        }
-        batch.add(c.email)
-        i++
+    let i=1
+    let batchsize=99
+    let batch : EmailBatch = new EmailBatch(batchsize)
+    for (let c of custHits){
+      if (i>batchsize){
+        batchArr.push(batch)
+        batch = new EmailBatch(batchsize)// 100 = max size hotmail. todo make config setting
+        i=1
       }
-      batchArr.push(batch)
-    }
+      batch.add(c.email)
+      i++
+    } // for
+    // add last open batch
+    if (batch.emails.length > 0) batchArr.push(batch)
+
     return batchArr
   }
 
