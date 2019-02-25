@@ -33,6 +33,14 @@ export class DataService {
   private searchCompleted$: BehaviorSubject<Customer[]>= new BehaviorSubject<Customer[]>([])
   emailSearchTerm:string 
 
+  getCustomer(id:number): Customer {
+    return this.customers.find(x=>x.id === id)
+  }
+
+  getMailings():Mailing[]{
+    return this.mailings.slice().sort((m1,m2)=>m2.sent-m1.sent)
+  }
+  
   getData(): void {
     let error: string
     this._ps.getData().pipe(take(1))  
@@ -73,14 +81,6 @@ export class DataService {
           this.searchCompleted$.next([])
         }
       })
-  }
-
-  // getAllCustomers() : Array<Customer> {
-  //     return this.customers.slice();
-  // }
-  
-  getCustomer(id:number): Customer {
-    return this.customers.find(x=>x.id === id)
   }
 
   removeFromSearchResult(cust: Customer){

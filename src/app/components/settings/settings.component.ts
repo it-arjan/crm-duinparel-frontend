@@ -51,9 +51,11 @@ export class SettingsComponent implements OnInit {
     //   this._ui.error(`kan active tab ${this.activetabNr} niet automatisch selecteren, klik zelf even of start opnieuw op.`)
     return this.tabIds[this.activetabNr]
   }
-public navigate(commands: any[]): void {
-    this.ngZone.run(() => this._router.navigate(commands)).then();
-}
+
+  public navigate(commands: any[]): void {
+      this.ngZone.run(() => this._router.navigate(commands)).then();
+  }
+  
   checkSettings():boolean{
     let settingWithError:string
     if ( settingWithError = this.searchIncorrectSetting()) {

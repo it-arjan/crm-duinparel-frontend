@@ -1,79 +1,112 @@
-<form 
-    [formGroup]="reactiveForm" 
-    (ngSubmit)="onSubmit()" 
-    class="form-inline2"
-    >
-          <div class="form-group row border-top pt-2 vcenter">
-              <div class="col-2">Laatste bezoek tussen</div>
-              <div class="col-1">
-                <input class ="col-12 rounded" type="number" formControlName="visitedFrom"/>
+<ngb-tabset #tabset="ngbTabset" >
+    <ngb-tab id="newMailing" > 
+      <ng-template ngbTabTitle><b>Nieuwe mailing maken</b></ng-template>
+        <ng-template ngbTabContent>
+        <form 
+            [formGroup]="reactiveForm" 
+            (ngSubmit)="onSubmit()" 
+            class="form-inline2"
+            >
+                  <div class="form-group row border-top pt-2 vcenter">
+                      <div class="col-2">Laatste bezoek tussen</div>
+                      <div class="col-1">
+                        <input class ="col-12 rounded" type="number" formControlName="visitedFrom"/>
+                      </div>
+                      <div class="col-1 text-center">en</div>
+                      <div class="col-1">
+                        <input class ="col-12 rounded" type="number" formControlName="visitedUntil">
+                    </div>
+                    <div class="row-1">maanden</div>
+                  </div>
+                  <div class="form-group row border-top pt-2 vcenter">
+                      <div class="col-2">Niet gemaild sinds </div>
+                      <div class="col-1">
+                        <input class ="col-12 rounded" type="number" formControlName="mailedSinceFrom">
+                        </div>
+                        <div class="col-1 text-center">maanden</div>
+                        <div class="col-1">
+                        </div>
+                      <div class="row-1"></div>
+                </div>
+                <div class="form-group row border-top pt-2 vcenter">
+                        <div class="col-2">Vaste klant: Minimaal</div>
+                        <div class="col-1">
+                          <input class ="col-12 rounded" type="number" formControlName="totalVisists"> 
+                        </div>
+                      <div class="row-1">keer geweest</div>
+                      <div class="col-2"></div>
+                      <div class="col-1">
+                        </div>
+                </div>
+                <div class="form-group row border-top pt-2 vcenter">
+                  <div class="col-1"></div>
+                  <div class="col-2">
+                    <div formGroupName="bookTypeCheckboxes" class="form-check form-check-inline">
+                        <ng-template ngFor let-item [ngForOf]="reactiveForm.get('bookTypeCheckboxes').value | keyvalue">
+                          <input class="form-check-input" type="checkbox" [formControlName]="item.key" checked [id]="item.key"/> 
+                          <label class="form-check-label" [for]="item.key">{{ item.key }}</label>
+                          <span>&nbsp;</span>
+                    </ng-template>
+                  </div>
+                  </div>
+                <div class="col-2">
+                    <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="propType">
+                      <ng-template ngFor let-proptype [ngForOf]="propTypes">
+                      <label ngbButtonLabel class="btn-outline-primary btn-sm">
+                      <input ngbButton type="radio" value="{{proptype}}"> {{proptype}}
+                      </label> 
+                    </ng-template>
+                  </div>
+                </div>
+                <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Zoek</button></div>
               </div>
-              <div class="col-1 text-center">en</div>
-              <div class="col-1">
-                <input class ="col-12 rounded" type="number" formControlName="visitedUntil">
+            </form>
+        <div class="row border-top pt-2 vcenter rounded" *ngIf="selectionAsBatches">
+            <div class="col-md-6 pad">Deze selectie bestaat uit {{countSelectedEmails()}} adressen, onderverdeeld in {{selectionAsBatches.length}} batches.</div> 
+            <div class="col-md-4" >
+              <button #b1 class="btn btn-outline-primary pad space" type="button" 
+                *ngIf="selectionAsBatches.length > 0 && !lastSavedmailing" (click)="rememberMailing()" 
+                data-toggle="tooltip" title="Het bewaren van een mailing is belangrijk voor een correcte werken van de niet-gemaild-sinds-button, niet vergeten!">Bewaar deze mailing</button>
+              <button #b2 class="btn btn-outline-primary pad space" type="button" 
+                *ngIf="lastSavedmailing" (click)="undoRememberMailing()" 
+                data-toggle="tooltip" title="Dit kan ook op de terugkijk-tab">Maak bewaren ongedaan</button>
             </div>
-            <div class="row-1">maanden</div>
-          </div>
-          <div class="form-group row border-top pt-2 vcenter">
-              <div class="col-2">Niet gemaild sinds </div>
-              <div class="col-1">
-                <input class ="col-12 rounded" type="number" formControlName="mailedSinceFrom">
-                </div>
-                <div class="col-1 text-center">maanden</div>
-                <div class="col-1">
-                </div>
-              <div class="row-1"></div>
         </div>
-         <div class="form-group row border-top pt-2 vcenter">
-                <div class="col-2">Vaste klant: Minimaal</div>
-                <div class="col-1">
-                  <input class ="col-12 rounded" type="number" formControlName="totalVisists"> 
-                </div>
-              <div class="row-1">keer geweest</div>
-              <div class="col-2"></div>
-              <div class="col-1">
-                </div>
-        </div>
-        <div class="form-group row border-top pt-2 vcenter">
-          <div class="col-1"></div>
-          <div class="col-2">
-            <div formGroupName="bookTypeCheckboxes" class="form-check form-check-inline">
-                <ng-template ngFor let-item [ngForOf]="reactiveForm.get('bookTypeCheckboxes').value | keyvalue">
-                  <input class="form-check-input" type="checkbox" [formControlName]="item.key" checked [id]="item.key"/> 
-                  <label class="form-check-label" [for]="item.key">{{ item.key }}</label>
-                  <span>&nbsp;</span>
-            </ng-template>
+        <div class="row border-top pt-2 vcenter rounded" *ngFor="let batch of selectionAsBatches; let idx=index">
+            <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.getEmailCsv()}}</div>
+          <div class="col-md-4" >
+            <button 
+                class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)" 
+                data-toggle="tooltip" title="gebruik Ctrl-V om emails te plakken..">Kopieer batch
+              </button>
+            </div>
           </div>
+    </ng-template>
+    </ngb-tab>
+    <ngb-tab id="viewMailings" > 
+      <ng-template ngbTabTitle><b>Terugkijken</b></ng-template>
+        <ng-template ngbTabContent>
+          <div class="container">
+            <div class="row" class="col-md-12">
+             <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Verstuurd</th>
+                  <th>Aantal klanten</th>
+                  <th>Actie</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let mail of  _ds.getMailings();  let idx=index">
+                  <td>{{mail.sent | date:getGlobDateFormat('ang')}}</td>
+                  <td>{{mail.customerids.length}}</td>
+                  <td *ngIf="idx===0"><button (click)="removeMailing(idx)">Verwijder</button></td>
+                  <td *ngIf="idx>0"></td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
           </div>
-        <div class="col-2">
-            <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="propType">
-              <ng-template ngFor let-proptype [ngForOf]="propTypes">
-              <label ngbButtonLabel class="btn-outline-primary btn-sm">
-              <input ngbButton type="radio" value="{{proptype}}"> {{proptype}}
-              </label> 
-            </ng-template>
-          </div>
-        </div>
-        <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Zoek</button></div>
-      </div>
-    </form>
-<div class="row border-top pt-2 vcenter rounded" *ngIf="selectionAsBatches">
-    <div class="col-md-6 pad">Deze selectie bestaat uit {{countSelectedEmails()}} adressen, onderverdeeld in {{selectionAsBatches.length}} batches.</div> 
-    <div class="col-md-4" >
-      <button #b1 class="btn btn-outline-primary pad space" type="button" 
-        *ngIf="selectionAsBatches.length > 0 && !mailingRemembered" (click)="rememberMailing()" 
-        data-toggle="tooltip" title="Klik hierop als je daadwerkelijk een mail stuurt naar deze adressen, niet vergeten!">Onthoud deze selectie</button>
-      <button #b2 class="btn btn-outline-primary pad space" type="button" 
-        *ngIf="mailingRemembered" (click)="undoRememberMailing()" 
-        data-toggle="tooltip" title="Dit kan alleen nu nog">Maak onthouden ongedaan</button>
-    </div>
-</div>
-<div class="row border-top pt-2 vcenter rounded" *ngFor="let batch of selectionAsBatches; let idx=index">
-    <div class="col-md-8 pad" [ngClass]="checkIfCopied(idx)? 'strike':'nostrike'">{{batch.getEmailCsv()}}</div>
-  <div class="col-md-4" >
-    <button 
-        class="btn btn-outline-secondary btn-sm" (click)="copyBatch(idx)" 
-        data-toggle="tooltip" title="gebruik Ctrl-V om emails te plakken..">Kopieer batch
-      </button>
-    </div>
-  </div>
+        </ng-template>
+      </ngb-tab>
+  </ngb-tabset>
