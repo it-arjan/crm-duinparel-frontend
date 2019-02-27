@@ -39,10 +39,10 @@
              </div>
         </div>
 </form>
-<p *ngIf="customer" class="text-info pad">Boekingen van {{customer.name}}</p>
+<p class="text-info pad">Boekingen van {{customer.name}}</p>
 
 <!-- list existing bookings here, + delete button -->
-<div class="container" *ngIf="customer">
+<div class="container">
 <div class="row border highlight vcenter" *ngFor="let booking of customer.bookings; let idx=index">
 <div class="col-md-3">{{booking.arrive | date:globDateformat()}}</div>
 <div class="col-md-3">{{booking.depart | date:globDateformat()}}</div>

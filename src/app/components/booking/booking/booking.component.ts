@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DataService } from 'src/app/services/data.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Customer } from 'src/app/models/customer.model';
@@ -26,6 +26,7 @@ export class BookingComponent implements OnInit {
   constructor(
     private _bs: BackendService, 
     private _ds: DataService, 
+    private _cd: ChangeDetectorRef,
     private _modalService: NgbModal,
     private _ui : UIService,
     private _router: Router, 
@@ -116,6 +117,7 @@ export class BookingComponent implements OnInit {
       else {
         this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
         this._ui.successIcon()
+        this._cd.detectChanges()
       }
       
     })
