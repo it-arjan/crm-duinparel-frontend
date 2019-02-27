@@ -14,13 +14,21 @@ export class PersistService  implements iDataPersist {
 
   constructor(
     private _es: ElectronService,
-     private _ui: UIService,
- ) { }
+    private _ui: UIService,
+ ) { 
+   this.subscribeToFallbackChannel()
+ }
   private getData_R$ : ReplaySubject<tBulkdataResult>
-  private persistCust_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  private persistBook_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  private persistMail_R$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
 
+  subscribeToFallbackChannel(){
+    if (this._es.ipcRenderer){
+      this._es.ipcRenderer.once('FallbackChannel', 
+          (event: Electron.IpcMessageEvent, data: tDataResult) => {
+            this._ui.error("a message on the FallbackChannel is getting through, this is highly uncommon..")
+            if (data.error) this._ui.error("...errors! " + data.error)
+        }) 
+    }
+  }
   //////////////////////////////////
   // ====== iDataPersist
   //////////////////////////
@@ -53,26 +61,17 @@ export class PersistService  implements iDataPersist {
     this.getData_R$= new ReplaySubject<tBulkdataResult>()
   }
   
-  persist(object: Customer | Booking |Mailing, persisttype: tPersist) : ReplaySubject<tDataResult>{
+  persist(objecttype: string, object: Customer | Booking |Mailing, persisttype: tPersist) : ReplaySubject<tDataResult>{
     this.checkPlatform();
 
-    let objecttype = object.constructor.name
-
-    let subject = objecttype ==='Customer' 
-      ? this.persistCust_R$ 
-      :objecttype ==='Booking' 
-        ?this.persistBook_R$ 
-        :objecttype ==='Mailing' 
-        ?this.persistMail_R$ 
-      :null 
-    
-    if (!subject){
-      this._ui.error(`invalid objecttype ${objecttype} for operation ${tPersist[persisttype]}. Dit is niet goed`!!)
-      return
-    }
+    // below works in de, fails in prod
+    // let objecttype = object.constructor.name
+    // alert(objecttype)
+    let subject: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+   
     let returnChannelName = `Persist${objecttype}Response`
     this._es.ipcRenderer.once(returnChannelName, (event: Electron.IpcMessageEvent, result: tDataResultNodejs) => {
-      console.log(returnChannelName + '!!');
+      console.log('response from ' + returnChannelName + ' :)');
       if (persisttype === tPersist.Insert) {
         object.id= result.generatedid
       }
@@ -80,20 +79,22 @@ export class PersistService  implements iDataPersist {
     })
     //call to ipcMain
     let sendarg : tPersistBag = {objecttype: objecttype, object: object, persisttype:tPersist[persisttype]}
-    this._es.ipcRenderer.send('Persist', sendarg)
+       console.log('sendig persist with');
+       console.log(sendarg)
+   this._es.ipcRenderer.send('Persist', sendarg)
 
     return subject
   }
 
   persistCustomer(customer: Customer, type: tPersist) :  ReplaySubject<tDataResult> {
-    return this.persist(customer, type)
+    return this.persist("Customer", customer, type)
   }
 
   persistBooking(booking:Booking, type: tPersist): ReplaySubject<tDataResult>{
-    return this.persist(booking, type)
+    return this.persist("Booking", booking, type)
  }
  
   persistMailing(mailing: Mailing, type: tPersist) : ReplaySubject<tDataResult>{
-    return this.persist(mailing, type)
+    return this.persist("Mailing", mailing, type)
   }  
 }
