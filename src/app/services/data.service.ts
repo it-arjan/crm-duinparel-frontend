@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 })
 export class DataService {
   constructor(
-    private _ps: FakeBackendService,
+    private _ps: PersistService,
     private _ui: UIService,
     private _router: Router 
    ) { 

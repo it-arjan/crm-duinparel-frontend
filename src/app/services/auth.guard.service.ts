@@ -12,7 +12,7 @@ import { FakeBackendService } from './fake.data.backend.service';
 export class AuthGuardService implements CanActivate {
 
   constructor(
-    private _auth: FakeBackendService, 
+    private _auth: AuthService, 
     private _ui: UIService, 
     private router: Router) { 
       console.log('constructor AuthGuardService')

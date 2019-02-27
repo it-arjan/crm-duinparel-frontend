@@ -21,7 +21,7 @@ export class UIService implements iGuidance {
 
   feedbackHistory: UserFeedback[] =[]
   constructor(
-    private _auth: FakeBackendService
+    private _auth: AuthService
   ) {
     this.listenForCheckins()
   }

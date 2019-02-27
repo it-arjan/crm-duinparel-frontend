@@ -21,8 +21,8 @@ import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 })
 export class SettingsComponent implements OnInit {
 
-  constructor(private _bs : FakeBackendService,
-              private _auth: FakeBackendService,
+  constructor(private _bs : BackendService,
+              private _auth: AuthService,
               private _router: Router, private ngZone: NgZone,
               private _ui: UIService) { 
   }

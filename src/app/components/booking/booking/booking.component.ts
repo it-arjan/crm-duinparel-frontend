@@ -24,7 +24,7 @@ import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 export class BookingComponent implements OnInit {
 
   constructor(
-    private _bs: FakeBackendService, 
+    private _bs: BackendService, 
     private _ds: DataService, 
     private _modalService: NgbModal,
     private _ui : UIService,

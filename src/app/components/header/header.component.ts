@@ -31,9 +31,9 @@ import { ufType } from 'src/app/services/interfaces.ui';
 export class HeaderComponentComponent implements OnInit, OnDestroy {  
 
   constructor(
+    private _bs: BackendService, private _auth: AuthService,
     private _ui : UIService, private _modalService: NgbModal,
-    private _bs: FakeBackendService, private _cd: ChangeDetectorRef,
-    private _auth: FakeBackendService,
+    private _cd: ChangeDetectorRef,
     private _ds: DataService, private _r2: Renderer2
     ) { }
   notificationState:string
