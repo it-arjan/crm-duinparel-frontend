@@ -48,7 +48,11 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
 
   resetAnimation(){
      this.notificationState = 'in'
-     setTimeout(()=>{ this.notificationState = 'out' },1000)
+     this._cd.detectChanges()
+     setTimeout(()=>{ 
+       this.notificationState = 'out';
+        this._cd.detectChanges()
+      },200)
   }
 
   ngOnInit() {
@@ -65,7 +69,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   }
 
   onUINotification(feedback:UserFeedback){
-      this.notificationState = 'in'
+      //this.notificationState = 'in'
       this.currentFeedback=feedback
       //this.processFeedback(feedback)
       // Start adding warnings/ errors to history after logon
@@ -73,8 +77,9 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         this.ufList.unshift(feedback) 
       }
             //Trigger state change after view is rendered
-      setTimeout(()=>{ this.notificationState = 'out' },1000)
-      this._cd.detectChanges() //hack to pickup the first message
+      // setTimeout(()=>{ this.notificationState = 'out' },1000)
+      // this._cd.detectChanges() //hack to pickup the first message
+      this.resetAnimation()
   }
 
   onClickNotifications(){

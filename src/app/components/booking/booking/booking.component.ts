@@ -165,7 +165,8 @@ export class BookingComponent implements OnInit {
               }
               else {
                 this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
-                    this._ui.deletedIcon()
+                this._ui.deletedIcon()
+                this._cd.detectChanges()
               }
             })
           }
