@@ -22,7 +22,7 @@ export class PersistService  implements iDataPersist {
 
   subscribeToFallbackChannel(){
     if (this._es.ipcRenderer){
-      this._es.ipcRenderer.once('FallbackChannel', 
+      this._es.ipcRenderer.on('FallbackChannel', 
           (event: Electron.IpcMessageEvent, data: tDataResult) => {
             this._ui.error("a message on the FallbackChannel is getting through, this is highly uncommon..")
             if (data.error) this._ui.error("...errors! " + data.error)
