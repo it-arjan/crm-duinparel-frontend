@@ -12,29 +12,32 @@
             </div>
             <div class="form-group">
                 <input class ="form-control" type="text" id="address" formControlName="address" placeholder="address">
-              </div>
-              <div class="form-group">
-                  <input class ="form-control" type="text" id="email" formControlName="email" placeholder="email">
-                </div>
-                <div class="form-group">
-                    <input class ="form-control" type="text" id="country" formControlName="country" placeholder="country">
-                  </div>
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
-                        {{'Opslaan'}}
-                    </button>
-                    <button class="btn btn-outline-danger" type="button" (click)="onCancel()">
-                        Stop
-                    </button>
-                    <span style="width:30px"></span>
-                    <button 
-                    class="btn btn-outline-danger" 
-                    type="button" 
-                    (click)="onDelete()"
-                    *ngIf="editMode">
-                        Verwijder
-                    </button>                 
-                </div>
+            </div>
+            <div class="form-group">
+                <input class ="form-control" type="text" id="email" formControlName="email" placeholder="email">
+            </div>
+            <div class="form-group">
+                <input class ="form-control" type="text" id="phone" formControlName="phone" placeholder="telefoonnr">
+            </div>
+            <div class="form-group">
+              <input class ="form-control" type="text" id="country" formControlName="country" placeholder="country">
+            </div>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
+                  {{'Opslaan'}}
+              </button>
+              <button class="btn btn-outline-danger" type="button" (click)="onCancel()">
+                  Stop
+              </button>
+              <span style="width:30px"></span>
+              <button 
+              class="btn btn-outline-danger" 
+              type="button" 
+              (click)="onDelete()"
+              *ngIf="editMode">
+                  Verwijder
+              </button>                 
+            </div>
         </div>
 </form>

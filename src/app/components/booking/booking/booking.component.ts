@@ -63,6 +63,7 @@ export class BookingComponent implements OnInit {
     this.reactiveForm = new FormGroup({
       'arrive': new FormControl('',[Validators.required, Validators.pattern(Globals.momDatePattern), this.datesValid.bind(this)]),
       'depart': new FormControl('',[Validators.required, Validators.pattern(Globals.momDatePattern), this.datesValid.bind(this)]),
+      'nrpers': new FormControl('',[Validators.required, Validators.min(0)]),
       'propcode': new FormControl('',[Validators.required]),
       'booktype': new FormControl('',[Validators.required]),
     })
@@ -104,10 +105,11 @@ export class BookingComponent implements OnInit {
     let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
     let m_depart = moment(this.reactiveForm.get('depart').value, Globals.momDateformat);
     console.log(m_arrive, m_depart)
-    let propcode = this.reactiveForm.get('propcode').value;
-    let booktype = this.reactiveForm.get('booktype').value;
+    let nrpers:number = +this.reactiveForm.get('nrpers').value;
+    let propcode:string = this.reactiveForm.get('propcode').value;
+    let booktype:string = this.reactiveForm.get('booktype').value;
 
-    let booking = new Booking(0, this.custId, m_arrive.unix()*1000, m_depart.unix()*1000, propcode, booktype)
+    let booking = new Booking(0, this.custId, m_arrive.unix()*1000, m_depart.unix()*1000, nrpers, propcode, booktype)
     //this.customer.bookings.push(booking)
     this._ds.addBooking(booking).pipe(take(1))
     .subscribe((result)=>{
@@ -115,7 +117,7 @@ export class BookingComponent implements OnInit {
         this._ui.error('Fout bij opslaan booking: ' + result.error)
       }
       else {
-        this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
+        this.reactiveForm.setValue({arrive:'',depart:'', nrpers:'', propcode:'',booktype:''});
         this._ui.successIcon()
         this._cd.detectChanges()
       }
@@ -164,7 +166,7 @@ export class BookingComponent implements OnInit {
                 this._ui.error('Fout bij verwijderen boeking: ' + result.error)
               }
               else {
-                this.reactiveForm.setValue({arrive:'',depart:'',propcode:'',booktype:''});
+                this.reactiveForm.setValue({arrive:'',depart:'',nrpers:'',propcode:'',booktype:''});
                 this._ui.deletedIcon()
                 this._cd.detectChanges()
               }

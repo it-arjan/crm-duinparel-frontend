@@ -6,36 +6,53 @@
     <!-- <div class="row"> -->
         <div class="col-md-12">
             <div class="input-group">
-                <input 
-                    class ="form-control-sm col-2" 
+              <div class="input-group-append col-2">
+               <input 
+                    class ="form-control-sm" 
                     type="text" 
                     name="arrive" 
                     id="arrive" 
                     formControlName="arrive" 
                     placeholder="aankomst"
                     >
-               <input 
-                    class ="form-control-sm col-2 input-group-append" 
+              </div>
+               <div class="input-group-append col-2">
+              <input 
+                    class ="form-control-sm" 
                     type="text" 
                     formControlName="depart" 
                     placeholder="vertrek"
                >
+              </div>
  
 
-                      <div class="input-group-append">
-                   <button class="btn btn-outline-secondary calendar" (click)="openModalCalendar()" type="button"></button>
+              <div class="input-group-append col-1">
+                <span>
+                  <i class="fa fa-calendar " aria-hidden="true" style="font-size:2em;display:inline-block" (click)="openModalCalendar()"></i>
+                </span>
+
+                   <!-- <button class="btn btn-outline-primary calendar" (click)="openModalCalendar()" type="button"></button> -->
               </div>
-              <select class ="form-control input-group-append" formControlName="propcode">
+              <div class="input-group-append col-2">
+                   <input 
+                    class ="form-control-sm" 
+                    id="nrpers"
+                    type="text" 
+                    formControlName="nrpers" 
+                    placeholder="#personen"
+               >
+              </div>
+              <select class ="form-control input-group-append col-2" formControlName="propcode">
                     <option disabled selected value>--</option>
                     <option *ngFor="let pcode of propCodes">{{pcode}}</option>
                 </select> 
-                <select class ="form-control input-group-append" formControlName="booktype">
-                        <option disabled selected value>--</option>
-                        <option *ngFor="let btype of bookTypes">{{btype}}</option>
-                    </select>
-                    <button class="btn btn-sm btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
-                            Voeg toe
-                        </button>
+                <select class ="form-control input-group-append col-2" formControlName="booktype">
+                  <option disabled selected value>--</option>
+                  <option *ngFor="let btype of bookTypes">{{btype}}</option>
+                </select>
+                <button class="btn btn-sm btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
+                    Voeg toe
+                </button>
              </div>
         </div>
 </form>
@@ -44,10 +61,11 @@
 <!-- list existing bookings here, + delete button -->
 <div class="container">
 <div class="row border highlight vcenter" *ngFor="let booking of customer.bookings; let idx=index">
-<div class="col-md-3">{{booking.arrive | date:globDateformat()}}</div>
-<div class="col-md-3">{{booking.depart | date:globDateformat()}}</div>
-<div class="col-md-2">{{booking.propcode }}</div>
-<div class="col-md-2">{{booking.booktype }}</div>
+<div class="col-md-2">{{booking.arrive | date:globDateformat()}}</div>
+<div class="col-md-2">{{booking.depart | date:globDateformat()}}</div>
+<div class="col-md-1">{{booking.nrpers }}</div>
+<div class="col-md-1">{{booking.propcode }}</div>
+<div class="col-md-1">{{booking.booktype }}</div>
 <div class="col-md-2 input-group">
 
     <button style="margin-right:3px" class="btn btn-sm btn-outline-success" (click)='onWord(idx)'>Word</button>

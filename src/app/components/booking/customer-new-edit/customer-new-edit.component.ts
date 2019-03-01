@@ -55,11 +55,12 @@ export class CustomerNewEditComponent implements OnInit {
   }
 
   private initForm(){
-    let name='', address='', email='', country='';
+    let name='', address='', email='', country='', phone=''
     if (this.editMode){
       name=this.customer.name
       address = this.customer.address
       email = this.customer.email
+      phone = this.customer.phone
       country = this.customer.country  
    }
 
@@ -67,6 +68,7 @@ export class CustomerNewEditComponent implements OnInit {
     'name': new FormControl(name, Validators.required),
     'address': new FormControl(address, Validators.required), 
     'email': new FormControl(email, [Validators.required, Validators.email]), 
+    'phone': new FormControl(phone), 
     'country': new FormControl(country), 
   })
   }
@@ -77,6 +79,7 @@ export class CustomerNewEditComponent implements OnInit {
         this.reactiveForm.get('name').value, 
         this.reactiveForm.get('address').value, 
         this.reactiveForm.get('email').value,
+        this.reactiveForm.get('phone').value,
         this.reactiveForm.get('country').value,
         []
         )
@@ -87,7 +90,6 @@ export class CustomerNewEditComponent implements OnInit {
           .subscribe((result)=>{
                this.handlePersistResponse(result)
             })
-
       }
       else {
         console.log('before: ' + editedCustomer.id)

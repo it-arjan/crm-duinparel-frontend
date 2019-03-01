@@ -56,51 +56,51 @@ export class FakeBackendService implements iDataPersist, iSecurity, iBackendTask
     this.customers=[]
     this.mailings=[]
     let bookings: Booking[]=[];
-    bookings.push(new Booking( 1, 1, new Date("03/25/2015").getTime(), new Date("03/28/2015").getTime(),'jvg', 'week'))
-    bookings.push(new Booking( 2, 1, new Date("04/25/2014").getTime(), new Date("04/28/2014").getTime(),'jvg', 'week'))
-    this.customers.push(new Customer(1,'jan jansen aka 1','bloemstraat 13, 1232 AJ, rotterdam', 'jjanse@hotmail.com','0034ngb1246345923', bookings))
+    bookings.push(new Booking( 1, 1, new Date("03/25/2015").getTime(), new Date("03/28/2015").getTime(), 2 ,'jvg', 'week'))
+    bookings.push(new Booking( 2, 1, new Date("04/25/2014").getTime(), new Date("04/28/2014").getTime(), 2,'jvg', 'week'))
+    this.customers.push(new Customer(1,'jan jansen aka 1','bloemstraat 13, 1232 AJ, rotterdam', 'jjanse@hotmail.com', '06-1035289','NL', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 3, 2, new Date("03/25/2018").getTime(), new Date("03/28/2018").getTime(),'jvg', 'weekend'))
-    bookings.push(new Booking( 4, 2, new Date("04/25/2018").getTime(), new Date("04/28/2018").getTime(),'alb', 'weekend'))
-    bookings.push(new Booking( 5, 2, new Date("08/25/2018").getTime(), new Date("08/28/2018").getTime(),'jvg', 'weekend'))
-    bookings.push(new Booking( 6, 2, new Date("11/25/2018").getTime(), new Date("11/28/2018").getTime(),'jvg', 'weekend'))
-    this.customers.push(new Customer(2,'jan doedel aka 2','dopperstraat 13, 1232 AJ, tsjietjerkstadeel', 'j.d@xs4all.nl','', bookings))
+    bookings.push(new Booking( 3, 2, new Date("03/25/2018").getTime(), new Date("03/28/2018").getTime(), 2,'jvg', 'weekend'))
+    bookings.push(new Booking( 4, 2, new Date("04/25/2018").getTime(), new Date("04/28/2018").getTime(), 2,'alb', 'weekend'))
+    bookings.push(new Booking( 5, 2, new Date("08/25/2018").getTime(), new Date("08/28/2018").getTime(), 2,'jvg', 'weekend'))
+    bookings.push(new Booking( 6, 2, new Date("11/25/2018").getTime(), new Date("11/28/2018").getTime(), 2, 'jvg', 'weekend'))
+    this.customers.push(new Customer(2,'jan doedel aka 2','dopperstraat 13, 1232 AJ, tsjietjerkstadeel', 'j.d@xs4all.nl', '06-1035289','NL', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 7, 3, new Date("03/25/2015").getTime(), new Date("03/28/2015").getTime(),'alb', 'week'))
-    bookings.push(new Booking( 8, 3, new Date("05/15/2014").getTime(), new Date("05/22/2014").getTime(),'jvg', 'week'))
-    this.customers.push(new Customer(3,'bert pietersen aka 3','jan steenstraat 13, 1000 TA, amsterdam', 'bepie@outlook.com','0031ingb0475860', bookings))
+    bookings.push(new Booking( 7, 3, new Date("03/25/2015").getTime(), new Date("03/28/2015").getTime(), 2,'alb', 'week'))
+    bookings.push(new Booking( 8, 3, new Date("05/15/2014").getTime(), new Date("05/22/2014").getTime(), 2,'jvg', 'week'))
+    this.customers.push(new Customer(3,'bert pietersen aka 3','jan steenstraat 13, 1000 TA, amsterdam', 'bepie@outlook.com', '06-1035289','DE', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 9, 4, new Date("03/25/2015").getTime(), new Date("03/28/2015").getTime(),'app', 'midweek'))
-    bookings.push(new Booking( 10, 4, new Date("03/25/2014").getTime(), new Date("03/28/2014").getTime(),'app', 'midweek'))
-    this.customers.push(new Customer(4,'karel van appman aka 4','hoofdweg 33, 1013 XA, harlingen', 'kbeene.appmens@xs4all.nl','0031ingb017482225', bookings))
+    bookings.push(new Booking( 9, 4, new Date("03/25/2015").getTime(), new Date("03/28/2015").getTime(), 2,'app', 'midweek'))
+    bookings.push(new Booking( 10, 4, new Date("03/25/2014").getTime(), new Date("03/28/2014").getTime(), 2,'app', 'midweek'))
+    this.customers.push(new Customer(4,'karel van appman aka 4','hoofdweg 33, 1013 XA, harlingen', 'kbeene.appmens@xs4all.nl', '06-1035289','DE', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 11, 5, new Date("03/25/2017").getTime(), new Date("03/28/2017").getTime(),'app', 'midweek'))
-    bookings.push(new Booking( 12, 5, new Date("03/25/2018").getTime(), new Date("03/28/2018").getTime(),'app', 'midweek'))
-    this.customers.push(new Customer(5,'M dawohl aka 5','hptwg 33, 10134, colon', 'd.wohl.appmens@grundlich.de','', bookings))
+    bookings.push(new Booking( 11, 5, new Date("03/25/2017").getTime(), new Date("03/28/2017").getTime(), 2,'app', 'midweek'))
+    bookings.push(new Booking( 12, 5, new Date("03/25/2018").getTime(), new Date("03/28/2018").getTime(), 2,'app', 'midweek'))
+    this.customers.push(new Customer(5,'M dawohl aka 5','hptwg 33, 10134, colon', 'd.wohl.appmens@grundlich.de', '06-1035289','DE', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 13, 6, new Date("09/24/2017").getTime(), new Date("09/28/2017").getTime(),'app', 'midweek'))
-    bookings.push(new Booking( 14, 6, new Date("08/18/2018").getTime(), new Date("08/14/2018").getTime(),'app', 'midweek'))
-    this.customers.push(new Customer(6,'K debringer aka 6','mittelweg 34, 10123, hamburg', 'k.debringer.appmens@gmx.de','', bookings))
+    bookings.push(new Booking( 13, 6, new Date("09/24/2017").getTime(), new Date("09/28/2017").getTime(), 2,'app', 'midweek'))
+    bookings.push(new Booking( 14, 6, new Date("08/18/2018").getTime(), new Date("08/14/2018").getTime(), 2,'app', 'midweek'))
+    this.customers.push(new Customer(6,'K debringer aka 6','mittelweg 34, 10123, hamburg', 'k.debringer.appmens@gmx.de', '06-1035289','NL', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 15, 7, new Date("06/23/2017").getTime(), new Date("06/29/2017").getTime(),'alb', 'midweek'))
-    bookings.push(new Booking( 16, 7, new Date("06/23/2018").getTime(), new Date("06/29/2018").getTime(),'jvg', 'midweek'))
-    this.customers.push(new Customer(7,'JJ aka 7','main st 33, 10134, london', 'aka.jj@heaven.co.uk','', bookings))
+    bookings.push(new Booking( 15, 7, new Date("06/23/2017").getTime(), new Date("06/29/2017").getTime(), 2,'alb', 'midweek'))
+    bookings.push(new Booking( 16, 7, new Date("06/23/2018").getTime(), new Date("06/29/2018").getTime(), 2,'jvg', 'midweek'))
+    this.customers.push(new Customer(7,'JJ aka 7','main st 33, 10134, london', 'aka.jj@heaven.co.uk', '06-1035289','NL', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 17, 8, new Date("04/23/2017").getTime(), new Date("04/29/2017").getTime(),'alb', 'midweek'))
-    bookings.push(new Booking( 18, 8, new Date("08/14/2018").getTime(), new Date("08/21/2018").getTime(),'jvg', 'week'))
-    this.customers.push(new Customer(8,'ms Smith aka 8','22nd st 33374, 1013423, NYC', 'smith-wesson@nra.com','', bookings))
+    bookings.push(new Booking( 17, 8, new Date("04/23/2017").getTime(), new Date("04/29/2017").getTime(), 2,'alb', 'midweek'))
+    bookings.push(new Booking( 18, 8, new Date("08/14/2018").getTime(), new Date("08/21/2018").getTime(), 2,'jvg', 'week'))
+    this.customers.push(new Customer(8,'ms Smith aka 8','22nd st 33374, 1013423, NYC', 'smith-wesson@nra.com', '06-1035289','USA', bookings))
 
     bookings = new Array<Booking>();
-    bookings.push(new Booking( 19, 9, new Date("04/23/2017").getTime(), new Date("04/29/2017").getTime(),'alb', 'midweek'))
-    bookings.push(new Booking( 20, 9, new Date("06/14/2018").getTime(), new Date("06/21/2018").getTime(),'jvg', 'week'))
-    this.customers.push(new Customer(9,'ms Jones aka 9','23rd st 23532, 101312323, NYC', 'jonejone@usa.today','', bookings))
+    bookings.push(new Booking( 19, 9, new Date("04/23/2017").getTime(), new Date("04/29/2017").getTime(), 2,'alb', 'midweek'))
+    bookings.push(new Booking( 20, 9, new Date("06/14/2018").getTime(), new Date("06/21/2018").getTime(), 2,'jvg', 'week'))
+    this.customers.push(new Customer(9,'ms Jones aka 9','23rd st 23532, 101312323, NYC', 'jonejone@usa.today', '06-1035289','USA', bookings))
 
     let custIds: number[] = []
     custIds =[1,2,3,4,5]
