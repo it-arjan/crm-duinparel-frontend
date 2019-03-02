@@ -1,5 +1,7 @@
 import { OnInit, Injectable } from '@angular/core';
+import * as moment from 'moment';
 
+export enum tDateError { arrive_invalid, depart_invalid, depart_before_arrive}
 @Injectable()
 export class Globals {
 
@@ -28,4 +30,25 @@ export class Globals {
 
     return (d2M+12*d2Y)-(d1M+12*d1Y)
 }
+public static checkDates(arrive_str:string, depart_str:string):{valid:boolean, error:tDateError}{
+    let result = {valid:true, error:null}
+     if (arrive_str && depart_str && 
+          Globals.momDatePattern.test(arrive_str) && 
+          Globals.momDatePattern.test(depart_str)){
+      
+        let m_arrive = moment(arrive_str, Globals.momDateformat);
+        let m_depart = moment(depart_str, Globals.momDateformat);
+        if (!m_arrive.isValid() || !m_depart.isValid()){
+          if (!m_arrive.isValid()) result.error=tDateError.arrive_invalid
+          if (!m_depart.isValid()) result.error=tDateError.depart_invalid
+
+          result.valid=false
+        }
+        else if(m_arrive.isSame(m_depart) || m_arrive.isAfter(m_depart)) {
+          result.error=tDateError.depart_before_arrive
+          result.valid=false
+        }
+      }
+      return result
+  }
 }

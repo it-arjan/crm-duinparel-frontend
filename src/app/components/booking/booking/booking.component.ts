@@ -8,7 +8,7 @@ import { UIService } from 'src/app/services/ui.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Booking } from 'src/app/models/booking.model';
 import { ModalDaterangeSelectComponent } from '../../ng-bootstrap/modal-daterange-select/modal-daterange-select.component';
-import { Globals } from '../../../shared/globals';
+import { Globals, tDateError } from '../../../shared/globals';
 
 import * as moment from 'moment';
 import { BackendService } from 'src/app/services/backend.service';
@@ -75,32 +75,24 @@ export class BookingComponent implements OnInit {
 
   datesValid(control: FormControl) : {[s: string]: boolean}{
     //PS: call as validator with bind(this)
-    if (this.reactiveForm &&  //needed, is somehow called before this.reactiveForm is instantiated
-      this.reactiveForm.get('arrive').value && //only check when both dates are filled
-      this.reactiveForm.get('depart').value &&
-      Globals.momDatePattern.test(this.reactiveForm.get('arrive').value) && //and our global dateformat regex passes
-      Globals.momDatePattern.test(this.reactiveForm.get('depart').value)){
+    let result:{[s: string]:boolean}=null
+    let frm_arrive:string,frm_depart:string
+    if (this.reactiveForm){  //needed, is somehow called before this.reactiveForm is instantiated
+      //we need both dates to determine validity
+      frm_arrive = this.reactiveForm.get('arrive').value 
+      frm_depart = this.reactiveForm.get('depart').value
+      let intResult = Globals.checkDates(frm_arrive, frm_depart)
+      //only check when both dates are filled and our global dateformat regex passes
+      if (!intResult.valid){
       
-      let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
-      let m_depart = moment(this.reactiveForm.get('depart').value, Globals.momDateformat);
-      let formatRecognized = m_arrive.isValid() && m_depart.isValid()
-      if (!formatRecognized){
-        if (!m_arrive.isValid()) this._ui.error("Aankomst wordt niet als datum herkend!")
-        if (!m_depart.isValid()) this._ui.error("Vertrek wordt niet als datum herkend!")
-
-        return {'dateInvalid': true} 
+          if (intResult.error===tDateError.arrive_invalid) this._ui.error("Aankomst wordt niet als datum herkend!")
+          if (intResult.error===tDateError.depart_invalid) this._ui.error("Vertrek wordt niet als datum herkend!")
+          if (intResult.error===tDateError.depart_before_arrive) this._ui.error("vertrek moet later zijn dan de aankomst!")
+          result = {'dateInvalid': true} 
       }
-      else if(m_arrive.isSame(m_depart) || m_arrive.isAfter(m_depart)) {
-        this._ui.error("vertrek moet later zijn dan de aankomst!")
-
-        return {'dateInvalid': true} 
-      }
-      this._ui.info("vertrek en aankomst zijn ok")
-      return null
     }
-    return null  
+    return result  ?result : null
   }
-  
   onSubmit(){
     let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
     let m_depart = moment(this.reactiveForm.get('depart').value, Globals.momDateformat);
