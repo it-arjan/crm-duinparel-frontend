@@ -3,22 +3,26 @@
     <div class="col-md-2">
         <input class ="form-control" type="text" id="email" formControlName="email" placeholder="(stukje) email">
     </div>
-    <div class="col-md-2">
-        <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
-            Zoek
-        </button>
-    </div>
+   <div class="col-md-2">
+        
+  </div>
   <div class="col-md-2">
     <button class="btn btn-outline-primary" type="button" (click)="onNewCustomer()">
         Nieuwe klant
     </button>
-    <div class="col-md-6"></div>
   </div>
+  <div class="col-md-6"></div>
 </div>
 <div class="row">
     <div class="col-md-2">
         <input class ="form-control" type="name" id="name" formControlName="name" placeholder="(stukje) naam">
     </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
+            Zoek
+        </button>
+    </div>
+  <div class="col-md-8"></div>
 </div>
 </form>
 
