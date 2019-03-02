@@ -64,15 +64,31 @@ export class DataService {
   searchResults(): BehaviorSubject<Customer[]>{
        return this.searchCompleted$
   }
-  searchCustomers(emailPiece:string){
+  searchCustomers(emailPiece:string, namePiece: string){
     this.emailSearchTerm= emailPiece
     this.dataReadyReplay().pipe(take(1))
       .subscribe(x =>{
         if (this.customers.length > 0){
           console.log('data ready, set the search result')
-          let temp = this.customers.filter(x=>x.email.indexOf(emailPiece) > -1)
-          this.searchResult.length=0 //copy it to update view automatically, only this no longer works with the dataReady observable
-          temp.forEach(x=>this.searchResult.push(x))
+          let temp = this.customers.filter(x=>{
+            return emailPiece && namePiece
+            ? x.email.indexOf(emailPiece) > -1  && x.name.indexOf(namePiece) > -1
+            : emailPiece ? x.email.indexOf(emailPiece) > -1
+            : namePiece ? x.name.indexOf(namePiece) > -1
+            : true
+            })
+          //copy it to update view automatically, only this no longer works with the dataReady observable
+          this.searchResult.length=0 
+          let count=0
+          let maxsearch=10
+          for (let x of temp){
+              this.searchResult.push(x)
+              count++
+              if (count >= maxsearch) {
+                this._ui.warning(`Er zijn meer matches dan het maximum ${maxsearch}, zoek specifieker.`)
+                break;
+              }
+            }
           // console.log('this.searchResult.length === '+this.searchResult.length)
           this.searchCompleted$.next(this.searchResult)
         }

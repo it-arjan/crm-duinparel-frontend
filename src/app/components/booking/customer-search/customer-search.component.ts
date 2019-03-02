@@ -21,12 +21,13 @@ export class CustomerSearchComponent implements OnInit {
   }
   initForm(){
     this.reactiveForm = new FormGroup({
-      'email': new FormControl('')//, Validators.required
+      'email': new FormControl(''),//, Validators.required
+      'name': new FormControl('')//, Validators.required
     })
   }
   onSubmit(){
     this._ui.checkin(tGuistate.searchCustomer)
-    this._ds.searchCustomers(this.reactiveForm.get('email').value)
+    this._ds.searchCustomers(this.reactiveForm.get('email').value, this.reactiveForm.get('name').value)
   }
   onNewCustomer(){
     this._ui.checkin(tGuistate.newCustomer)

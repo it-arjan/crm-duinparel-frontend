@@ -42,6 +42,6 @@ export class CustomerListComponent implements OnInit {
     }
   }
   onDblclick(idx: number){
-    this._ds.searchCustomers(this.customers[idx].email)
+    this._ds.searchCustomers(this.customers[idx].email,null)
   }
 }
