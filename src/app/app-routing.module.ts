@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
-import { BookingWrapComponent } from './components/booking/booking-wrap/booking-wrap.component';
+import { BookingWrapComponent } from './components/booking/customer-wrap/customer-wrap.component';
 import { MailingComponent } from './components/mailing/mailing/mailing.component';
 import { BookingComponent } from './components/booking/booking/booking.component';
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';

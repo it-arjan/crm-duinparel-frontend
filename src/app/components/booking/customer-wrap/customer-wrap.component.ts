@@ -5,8 +5,8 @@ import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-booking-wrap',
-  templateUrl: './booking-wrap.component.html',
-  styleUrls: ['./booking-wrap.component.css']
+  templateUrl: './customer-wrap.component.html',
+  styleUrls: ['./customer-wrap.component.css']
 })
 export class BookingWrapComponent implements OnInit, OnDestroy { //todo rename to  customer-booking-wrap
 

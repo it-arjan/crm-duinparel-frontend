@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BookingWrapComponent } from './booking-wrap.component';
+import { BookingWrapComponent } from './customer-wrap.component';
 
 describe('BookingWrapComponent', () => {
   let component: BookingWrapComponent;

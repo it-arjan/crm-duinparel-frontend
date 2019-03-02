@@ -9,7 +9,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HeaderComponentComponent } from './components/header/header.component';
 import { DropdownDirective } from './shared/dropdown.directive';
-import { BookingWrapComponent } from './components/booking/booking-wrap/booking-wrap.component';
+import { BookingWrapComponent } from './components/booking/customer-wrap/customer-wrap.component';
 import { CustomerSearchComponent } from './components/booking/customer-search/customer-search.component';
 import { CustomerListComponent } from './components/booking/customer-list/customer-list.component';
 import { CustomerNewEditComponent } from './components/booking/customer-new-edit/customer-new-edit.component';
