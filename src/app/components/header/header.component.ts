@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef, Renderer2, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef, Renderer2, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { UIService } from 'src/app/services/ui.service';
 import { UserFeedback } from 'src/app/models/UserFeedback.model';
 import {trigger, state, style, animate, transition} from '@angular/animations';
@@ -33,7 +33,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   constructor(
     private _bs: BackendService, private _auth: AuthService,
     private _ui : UIService, private _modalService: NgbModal,
-    private _cd: ChangeDetectorRef,
+    private _cd: ChangeDetectorRef, private zone: NgZone,
     private _ds: DataService, private _r2: Renderer2
     ) { }
   notificationState:string
@@ -47,12 +47,12 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   notifClicked=false
 
   resetAnimation(){
-     this.notificationState = 'in'
-     this._cd.detectChanges()
-     setTimeout(()=>{ 
-       this.notificationState = 'out';
-        this._cd.detectChanges()
-      },200)
+      this.zone.run(() => {
+       this.notificationState = 'in'
+        setTimeout(()=>{ 
+              this.notificationState = 'out';
+          },200)
+      })
   }
 
   ngOnInit() {
