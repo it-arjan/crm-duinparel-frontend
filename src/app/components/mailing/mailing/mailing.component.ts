@@ -4,13 +4,14 @@ import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/fo
 import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from 'src/app/services/data.service';
 import { UIService } from 'src/app/services/ui.service';
-import { Globals } from 'src/app/shared/globals';
+import { Globals, tDateError } from 'src/app/shared/globals';
 import { Customer } from 'src/app/models/customer.model';
 import { take } from 'rxjs/operators';
 import { Mailing } from 'src/app/models/mailing.model';
 import { ModalConfirmComponent } from '../../ng-bootstrap/modal-confirm/modal-confirm.component';
 import * as moment from 'moment';
 import { tPersist, tDataResult } from 'src/app/services/interfaces.persist';
+import { ModalDaterangeSelectComponent } from '../../ng-bootstrap/modal-daterange-select/modal-daterange-select.component';
 
 @Component({
   selector: 'app-mailing-wrap',
@@ -79,20 +80,83 @@ export class MailingComponent implements OnInit {
 
   initForm(){
     this.reactiveForm = new FormGroup({
+      'slot': new FormControl('',[this.slotValidVal.bind(this)]),
       'visitedFrom': new FormControl(this.visitedFrom,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
       'visitedUntil': new FormControl(this.visitedUntil>0?this.visitedUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'mailedSinceFrom': new FormControl(this.mailedSinceFrom>0?this.mailedSinceFrom:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'totalVisists': new FormControl(this.totalVisists>0?this.totalVisists:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'propType': new FormControl('',[Validators.required]),
       'bookTypeCheckboxes': new FormGroup({
-       
+           //add checkbox formcontrols dynamically below, Angular 6 
       }),
     })
-    //add checkbox formcontrols dynamically, Angular 6 
+    //add checkbox formcontrols
     const checkboxes = <FormGroup>this.reactiveForm.get('bookTypeCheckboxes');
     this.bookTypes.map(x=>checkboxes.addControl(x, new FormControl(true)))
   }
+  testPattern(slot){
+    return Globals.slotPattern.test(slot)
+  }
   
+  validSlotEntered(){
+    let slot=this.reactiveForm.get('slot').value
+    if (slot) slot=slot.replace(/\s/g,'')
+    return this.testPattern(slot) && !this.checkSlot(slot)
+  }
+  //checkSlot is called from validator and from template
+  checkSlot(slot:string): string { 
+
+    let arr_fromuntil = slot.split(',')
+    let from= arr_fromuntil[0]
+    let until= arr_fromuntil[1]
+    let errormsg=null
+    //format should be day_nr/month_nr
+    let fromparts = from.split('/')
+    if ( Number(fromparts[0]) <1 || Number(fromparts[0]) > 31) 
+      errormsg= "Dag van periode-van niet tussen 1-31, formaat is dag/maand."
+    if (!errormsg && Number(fromparts[1]) <1 || Number(fromparts[1]) > 12 ) 
+      errormsg= "Maand van periode-van niet tussen 1-12, formaat is dag/maand."
+    
+    let untilparts = until.split('/')
+    if (!errormsg && Number(untilparts[0]) <1 ||Number(untilparts[0]) > 31 )
+      errormsg= "Dag van periode-tot niet tussen 1-31, formaat is dag/maand."
+    if (!errormsg && Number(untilparts[1]) <1 ||Number(untilparts[1]) > 12 )
+      errormsg= "Maand van periode-tot niet tussen 1-12, formaat is dag/maand."
+    
+    //check if until is after from
+    if (!errormsg && fromparts[1]>untilparts[1] || (fromparts[1]===untilparts[1] && fromparts[0]>untilparts[0]))
+      errormsg= "periode-tot moet na periode-van zijn."
+    return errormsg
+  }
+
+  slotValidVal(control: FormControl) : {[s: string]: boolean}{
+    //PS: call as validator with bind(this)
+    let result:{[s: string]:boolean}=null
+    if (this.reactiveForm){  //needed, is somehow called before this.reactiveForm is instantiated
+      //we need both fields to determine validity
+      let frm_slot:string= this.reactiveForm.get('slot').value
+      if (frm_slot) frm_slot=frm_slot.replace(/\s/g,'') 
+      
+      console.log('slotValid called') 
+      if (this.testPattern(frm_slot)) {
+        let errormsg:string = this.checkSlot(frm_slot)
+        
+        if (errormsg){
+          result = {'dateInvalid': true} 
+          this._ui.error(errormsg)
+        } 
+      }
+    }
+    return result
+  }
+
+  handleDateError(error:tDateError){
+    if (error===tDateError.arrive_invalid) this._ui.error("Periode-van wordt niet als datum herkend!")
+    if (error===tDateError.depart_invalid) this._ui.error("Periode-tot wordt niet als datum herkend!")
+    if (error===tDateError.depart_before_arrive) this._ui.error("vertrek moet later zijn dan de aankomst!")
+  }
+
+
   setSelectedBooktypes(checkboxes:FormGroup){
     this.selectedBookTypes.length=0 //clear array
     for (let booktype of this.bookTypes){
@@ -102,10 +166,13 @@ export class MailingComponent implements OnInit {
 
   onSubmit(){
     this.resetScreen()
-    this.visitedFrom = this.reactiveForm.get('visitedFrom').value;
-    this.visitedUntil = this.reactiveForm.get('visitedUntil').value;
-    this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value;
-    this.totalVisists = this.reactiveForm.get('totalVisists').value;
+    let str_slot:string = this.reactiveForm.get('slot').value
+    if (str_slot) str_slot=str_slot.replace(/\s/g,'')
+
+    this.visitedFrom = this.reactiveForm.get('visitedFrom').value
+    this.visitedUntil = this.reactiveForm.get('visitedUntil').value
+    this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value
+    this.totalVisists = this.reactiveForm.get('totalVisists').value
 
     this.selectedPropCodes = Globals.propType2PropCode(this.reactiveForm.get('propType').value )
     this.setSelectedBooktypes(<FormGroup>this.reactiveForm.get('bookTypeCheckboxes'))
@@ -114,9 +181,10 @@ export class MailingComponent implements OnInit {
     //   this.mailedSinceFrom,this.totalVisists,
     //   this.selectedPropCodes, this.selectedBookTypes)
       
-    this.selectionAsBatches = this._ds.searchEmails(this.visitedFrom,this.visitedUntil,
-                                                this.mailedSinceFrom,this.totalVisists,
-                                                this.selectedPropCodes, this.selectedBookTypes)
+    this.selectionAsBatches = this._ds.searchEmails(str_slot, 
+                                                  this.visitedFrom,this.visitedUntil,
+                                                  this.mailedSinceFrom,this.totalVisists,
+                                                  this.selectedPropCodes, this.selectedBookTypes)
    // console.log(this.selectionAsBatches)
     }
 

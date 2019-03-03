@@ -84,14 +84,16 @@ export class BookingComponent implements OnInit {
       let intResult = Globals.checkDates(frm_arrive, frm_depart)
       //only check when both dates are filled and our global dateformat regex passes
       if (!intResult.valid){
-      
-          if (intResult.error===tDateError.arrive_invalid) this._ui.error("Aankomst wordt niet als datum herkend!")
-          if (intResult.error===tDateError.depart_invalid) this._ui.error("Vertrek wordt niet als datum herkend!")
-          if (intResult.error===tDateError.depart_before_arrive) this._ui.error("vertrek moet later zijn dan de aankomst!")
           result = {'dateInvalid': true} 
+          this.handleDateError(intResult.error)
       }
     }
-    return result  ?result : null
+    return result
+  }
+  handleDateError(error:tDateError){
+    if (error===tDateError.arrive_invalid) this._ui.error("Aankomst wordt niet als datum herkend!")
+    if (error===tDateError.depart_invalid) this._ui.error("Vertrek wordt niet als datum herkend!")
+    if (error===tDateError.depart_before_arrive) this._ui.error("vertrek moet later zijn dan de aankomst!")
   }
   onSubmit(){
     let m_arrive = moment(this.reactiveForm.get('arrive').value, Globals.momDateformat);
@@ -113,9 +115,7 @@ export class BookingComponent implements OnInit {
         this._ui.successIcon()
         this._cd.detectChanges()
       }
-      
     })
-
   }
 
   openModalCalendar(){

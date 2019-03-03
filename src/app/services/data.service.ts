@@ -10,6 +10,8 @@ import { UIService } from './ui.service';
 import { ReplaySubject, Subject, BehaviorSubject } from 'rxjs';
 import { PersistService } from './persist.service';
 import { Router } from '@angular/router';
+import { Globals } from '../shared/globals';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -221,49 +223,84 @@ export class DataService {
     this.searchResult.length=0;
   }
 
-  bookingMatches(book: Booking,
-            allowedProptypes: string[], 
-            allowedBooktypes: string[],
-            msecNotVisitedFrom: number, 
-            msecNotVisitedUntil: number): boolean {
+  bookingFallsWithinSlot(book: Booking, str_slot) : boolean {
+    let arr_fromuntil = str_slot.split(',')
+    let str_slot_from = arr_fromuntil[0]
+    let str_slot_until= arr_fromuntil[1]
 
-    //does property/bookType match?
-    let hasMachingBookings = allowedProptypes.includes(book.propcode) && allowedBooktypes.includes(book.booktype)
-    if (hasMachingBookings){
-      //Refine by date  
-      let diff_msec = Date.now() - book.arrive 
-      hasMachingBookings = diff_msec > msecNotVisitedFrom
-      if (hasMachingBookings && msecNotVisitedUntil > 0) 
-        hasMachingBookings = diff_msec < msecNotVisitedUntil
-    }
-    return hasMachingBookings
-  }
+    let arr_slot_from = str_slot_from.split('/')
+    let day_slot_from = Number(arr_slot_from[0])
+    let month_slot_from = Number(arr_slot_from[1])
+    
+    let arr_slot_until = str_slot_until.split('/')
+    let day_slot_until = Number(arr_slot_until[0])
+    let month_slot_until = Number(arr_slot_until[1])
 
-  selectMatchingBookings( cust: Customer, msecNotVisitedFrom: number, msecNotVisitedUntil: number, 
+    let arrive_m = moment(book.arrive)
+    let depart_m = moment(book.arrive)
+    
+    // compare months
+    //if moth same, compare the day
+    let arrive_within = arrive_m.month() > month_slot_from
+                        ? true
+                        : arrive_m.month() === month_slot_from
+                        ? arrive_m.date() >= day_slot_from
+                        : false
+    let depart_within = depart_m.month() < month_slot_until
+                        ? true
+                        : depart_m.month() === month_slot_until
+                        ? depart_m.date() <= day_slot_until
+                        : false
+    return arrive_within && depart_within
+  } 
+  selectMatchingBookings( cust: Customer, 
+                          str_slot: string,
+                          msecNotVisitedFrom: number, msecNotVisitedUntil: number, 
                           allowedProptypes: string[], allowedBooktypes: string[]) {
       let matchingBookings = cust.bookings.filter((book) => {
-        return this.bookingMatches(book, allowedProptypes, allowedBooktypes, msecNotVisitedFrom, msecNotVisitedUntil)
-      }) //cust.bookings.filter
+
+            //does property/bookType match?
+            let hasMachingBookings = allowedProptypes.includes(book.propcode) && allowedBooktypes.includes(book.booktype)
+            if (str_slot ){
+              hasMachingBookings = hasMachingBookings && this.bookingFallsWithinSlot(book, str_slot)
+            }
+            if (hasMachingBookings){
+              //Refine by date  
+              let diff_msec = Date.now() - book.arrive 
+              hasMachingBookings = diff_msec > msecNotVisitedFrom
+              if (hasMachingBookings && msecNotVisitedUntil > 0) 
+                hasMachingBookings = diff_msec < msecNotVisitedUntil
+            }
+            return hasMachingBookings
+          }) //cust.bookings.filter
     return matchingBookings 
   }
-  findCustomers(msecNotVisitedFrom: number, 
+
+  findCustomers(str_slot: string, 
+                msecNotVisitedFrom: number, 
                 msecNotVisitedUntil: number, 
                 msecNotMailedFrom:number, 
                 visitCount:number, 
                 selectedProptypes: string[],
                 selectedBooktypes: string[]):Customer[] {
-    let result:Customer[]=[]                
+    let result:Customer[]=[]
+    let hasMatchingBookings=false  
+            
     if (this.customers){
       // simply filter customers
         let custHits =this.customers.filter((cust: Customer) => {
           // First see if this customer has bookings of this book-type and propcode
           // any booking will do, it can be too old for the criteria
           let hasVisitedEnough = visitCount < 0 || cust.bookings.length >= visitCount
-          let matchingBookings = hasVisitedEnough  
-                                ? this.selectMatchingBookings(cust, msecNotVisitedFrom, msecNotVisitedUntil, selectedProptypes, selectedBooktypes)
-                                : []
-          return matchingBookings.length > 0
-        })
+          if (hasVisitedEnough){
+              hasMatchingBookings=this.selectMatchingBookings(cust, 
+                                            str_slot,
+                                            msecNotVisitedFrom, msecNotVisitedUntil, 
+                                            selectedProptypes, selectedBooktypes)
+                                            .length > 0
+            }
+            return hasMatchingBookings
+          })
         
         //Refine by mailing criteria
         //Not optimal in performance but better for maintenance
@@ -288,18 +325,25 @@ export class DataService {
       return result
   }
 
-  searchEmails(monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
-              monthsNotMailedFrom:number, totalVisits:number, 
-              selectedProptypes: string[],
-              selectedBooktypes: string[]) : CustomerBatch[]{
-    //convert moths to msec
+  searchEmails( str_slot: string, 
+                monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
+                monthsNotMailedFrom:number, totalVisits:number, 
+                selectedProptypes: string[],
+                selectedBooktypes: string[]) : CustomerBatch[]{
+    //convert everything to msec
+
     let msecNotVisitedFrom = monthsNotVisitedFrom   ?  Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : -1
     let msecNotVisitedUntil = monthsNotVisitedUntil   ? Math.floor(totalVisits * 1000 * 3600 * 24 * 30.5) : -1
     let msecNotMailedFrom = monthsNotMailedFrom     ?  Math.floor(monthsNotMailedFrom * 1000 * 3600 * 24 * 30.5) : -1
     let visitCount = totalVisits || -1
-    console.log(msecNotVisitedFrom, msecNotVisitedUntil, msecNotMailedFrom, visitCount)
+    console.log('============= searchEmails =============')
+    console.log(str_slot, msecNotVisitedFrom, msecNotVisitedUntil, msecNotMailedFrom, visitCount)
+    
     let custHits:Customer[]
-    custHits = this.findCustomers(msecNotVisitedFrom, msecNotVisitedUntil, msecNotMailedFrom, visitCount, selectedProptypes, selectedBooktypes)
+    custHits = this.findCustomers(str_slot, 
+                                  msecNotVisitedFrom, msecNotVisitedUntil, 
+                                  msecNotMailedFrom, visitCount, 
+                                  selectedProptypes, selectedBooktypes)
 
     
     let batchArr:CustomerBatch[]=[]

@@ -9,6 +9,7 @@ export class Globals {
 
   public static momDateformat:string='D MMM YY' 
   public static momDatePattern:RegExp = new RegExp(/[0-9][0-9]? [a-zA-Z][a-z][a-z] [0-9][0-9]/)
+  public static slotPattern:RegExp = new RegExp(/[0-9][0-9]?\/[0-9][0-9]?,[0-9][0-9]?\/[0-9][0-9]?/)
   public static angularDateformat:string='d MMM yy' 
   public static angularDateformatWithWeekDay:string='EEE, d MMM yy' 
   public static angularDateTimeformat:string='MMM d - H:mm' 
@@ -30,6 +31,7 @@ export class Globals {
 
     return (d2M+12*d2Y)-(d1M+12*d1Y)
 }
+
 public static checkDates(arrive_str:string, depart_str:string):{valid:boolean, error:tDateError}{
     let result = {valid:true, error:null}
      if (arrive_str && depart_str && 
