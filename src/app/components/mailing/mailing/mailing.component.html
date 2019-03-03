@@ -17,8 +17,9 @@
                       formControlName="slot" 
                       placeholder="dag/maand,dag/maand">
                 </div>
-                <div class="input-group-append col-2">
-                  <span *ngIf="validSlotEntered()">OKAY!!!</span>
+                <div class="input-group-append col-4">
+                  <i class="fa fa-check" style="color:green" *ngIf="slotDataEntered() && validSlotEntered()" aria-hidden="true"></i>
+                  <i class="fa fa-exclamation" *ngIf="slotDataEntered() && !validSlotEntered()" aria-hidden="true"> {{getErrorWhenPatternOk()}}</i>
                 </div>
                 <div class="input-group-append col-1">
                   

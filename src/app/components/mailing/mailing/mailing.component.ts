@@ -80,7 +80,7 @@ export class MailingComponent implements OnInit {
 
   initForm(){
     this.reactiveForm = new FormGroup({
-      'slot': new FormControl('',[this.slotValidVal.bind(this)]),
+      'slot': new FormControl('',{validators: this.slotValidVal.bind(this), updateOn: "blur"}),
       'visitedFrom': new FormControl(this.visitedFrom,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
       'visitedUntil': new FormControl(this.visitedUntil>0?this.visitedUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'mailedSinceFrom': new FormControl(this.mailedSinceFrom>0?this.mailedSinceFrom:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
@@ -97,15 +97,26 @@ export class MailingComponent implements OnInit {
   testPattern(slot){
     return Globals.slotPattern.test(slot)
   }
-  
+   getErrorWhenPatternOk(){
+    let slot=this.reactiveForm.get('slot').value
+    if (slot) slot=slot.replace(/\s/g,'')
+    //if (this.testPattern(slot) )
+      return this.getErrorMessage(slot)
+  return null
+  } 
   validSlotEntered(){
     let slot=this.reactiveForm.get('slot').value
     if (slot) slot=slot.replace(/\s/g,'')
-    return this.testPattern(slot) && !this.checkSlot(slot)
+    return this.getErrorMessage(slot)==null
   }
-  //checkSlot is called from validator and from template
-  checkSlot(slot:string): string { 
-
+  slotDataEntered(){
+    let slot=this.reactiveForm.get('slot').value
+    return slot && slot.length > 0
+  }
+  //checkSlot is called from validator and from template (through validSlotEntered)
+  getErrorMessage(slot:string): string {
+    if (!this.testPattern(slot))
+      return "Patroon: dag/maand, dag/maand"
     let arr_fromuntil = slot.split(',')
     let from= arr_fromuntil[0]
     let until= arr_fromuntil[1]
@@ -113,19 +124,20 @@ export class MailingComponent implements OnInit {
     //format should be day_nr/month_nr
     let fromparts = from.split('/')
     if ( Number(fromparts[0]) <1 || Number(fromparts[0]) > 31) 
-      errormsg= "Dag van periode-van niet tussen 1-31, formaat is dag/maand."
+      errormsg= "Dag in periode-van moet tussen 1-31."
     if (!errormsg && Number(fromparts[1]) <1 || Number(fromparts[1]) > 12 ) 
-      errormsg= "Maand van periode-van niet tussen 1-12, formaat is dag/maand."
+      errormsg= "Maand in periode-van moet tussen 1-12."
     
     let untilparts = until.split('/')
     if (!errormsg && Number(untilparts[0]) <1 ||Number(untilparts[0]) > 31 )
-      errormsg= "Dag van periode-tot niet tussen 1-31, formaat is dag/maand."
+      errormsg= "Dag in periode-tot moet tussen 1-31."
     if (!errormsg && Number(untilparts[1]) <1 ||Number(untilparts[1]) > 12 )
-      errormsg= "Maand van periode-tot niet tussen 1-12, formaat is dag/maand."
-    
+      errormsg= "Maand in periode-tot moet tussen 1-12."
+    // console.log(`months:  ${fromparts[1]}, ${untilparts[1]}`)
+    // console.log(`days:  ${fromparts[0]}, ${untilparts[0]}`)
     //check if until is after from
-    if (!errormsg && fromparts[1]>untilparts[1] || (fromparts[1]===untilparts[1] && fromparts[0]>untilparts[0]))
-      errormsg= "periode-tot moet na periode-van zijn."
+    if (!errormsg && fromparts[1]>untilparts[1] || (fromparts[1]===untilparts[1] && fromparts[0]>=untilparts[0]))
+      errormsg= "periode-tot is eerder dan periode-van."
     return errormsg
   }
 
@@ -135,27 +147,15 @@ export class MailingComponent implements OnInit {
     if (this.reactiveForm){  //needed, is somehow called before this.reactiveForm is instantiated
       //we need both fields to determine validity
       let frm_slot:string= this.reactiveForm.get('slot').value
-      if (frm_slot) frm_slot=frm_slot.replace(/\s/g,'') 
-      
-      console.log('slotValid called') 
-      if (this.testPattern(frm_slot)) {
-        let errormsg:string = this.checkSlot(frm_slot)
-        
-        if (errormsg){
-          result = {'dateInvalid': true} 
-          this._ui.error(errormsg)
-        } 
-      }
+      if (frm_slot) 
+        frm_slot=frm_slot.replace(/\s/g,'') 
+      let errormsg:string = this.getErrorMessage(frm_slot)
+      if (errormsg){
+        result = {'dateInvalid': true} 
+      } 
     }
     return result
   }
-
-  handleDateError(error:tDateError){
-    if (error===tDateError.arrive_invalid) this._ui.error("Periode-van wordt niet als datum herkend!")
-    if (error===tDateError.depart_invalid) this._ui.error("Periode-tot wordt niet als datum herkend!")
-    if (error===tDateError.depart_before_arrive) this._ui.error("vertrek moet later zijn dan de aankomst!")
-  }
-
 
   setSelectedBooktypes(checkboxes:FormGroup){
     this.selectedBookTypes.length=0 //clear array
