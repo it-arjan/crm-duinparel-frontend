@@ -142,17 +142,19 @@ export class MailingComponent implements OnInit {
   }
 
   slotValidVal(control: FormControl) : {[s: string]: boolean}{
-    //PS: call as validator with bind(this)
+    //PS: called as validator onBlur and with bind(this)
     let result:{[s: string]:boolean}=null
     if (this.reactiveForm){  //needed, is somehow called before this.reactiveForm is instantiated
-      //we need both fields to determine validity
-      let frm_slot:string= this.reactiveForm.get('slot').value
-      if (frm_slot) 
-        frm_slot=frm_slot.replace(/\s/g,'') 
-      let errormsg:string = this.getErrorMessage(frm_slot)
-      if (errormsg){
-        result = {'dateInvalid': true} 
-      } 
+      //only check when there is data entered
+      if (this.slotDataEntered()){
+        let frm_slot:string= this.reactiveForm.get('slot').value
+        if (frm_slot) 
+          frm_slot=frm_slot.replace(/\s/g,'') 
+        let errormsg:string = this.getErrorMessage(frm_slot)
+        if (errormsg){
+          result = {'dateInvalid': true} 
+        } 
+      }
     }
     return result
   }
