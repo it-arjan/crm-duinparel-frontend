@@ -28,6 +28,6 @@ export class UserFeedback{
       }
     }
     toHistory(){
-      return (this.message && this.type != ufType.msgInfo)
+      return (this.message && this.type === ufType.msgError)
     }
 }

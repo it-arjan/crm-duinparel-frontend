@@ -69,16 +69,11 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   }
 
   onUINotification(feedback:UserFeedback){
-      //this.notificationState = 'in'
       this.currentFeedback=feedback
-      //this.processFeedback(feedback)
       // Start adding warnings/ errors to history after logon
       if (feedback.toHistory()) {
         this.ufList.unshift(feedback) 
       }
-            //Trigger state change after view is rendered
-      // setTimeout(()=>{ this.notificationState = 'out' },1000)
-      // this._cd.detectChanges() //hack to pickup the first message
       this.resetAnimation()
   }
 
