@@ -65,10 +65,11 @@
 <div class="col-md-2">{{booking.depart | date:globDateformat()}}</div>
 <div class="col-md-1">{{booking.nrpers }}</div>
 <div class="col-md-1">{{booking.propcode }}</div>
-<div class="col-md-1">{{booking.booktype }}</div>
-<div class="col-md-2 input-group">
-
+<div class="col-md-2">{{booking.booktype }}</div>
+<div class="col-md-2 text-align-middle">
     <button style="margin-right:3px" class="btn btn-sm btn-outline-success" (click)='onWord(idx)'>Word</button>
+</div>
+<div class="col-md-1 text-align-middle">
     <button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>X</button>
 </div>
 </div>
