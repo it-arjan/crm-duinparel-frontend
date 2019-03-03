@@ -1,5 +1,7 @@
 import { OnInit, Injectable } from '@angular/core';
 import * as moment from 'moment';
+import 'moment/locale/nl'  // without this line it didn't work
+moment.locale('nl')
 
 export enum tDateError { arrive_invalid, depart_invalid, depart_before_arrive}
 @Injectable()

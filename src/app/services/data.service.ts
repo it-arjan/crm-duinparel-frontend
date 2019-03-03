@@ -12,6 +12,8 @@ import { PersistService } from './persist.service';
 import { Router } from '@angular/router';
 import { Globals } from '../shared/globals';
 import * as moment from 'moment';
+import 'moment/locale/nl'  // without this line it didn't work
+moment.locale('nl')
 
 @Injectable({
   providedIn: 'root'

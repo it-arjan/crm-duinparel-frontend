@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NgxElectronModule } from 'ngx-electron';
@@ -21,7 +21,10 @@ import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/m
 import { ModalDaterangeSelectComponent } from './components/ng-bootstrap/modal-daterange-select/modal-daterange-select.component';
 import { Nl2BrPipe } from './shared/nl2br.pipe';
 import { AssumeSafeHtmlPipe } from './shared/assumeSafeHtml.pipe';
+import { registerLocaleData } from '@angular/common';
+import localeNl from '@angular/common/locales/nl';
 
+registerLocaleData(localeNl, 'nl'); 
 
 @NgModule({
   declarations: [
@@ -52,7 +55,7 @@ import { AssumeSafeHtmlPipe } from './shared/assumeSafeHtml.pipe';
     AppRoutingModule,
     NgxElectronModule,
   ],
-  providers: [],
+  providers: [{ provide: LOCALE_ID, useValue: "nl" },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

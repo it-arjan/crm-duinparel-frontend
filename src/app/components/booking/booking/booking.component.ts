@@ -11,6 +11,8 @@ import { ModalDaterangeSelectComponent } from '../../ng-bootstrap/modal-daterang
 import { Globals, tDateError } from '../../../shared/globals';
 
 import * as moment from 'moment';
+import 'moment/locale/nl'  // without this line it didn't work
+moment.locale('nl')
 import { BackendService } from 'src/app/services/backend.service';
 import { take } from 'rxjs/operators';
 import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
