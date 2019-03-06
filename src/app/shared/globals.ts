@@ -25,15 +25,6 @@ export class Globals {
     return screenSelection=='app' ? ['app']:['jvg', 'alb']
   }
 
-  public static jsDateDiffMonths(d1:Date, d2:Date){
-    var d1Y = d1.getFullYear();
-    var d2Y = d2.getFullYear();
-    var d1M = d1.getMonth();
-    var d2M = d2.getMonth();
-
-    return (d2M+12*d2Y)-(d1M+12*d1Y)
-}
-
 public static checkDates(arrive_str:string, depart_str:string):{valid:boolean, error:tDateError}{
     let result = {valid:true, error:null}
      if (arrive_str && depart_str && 
