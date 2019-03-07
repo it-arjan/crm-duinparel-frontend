@@ -13,21 +13,21 @@ import { Router } from '@angular/router';
 import { Globals } from '../shared/globals';
 import * as moment from 'moment';
 import 'moment/locale/nl'  // without this line it didn't work
+import { iData } from './interfaces.data';
 moment.locale('nl')
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+
+export class DataService implements iData{
   constructor(
     private _ps: PersistService,
     private _ui: UIService,
     private _router: Router 
    ) { 
       this.searchResult = new Array<Customer>();
-      // this.searchResult.push(this.customers[0])
-      // this.searchResult.push(this.customers[1])
-    }
+  }
 
   private customers: Array<Customer>=[];
   private mailings: Array<Mailing>=[];
@@ -60,7 +60,7 @@ export class DataService {
     }) 
  
   }
-  // Replays always emit the last value on subscribe, but only when there is one
+  // Replay Subjects always emit the last value on subscribe, but only when there is at least one
   dataReadyReplay(): ReplaySubject<tDataResult> {
        return this.dataReady$
   }
@@ -68,6 +68,7 @@ export class DataService {
   searchResults(): BehaviorSubject<Customer[]>{
        return this.searchCompleted$
   }
+
   searchCustomers(emailPiece:string, namePiece: string){
     this.emailSearchTerm= emailPiece
     this.dataReadyReplay().pipe(take(1))
@@ -103,7 +104,7 @@ export class DataService {
       })
   }
 
-  removeFromSearchResult(cust: Customer){
+  private removeFromSearchResult(cust: Customer){
     let idx = this.searchResult.indexOf(cust)
     if (idx >=0) {
       this.searchResult.splice(idx, 1)
@@ -225,7 +226,7 @@ export class DataService {
     this.searchResult.length=0;
   }
 
-  bookingFallsWithinSlot(book: Booking, str_slot) : boolean {
+  private bookingFallsWithinSlot(book: Booking, str_slot) : boolean {
     let arr_fromuntil = str_slot.split(',')
     let str_slot_from = arr_fromuntil[0]
     let str_slot_until= arr_fromuntil[1]
@@ -255,7 +256,7 @@ export class DataService {
                         : false
     return arrive_within && depart_within
   } 
-  selectMatchingBookings( cust: Customer, 
+  private selectMatchingBookings( cust: Customer, 
                           str_slot: string,
                           msecNotVisitedFrom: number, msecNotVisitedUntil: number, 
                           allowedProptypes: string[], allowedBooktypes: string[]) {
@@ -278,7 +279,7 @@ export class DataService {
     return matchingBookings 
   }
 
-  findCustomers(str_slot: string, 
+  private findCustomers(str_slot: string, 
                 msecNotVisitedFrom: number, 
                 msecNotVisitedUntil: number, 
                 msecNotMailedFrom:number, 

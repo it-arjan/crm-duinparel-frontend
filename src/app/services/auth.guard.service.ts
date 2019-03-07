@@ -3,7 +3,7 @@ import { CanActivate } from '@angular/router/src/utils/preactivation';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { BackendService } from './backend.service';
 import { UIService } from './ui.service';
-import { AuthService } from './auth.service';
+import { AuthBase } from './auth.base.service';
 import { FakeBackendService } from './fake.data.backend.service';
 
 @Injectable({
@@ -12,7 +12,7 @@ import { FakeBackendService } from './fake.data.backend.service';
 export class AuthGuardService implements CanActivate {
 
   constructor(
-    private _auth: AuthService, 
+    private _auth: AuthBase, 
     private _ui: UIService, 
     private router: Router) { 
       console.log('constructor AuthGuardService')

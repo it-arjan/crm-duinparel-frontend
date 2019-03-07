@@ -5,7 +5,7 @@ import { Booking } from '../models/booking.model';
 import { Mailing } from '../models/mailing.model';
 import { Observable, Observer, ReplaySubject } from 'rxjs';
 import { createLViewData } from '@angular/core/src/render3/instructions';
-import { iSecurity, securityResult } from './interfaces.security';
+import { iAuth, iAuthResult } from './interfaces.auth';
 import { UIService } from './ui.service';
 import { iBackendTasks } from './interfaces.backend';
 import { resolve } from 'q';
@@ -16,39 +16,15 @@ import { LogEntry } from '../models/logentry.model';
   providedIn: 'root'
 })
 
-export class FakeBackendService implements iDataPersist, iSecurity, iBackendTasks {
+export class FakeBackendService implements iDataPersist, iBackendTasks {
 
-  constructor(){} //do not add UiService becuase of circular dependency with AuthService
-  
-  //exec all methods with random delay between 0-2sec
+  constructor(){} //do not add UiService becuase of circular dependency with AuthBase
+   //exec all methods with random delay between 0-2sec
   computeDelay(): number {
     let result:number=Math.random() * 2000
     return result
   }
 
-  isAuthenticated(): boolean {
-    //this._ui.info('running fake auth')
-    return true
-  }
-  logOn(pwd: string): Promise<string> {
-      let promise=  new Promise<string>((resolve, reject) => {
-        let result = ''
-        setTimeout(() => {
-          resolve(result)
-        }, this.computeDelay()); 
-      })
-      return promise
-    }
-  changePassword(oldpass: string, newpass: string): Promise<securityResult> {
-      let promise=  new Promise<securityResult>((resolve, reject) => {
-        let result:securityResult = {success: true, error: null}
-        setTimeout(() => {
-          resolve(result)
-        }, this.computeDelay()); 
-      })
-      return promise
-  }
-  
   customers: Customer[]
   mailings: Mailing[]
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { UserFeedback } from '../models/UserFeedback.model';
 import { tGuistate, tGuiguidance, tComponentNames, iGuidance, ufType } from './interfaces.ui';
-import { AuthService } from './auth.service';
+import { AuthBase } from './auth.base.service';
 import { FakeBackendService } from './fake.data.backend.service';
 
 
@@ -21,7 +21,7 @@ export class UIService implements iGuidance {
 
   feedbackHistory: UserFeedback[] =[]
   constructor(
-    private _auth: AuthService
+    private _auth: AuthBase
   ) {
     this.listenForCheckins()
   }

@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
-import { iSecurity, securityResult, changePwdInput } from './interfaces.security';
+import { iAuth, iAuthResult, changePwdInput } from './interfaces.auth';
 import { ElectronService } from 'ngx-electron';
 import { UIService } from './ui.service';
+import { AuthBase } from './auth.base.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthService implements iSecurity {
+@Injectable()
+export class AuthService extends AuthBase {
   constructor(
     private _es: ElectronService,
-  ) { }
+  ) { 
+    super()
+  }
   
 authenticated:boolean
   isAuthenticated() : boolean {
@@ -19,7 +20,7 @@ authenticated:boolean
 
  logOn(pwd:string): Promise<string>{
     let result: Promise<string> =  new Promise<string>((resolve, reject) => {
-    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, result: securityResult) => {
+    this._es.ipcRenderer.once('LogonResponse', (event: Electron.IpcMessageEvent, result: iAuthResult) => {
       console.log('service.logon.result=' + result.success)
       if (result.success) {
         this.authenticated=true
@@ -37,10 +38,10 @@ authenticated:boolean
     return result
   }
 
-  changePassword(oldpass:string, newpass:string) : Promise<securityResult>{
+  changePassword(oldpass:string, newpass:string) : Promise<iAuthResult>{
     //console.log('subscribe to ChangepasswordResponse')
-    let result: Promise<securityResult> =  new Promise<securityResult>((resolve, reject) => {
-      this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: securityResult) => {
+    let result: Promise<iAuthResult> =  new Promise<iAuthResult>((resolve, reject) => {
+      this._es.ipcRenderer.once('ChangePasswordResponse', (event: Electron.IpcMessageEvent, result: iAuthResult) => {
         console.log('ChangePasswordResponse!!');
         if (result.success)
         {

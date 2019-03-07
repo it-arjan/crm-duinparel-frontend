@@ -11,7 +11,7 @@ import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
 import { BackendService } from 'src/app/services/backend.service';
 import { tDataResult } from 'src/app/services/interfaces.persist';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthBase } from 'src/app/services/auth.base.service';
 import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 import { ufType } from 'src/app/services/interfaces.ui';
 
@@ -31,7 +31,7 @@ import { ufType } from 'src/app/services/interfaces.ui';
 export class HeaderComponentComponent implements OnInit, OnDestroy {  
 
   constructor(
-    private _bs: BackendService, private _auth: AuthService,
+    private _bs: BackendService, private _auth: AuthBase,
     private _ui : UIService, private _modalService: NgbModal,
     private _cd: ChangeDetectorRef, private zone: NgZone,
     private _ds: DataService, private _r2: Renderer2

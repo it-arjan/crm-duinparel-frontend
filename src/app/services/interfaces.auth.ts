@@ -1,4 +1,4 @@
-export interface securityResult {
+export interface iAuthResult {
   success: boolean
   error: string
 }
@@ -7,8 +7,8 @@ export interface changePwdInput {
   newpwd: string
 }
 
-export interface iSecurity {
+export interface iAuth {
   isAuthenticated() : boolean 
   logOn(pwd:string): Promise<string>
-  changePassword(oldpass:string, newpass:string) : Promise<securityResult>
+  changePassword(oldpass:string, newpass:string) : Promise<iAuthResult>
 }

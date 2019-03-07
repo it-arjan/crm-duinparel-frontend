@@ -9,7 +9,7 @@ import { DataService } from 'src/app/services/data.service';
 import { ReplaySubject } from 'rxjs';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthBase } from 'src/app/services/auth.base.service';
 import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 
 @Component({
@@ -22,7 +22,7 @@ import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 export class SettingsComponent implements OnInit {
 
   constructor(private _bs : BackendService,
-              private _auth: AuthService,
+              private _auth: AuthBase,
               private _router: Router, private ngZone: NgZone,
               private _ui: UIService) { 
   }
