@@ -23,7 +23,7 @@ import { Nl2BrPipe } from './shared/nl2br.pipe';
 import { AssumeSafeHtmlPipe } from './shared/assumeSafeHtml.pipe';
 import { registerLocaleData } from '@angular/common';
 import localeNl from '@angular/common/locales/nl';
-import { AuthService } from './services/auth.service';
+import { AuthNodejsService } from './services/auth.node.service';
 import { AuthBase } from './services/auth.base.service';
 
 registerLocaleData(localeNl, 'nl'); 
@@ -57,7 +57,10 @@ registerLocaleData(localeNl, 'nl');
     AppRoutingModule,
     NgxElectronModule,
   ],
-  providers: [{ provide: LOCALE_ID, useValue: "nl" },{provide: AuthBase, useClass: AuthService}],
+  providers: [
+    { provide: LOCALE_ID, useValue: "nl" },
+    { provide: AuthBase, useClass: AuthNodejsService},
+    ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

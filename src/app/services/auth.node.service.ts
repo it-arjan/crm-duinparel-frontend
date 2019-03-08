@@ -5,7 +5,7 @@ import { UIService } from './ui.service';
 import { AuthBase } from './auth.base.service';
 
 @Injectable()
-export class AuthService extends AuthBase {
+export class AuthNodejsService extends AuthBase {
   constructor(
     private _es: ElectronService,
   ) { 
