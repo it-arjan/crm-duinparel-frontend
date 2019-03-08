@@ -1,32 +1,79 @@
 import { Injectable } from '@angular/core';
-import { iDataPersist,tBulkdataResult, tDataResult, tPersist } from './interfaces.persist';
+import { ReplaySubject } from 'rxjs';
+import { tBulkdataResult, tDataResult, iDataPersist, tPersist, tDataResultNodejs, tPersistBag } from './interfaces.persist';
 import { Customer } from '../models/customer.model';
-import { Booking } from '../models/booking.model';
+import { ElectronService } from 'ngx-electron';
 import { Mailing } from '../models/mailing.model';
-import { Observable, Observer, ReplaySubject } from 'rxjs';
-import { createLViewData } from '@angular/core/src/render3/instructions';
-import { iAuth, iAuthResult } from './interfaces.auth';
+import { Booking } from '../models/booking.model';
 import { UIService } from './ui.service';
-import { iBackendTasks } from './interfaces.backend';
-import { resolve } from 'q';
-import { ConfigSetting } from '../models/configsetting.model';
-import { LogEntry } from '../models/logentry.model';
 import { Globals } from '../shared/globals';
+import { PersistBase } from './persist.base.service';
 
 @Injectable({
   providedIn: 'root'
 })
-
-export class FakeBackendService implements iDataPersist {
-
-  constructor(){} //do not add UiService becuase of circular dependency with AuthBase
-   //exec all methods with random delay between 0-2sec
-
-
+export class PersistFakeService  extends PersistBase {
+  constructor(){
+    super()
+  }
+  
   customers: Customer[]
   mailings: Mailing[]
+  
+  private dataReplay : ReplaySubject<tBulkdataResult>
+  
+  getData(): ReplaySubject<tBulkdataResult> {
+    console.log('fake getData')
+    //this._ui.info('fake Data') //todo, make it possible to add send msgs
 
-  createData(){
+    if (!this.customers) this.createData()
+    if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
+
+    setTimeout(x=> this.dataReplay.next({customers: this.customers, mailings: this.mailings, error: null}), Globals.computeDelay()) 
+    
+    return this.dataReplay
+  }
+  
+  persistCustomer(cust: Customer, type: tPersist): ReplaySubject<tDataResult>  {
+    let result: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+    // create new id on insert
+    if (type === tPersist.Insert) 
+      cust.id=this.getNextAvailableCustId()
+    
+    setTimeout(x=> {
+      result.next({error: null})
+    }, Globals.computeDelay()) 
+    
+    return result
+  }
+
+  persistBooking(book: Booking, type: tPersist): ReplaySubject<tDataResult>  {
+     let result: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+   //we dont use booking.id in FE
+    setTimeout(() => {
+      result.next({error: null})
+    }, Globals.computeDelay())
+
+    return result
+  }
+
+  persistMailing(mail: Mailing, type: tPersist): ReplaySubject<tDataResult> {
+    let result: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+    //set a new id on insert
+    if (type === tPersist.Insert) mail.id = this.getNextAvailableMailingId()
+
+    setTimeout(() => {
+      result.next({error: null})
+    }, Globals.computeDelay());
+
+    return result
+  }
+
+  cleanupDataCache(){
+    this.dataReplay = null
+  }
+  
+  private createData(){
     this.customers=[]
     this.mailings=[]
     let bookings: Booking[]=[];
@@ -84,69 +131,14 @@ export class FakeBackendService implements iDataPersist {
     this.mailings.push(new Mailing(1, new Date("04/23/2017").getTime(), 'contains cust ids 6.9', custIds))
     
   }
-  getNextAvailableCustId(): number{
+  private getNextAvailableCustId(): number{
     let maxId=0
     this.customers.forEach(x=> maxId = (x.id > maxId ? x.id : maxId))
     return maxId + 1
   }
-  getNextAvailableMailingId(): number{
+  private getNextAvailableMailingId(): number{
     let maxId=0
     this.mailings.forEach(x=> maxId = (x.id > maxId ? x.id : maxId))
     return maxId + 1
   }
-  
-  private dataReplay : ReplaySubject<tBulkdataResult>
-
-  getData(): ReplaySubject<tBulkdataResult> {
-    console.log('fake getData')
-    //this._ui.info('fake Data')
-
-    if (!this.customers) this.createData()
-    if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
-
-    setTimeout(x=> this.dataReplay.next({customers: this.customers, mailings: this.mailings, error: null}), Globals.computeDelay()) 
-    
-    return this.dataReplay
-  }
-  
-  private custReplay : ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-  persistCustomer(cust: Customer, type: tPersist): ReplaySubject<tDataResult>  {
-    // create new id on insert
-    if (type === tPersist.Insert) 
-      cust.id=this.getNextAvailableCustId()
-    
-    setTimeout(x=> {
-      this.custReplay.next({error: null})
-    }, Globals.computeDelay()) 
-    
-    return this.custReplay
-  }
-
-  private bookReplay : ReplaySubject<tDataResult>= new ReplaySubject<tDataResult>()
-  persistBooking(book: Booking, type: tPersist): ReplaySubject<tDataResult>  {
-    //we dont use booking.id in FE
-    setTimeout(() => {
-      this.bookReplay.next({error: null})
-    }, Globals.computeDelay())
-
-    return this.bookReplay
-  }
-
-  private mailReplay : ReplaySubject<tDataResult>= new ReplaySubject<tDataResult>()
-  persistMailing(mail: Mailing, type: tPersist): ReplaySubject<tDataResult> {
-    //set a new id on insert
-    if (type === tPersist.Insert) mail.id=this.getNextAvailableMailingId()
-
-    setTimeout(() => {
-      this.mailReplay.next({error: null})
-    }, Globals.computeDelay());
-
-    return this.mailReplay
-  }
-
-  cleanupDataCache(){
-    this.dataReplay = null
-  }
-  
-
 }

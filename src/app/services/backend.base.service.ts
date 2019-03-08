@@ -16,7 +16,6 @@ export abstract class BackendBase implements iBackendTasks {
 
   abstract readConfig(): Promise<ConfigSetting[]>
   abstract writeConfig(settings:ConfigSetting[])
-  abstract checkPlatform()
   abstract writeWordBooking(customer:Customer, booking:Booking): Promise<{wordFilename:string, wordFolder:string}>
   abstract getLogs(): Promise<Array<LogEntry>> 
   abstract exitProgram()

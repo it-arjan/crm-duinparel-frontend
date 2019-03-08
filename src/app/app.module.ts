@@ -27,6 +27,11 @@ import { AuthNodejsService } from './services/auth.node.service';
 import { AuthBase } from './services/auth.base.service';
 import { BackendBase } from './services/backend.base.service';
 import { BackendService } from './services/backend.service';
+import { PersistBase } from './services/persist.base.service';
+import { PersistService } from './services/persist.service';
+import { AuthFakeService } from './services/auth.fake.service';
+import { BackendFakeService } from './services/backend.fake.service';
+import { PersistFakeService } from './services/persist.fake.service';
 
 registerLocaleData(localeNl, 'nl'); 
 
@@ -61,8 +66,9 @@ registerLocaleData(localeNl, 'nl');
   ],
   providers: [
     { provide: LOCALE_ID, useValue: "nl" },
-    { provide: AuthBase, useClass: AuthNodejsService},
-    { provide: BackendBase, useClass: BackendService},
+    { provide: AuthBase, useClass: AuthFakeService},
+    { provide: BackendBase, useClass: BackendFakeService},
+    { provide: PersistBase, useClass: PersistFakeService},
     ],
   bootstrap: [AppComponent]
 })

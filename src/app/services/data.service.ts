@@ -7,12 +7,13 @@ import { tBulkdataResult, tPersist, tDataResult } from './interfaces.persist';
 import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
 import { ReplaySubject, Subject, BehaviorSubject } from 'rxjs';
-import { PersistService } from './persist.service';
 import { Router } from '@angular/router';
 import { Globals } from '../shared/globals';
+import { iData } from './interfaces.data';
+import { PersistBase } from './persist.base.service';
+
 import * as moment from 'moment';
 import 'moment/locale/nl'  // without this line it didn't work
-import { iData } from './interfaces.data';
 moment.locale('nl')
 
 @Injectable({
@@ -21,7 +22,7 @@ moment.locale('nl')
 
 export class DataService implements iData{
   constructor(
-    private _ps: PersistService,
+    private _ps: PersistBase,
     private _ui: UIService,
     private _router: Router 
    ) { 

@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { iAuth, iAuthResult, changePwdInput } from './interfaces.auth';
 import { ElectronService } from 'ngx-electron';
 import { UIService } from './ui.service';
+import { AuthBase } from './auth.base.service';
 
 @Injectable()
-export class AuthBase implements iAuth {
+export class AuthFakeService extends AuthBase {
   constructor(
     private _es: ElectronService,
-  ) { }
+  ) { 
+        super()
+  }
   
  //exec all methods with random delay between 0-2sec
   computeDelay(): number {

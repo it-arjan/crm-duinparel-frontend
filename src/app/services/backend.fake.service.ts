@@ -7,14 +7,17 @@ import { Booking } from '../models/booking.model';
 import { LogEntry } from '../models/logentry.model';
 import { iBackendTasks } from './interfaces.backend';
 import { Globals } from '../shared/globals';
+import { BackendBase } from './backend.base.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 
-export abstract class BackendFakeService implements iBackendTasks {
-
+export class BackendFakeService extends BackendBase {
+  constructor(){
+    super()
+  }
   /// ================= iBackendTasks ====================
   readConfig(): Promise<ConfigSetting[]> {
     let promise: Promise<ConfigSetting[]> =  new Promise<ConfigSetting[]>((resolve, reject) => {

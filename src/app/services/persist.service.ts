@@ -18,7 +18,8 @@ export class PersistService  implements iDataPersist {
  ) { 
    this.subscribeToFallbackChannel()
  }
-  private getData_R$ : ReplaySubject<tBulkdataResult>
+    
+  private getData_R$ : ReplaySubject<tBulkdataResult> =new ReplaySubject<tBulkdataResult>(1);
 
   subscribeToFallbackChannel(){
     if (this._es.ipcRenderer){
@@ -39,7 +40,6 @@ export class PersistService  implements iDataPersist {
   }
     getData(): ReplaySubject<tBulkdataResult> {
     this.checkPlatform();
-    this.getData_R$ = new ReplaySubject<tBulkdataResult>(1);
     this._es.ipcRenderer.once('GetDataResponse', 
       (event: Electron.IpcMessageEvent, data: tBulkdataResult) => {
         console.log("GetDataResponse")

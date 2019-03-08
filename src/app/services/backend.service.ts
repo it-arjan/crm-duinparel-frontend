@@ -6,22 +6,21 @@ import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { LogEntry } from '../models/logentry.model';
 import { iBackendTasks } from './interfaces.backend';
+import { BackendBase } from './backend.base.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class BackendService implements iBackendTasks {
+export class BackendService extends BackendBase {
 
   constructor(
     private _es: ElectronService,
     private _ui: UIService,
     ) { 
-      console.log('constructor BackendBase')
+      super()
     }
-
-  //TODO public authResult_R$: ReplaySubject<securityResult> = new ReplaySubject<securityResult>()
 
   readConfig(): Promise<ConfigSetting[]>{
     //subscribe
