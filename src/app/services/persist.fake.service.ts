@@ -9,9 +9,7 @@ import { UIService } from './ui.service';
 import { Globals } from '../shared/globals';
 import { PersistBase } from './persist.base.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class PersistFakeService  extends PersistBase {
   constructor(){
     super()

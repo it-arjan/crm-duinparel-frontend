@@ -10,9 +10,7 @@ import { Globals } from '../shared/globals';
 import { BackendBase } from './backend.base.service';
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class BackendFakeService extends BackendBase {
   constructor(){

@@ -8,9 +8,7 @@ import { LogEntry } from '../models/logentry.model';
 import { iBackendTasks } from './interfaces.backend';
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export abstract class BackendBase implements iBackendTasks {
 

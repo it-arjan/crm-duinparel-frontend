@@ -7,9 +7,7 @@ import { Mailing } from '../models/mailing.model';
 import { Booking } from '../models/booking.model';
 import { UIService } from './ui.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export abstract class PersistBase  implements iDataPersist {
 
    abstract getData(): ReplaySubject<tBulkdataResult>

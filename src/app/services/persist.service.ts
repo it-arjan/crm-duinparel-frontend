@@ -6,17 +6,16 @@ import { ElectronService } from 'ngx-electron';
 import { Mailing } from '../models/mailing.model';
 import { Booking } from '../models/booking.model';
 import { UIService } from './ui.service';
+import { PersistBase } from './persist.base.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class PersistService  implements iDataPersist {
+@Injectable()
+export class PersistService extends PersistBase {
 
   constructor(
     private _es: ElectronService,
-    private _ui: UIService,
- ) { 
-   this.subscribeToFallbackChannel()
+    private _ui: UIService) { 
+    super()
+    this.subscribeToFallbackChannel()
  }
     
   private getData_R$ : ReplaySubject<tBulkdataResult> =new ReplaySubject<tBulkdataResult>(1);
@@ -56,7 +55,7 @@ export class PersistService  implements iDataPersist {
     return this.getData_R$
   }
 
-  cleanupDataCache() {
+  cleanupDataCache() { //todo does this really save memory?
     this.getData_R$.complete()
     this.getData_R$= new ReplaySubject<tBulkdataResult>()
   }

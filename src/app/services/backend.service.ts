@@ -9,9 +9,7 @@ import { iBackendTasks } from './interfaces.backend';
 import { BackendBase } from './backend.base.service';
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class BackendService extends BackendBase {
 
