@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router/src/utils/preactivation';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { BackendService } from './backend.service';
 import { UIService } from './ui.service';
 import { AuthBase } from './auth.base.service';
-import { FakeBackendService } from './fake.data.backend.service';
 
 @Injectable({
   providedIn: 'root'

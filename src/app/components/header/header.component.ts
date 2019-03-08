@@ -9,11 +9,9 @@ import { ModalConfirmComponent } from '../ng-bootstrap/modal-confirm/modal-confi
 import { take } from 'rxjs/operators';
 import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
-import { BackendService } from 'src/app/services/backend.service';
+import { BackendBase } from 'src/app/services/backend.base.service';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { AuthBase } from 'src/app/services/auth.base.service';
-import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
-import { ufType } from 'src/app/services/interfaces.ui';
 
 @Component({
   selector: 'app-header',
@@ -31,7 +29,7 @@ import { ufType } from 'src/app/services/interfaces.ui';
 export class HeaderComponentComponent implements OnInit, OnDestroy {  
 
   constructor(
-    private _bs: BackendService, private _auth: AuthBase,
+    private _bs: BackendBase, private _auth: AuthBase,
     private _ui : UIService, private _modalService: NgbModal,
     private _cd: ChangeDetectorRef, private zone: NgZone,
     private _ds: DataService, private _r2: Renderer2

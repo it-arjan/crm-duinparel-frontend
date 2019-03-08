@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, OnChanges, NgZone } from '@angular/core';
-import { BackendService } from 'src/app/services/backend.service';
+import { BackendBase } from 'src/app/services/backend.base.service';
 import { ConfigSetting } from 'src/app/models/configsetting.model';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { UIService } from 'src/app/services/ui.service';
@@ -10,7 +10,6 @@ import { ReplaySubject } from 'rxjs';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { Router } from '@angular/router';
 import { AuthBase } from 'src/app/services/auth.base.service';
-import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 
 @Component({
   selector: 'app-config',
@@ -21,7 +20,7 @@ import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 })
 export class SettingsComponent implements OnInit {
 
-  constructor(private _bs : BackendService,
+  constructor(private _bs : BackendBase,
               private _auth: AuthBase,
               private _router: Router, private ngZone: NgZone,
               private _ui: UIService) { 

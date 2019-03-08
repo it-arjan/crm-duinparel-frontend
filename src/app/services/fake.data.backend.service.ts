@@ -11,19 +11,17 @@ import { iBackendTasks } from './interfaces.backend';
 import { resolve } from 'q';
 import { ConfigSetting } from '../models/configsetting.model';
 import { LogEntry } from '../models/logentry.model';
+import { Globals } from '../shared/globals';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class FakeBackendService implements iDataPersist, iBackendTasks {
+export class FakeBackendService implements iDataPersist {
 
   constructor(){} //do not add UiService becuase of circular dependency with AuthBase
    //exec all methods with random delay between 0-2sec
-  computeDelay(): number {
-    let result:number=Math.random() * 2000
-    return result
-  }
+
 
   customers: Customer[]
   mailings: Mailing[]
@@ -106,7 +104,7 @@ export class FakeBackendService implements iDataPersist, iBackendTasks {
     if (!this.customers) this.createData()
     if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
 
-    setTimeout(x=> this.dataReplay.next({customers: this.customers, mailings: this.mailings, error: null}), this.computeDelay()) 
+    setTimeout(x=> this.dataReplay.next({customers: this.customers, mailings: this.mailings, error: null}), Globals.computeDelay()) 
     
     return this.dataReplay
   }
@@ -119,7 +117,7 @@ export class FakeBackendService implements iDataPersist, iBackendTasks {
     
     setTimeout(x=> {
       this.custReplay.next({error: null})
-    }, this.computeDelay()) 
+    }, Globals.computeDelay()) 
     
     return this.custReplay
   }
@@ -129,7 +127,7 @@ export class FakeBackendService implements iDataPersist, iBackendTasks {
     //we dont use booking.id in FE
     setTimeout(() => {
       this.bookReplay.next({error: null})
-    }, this.computeDelay())
+    }, Globals.computeDelay())
 
     return this.bookReplay
   }
@@ -141,7 +139,7 @@ export class FakeBackendService implements iDataPersist, iBackendTasks {
 
     setTimeout(() => {
       this.mailReplay.next({error: null})
-    }, this.computeDelay());
+    }, Globals.computeDelay());
 
     return this.mailReplay
   }
@@ -150,41 +148,5 @@ export class FakeBackendService implements iDataPersist, iBackendTasks {
     this.dataReplay = null
   }
   
-  /// ================= iBackendTasks ====================
-  readConfig(): Promise<ConfigSetting[]> {
-    let promise: Promise<ConfigSetting[]> =  new Promise<ConfigSetting[]>((resolve, reject) => {
-      let result: ConfigSetting[] = [new ConfigSetting('You are running','on a fake backend!', null)]
-      setTimeout(() => {
-          resolve(result)
-        }, this.computeDelay());
-    })
-    return promise
-  }
-  
-  writeConfig(settings: ConfigSetting[]) {
-    console.log("writeConfig not implemented in fake backend.");
-  }
 
-  writeWordBooking(customer: Customer, booking: Booking): Promise<{ wordFilename: string, wordFolder: string; }> {
-    let promise =  new Promise<{ wordFilename: string, wordFolder: string }>((resolve, reject) => {
-      setTimeout(() => {
-        resolve({ wordFilename: 'writeWordBooking not implemented', wordFolder: 'in fake backend.' })
-      }, this.computeDelay());
-    })
-    return promise
-  }
-
-  getLogs(): Promise<LogEntry[]> {
-    let promise =  new Promise<LogEntry[]>((resolve, reject) => {
-      let result = [new LogEntry('fake file','','No log files in a fake backend!')]
-      setTimeout(() => {
-        resolve(result)
-      }, this.computeDelay());
-    })
-    return promise    
-  }  
-  
-  exitProgram(){
-    //do nothing
-  }
 }

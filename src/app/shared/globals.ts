@@ -24,10 +24,15 @@ export class Globals {
   public static propType2PropCode(screenSelection:string){
     return screenSelection=='app' ? ['app']:['jvg', 'alb']
   }
+  
+  public static computeDelay(): number {
+    let result:number=Math.random() * 2000
+    return result
+  }
 
-public static checkDates(arrive_str:string, depart_str:string):{valid:boolean, error:tDateError}{
+  public static checkDates(arrive_str:string, depart_str:string):{valid:boolean, error:tDateError}{
     let result = {valid:true, error:null}
-     if (arrive_str && depart_str && 
+    if (arrive_str && depart_str && 
           Globals.momDatePattern.test(arrive_str) && 
           Globals.momDatePattern.test(depart_str)){
       

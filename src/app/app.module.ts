@@ -25,6 +25,8 @@ import { registerLocaleData } from '@angular/common';
 import localeNl from '@angular/common/locales/nl';
 import { AuthNodejsService } from './services/auth.node.service';
 import { AuthBase } from './services/auth.base.service';
+import { BackendBase } from './services/backend.base.service';
+import { BackendService } from './services/backend.service';
 
 registerLocaleData(localeNl, 'nl'); 
 
@@ -60,6 +62,7 @@ registerLocaleData(localeNl, 'nl');
   providers: [
     { provide: LOCALE_ID, useValue: "nl" },
     { provide: AuthBase, useClass: AuthNodejsService},
+    { provide: BackendBase, useClass: BackendService},
     ],
   bootstrap: [AppComponent]
 })

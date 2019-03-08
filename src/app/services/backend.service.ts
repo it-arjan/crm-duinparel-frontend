@@ -18,7 +18,7 @@ export class BackendService implements iBackendTasks {
     private _es: ElectronService,
     private _ui: UIService,
     ) { 
-      console.log('constructor BackendService')
+      console.log('constructor BackendBase')
     }
 
   //TODO public authResult_R$: ReplaySubject<securityResult> = new ReplaySubject<securityResult>()

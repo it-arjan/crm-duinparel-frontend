@@ -3,7 +3,6 @@ import { Observable, Subject } from 'rxjs';
 import { UserFeedback } from '../models/UserFeedback.model';
 import { tGuistate, tGuiguidance, tComponentNames, iGuidance, ufType } from './interfaces.ui';
 import { AuthBase } from './auth.base.service';
-import { FakeBackendService } from './fake.data.backend.service';
 
 
 @Injectable({

@@ -13,9 +13,8 @@ import { Globals, tDateError } from '../../../shared/globals';
 import * as moment from 'moment';
 import 'moment/locale/nl'  // without this line it didn't work
 moment.locale('nl')
-import { BackendService } from 'src/app/services/backend.service';
+import { BackendBase } from 'src/app/services/backend.base.service';
 import { take } from 'rxjs/operators';
-import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 
 @Component({
   selector: 'app-booking',
@@ -26,7 +25,7 @@ import { FakeBackendService } from 'src/app/services/fake.data.backend.service';
 export class BookingComponent implements OnInit {
 
   constructor(
-    private _bs: BackendService, 
+    private _bs: BackendBase, 
     private _ds: DataService, 
     private _cd: ChangeDetectorRef,
     private _modalService: NgbModal,
