@@ -3,6 +3,7 @@
     <ngb-tab id="logon" *ngIf="!loggedOn"> 
       <ng-template ngbTabTitle><b>Inloggen</b></ng-template>
         <ng-template ngbTabContent>
+  <div class="container-fluid bgcolor " >
             <div class="inloggen">
                 <h3>Inloggen</h3>
                 <form
@@ -14,29 +15,33 @@
                 <button class="btn btn-outline-secondary" type="submit" [disabled]="!logonForm.valid || capsLock">Log in</button>
                 </form>        
               </div>
+  </div>              
         </ng-template>
       </ngb-tab>
     <ngb-tab id="changepwd" *ngIf="loggedOn">
       <ng-template ngbTabTitle><b>Wachtwoordbeheer</b></ng-template>
       <ng-template ngbTabContent>
+  <div class="container-fluid bgcolor " >
         <div class="changepwd">
           <form
             [formGroup]="changePwdForm" 
             (ngSubmit)="onChangePwd()" 
             class="form-inline">
-              <label for="oldpassword">old password <input type="password" formControlName="oldpassword"></label>
-              <label for="newpassword">new password <input type="password" formControlName="newpassword"></label>
-              <label for="newpassword2">repeat new password <input type="password" formControlName="newpassword2"></label>
+              <label for="oldpassword">oud wachtwoord <input type="password" formControlName="oldpassword"></label>
+              <label for="newpassword">nieuw wachtwoord <input type="password" formControlName="newpassword"></label>
+              <label for="newpassword2">herhaal nieuw wachtwoord <input type="password" formControlName="newpassword2"></label>
         
               <button class="btn btn-outline-secondary" type="submit" [disabled]="!changePwdForm.valid">Wijzig</button>
           </form>  
       </div>
+</div>      
   </ng-template> 
     </ngb-tab>
   <ngb-tab id="settings">
     <ng-template ngbTabTitle><b>Instellingen</b></ng-template>
     <ng-template ngbTabContent>
-<table class="table table-striped">
+  <div class="container-fluid bgcolor " >
+    <table class="table table-striped">
   <thead>
     <tr>
       <th>Naam</th>
@@ -52,11 +57,14 @@
     </tr>
     </tbody>
   </table>
+  </div>
   </ng-template>
   </ngb-tab>
   <ngb-tab id="logs">
       <ng-template ngbTabTitle><b>Log bestanden</b></ng-template>
       <ng-template ngbTabContent>
+  <div class="container-fluid bgcolor " >
+        <br/>
         <button type="button" class="btn btn-outline-secondary" (click)="getLogs()">Ophalen</button>
         <br/>
         <div class="row small" *ngFor="let entry of logEntries">
@@ -64,12 +72,14 @@
           <div class="col-md-1" >{{ entry.modified | date:globDateTime() }}</div>
           <div class="col-md-8 " [innerHtml]="entry.fileContents | nl2br | assumeSafeHtml"></div>
         </div>
+</div>        
        </ng-template>
     </ngb-tab>
     <ngb-tab id="Csv" *ngIf="loggedOn">
       <ng-template ngbTabTitle><b>Csv Importeren</b></ng-template>
        <ng-template ngbTabContent>
-            <div class="csv">
+  <div class="container-fluid bgcolor " >
+              <div class="csv">
                 <form
                 [formGroup]="csvForm" 
                 (change)="onCsvUpload($event)"
@@ -85,6 +95,7 @@
                 <div class="col-md-2">{{cust.email}}</div>
                 <div class="col-md-2">{{cust.country}}</div>
               </div>
+      </div>              
        </ng-template>
     </ngb-tab>
   </ngb-tabset>

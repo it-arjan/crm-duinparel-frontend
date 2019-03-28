@@ -27,7 +27,6 @@ import { AuthBase } from 'src/app/services/auth.base.service';
     ])
   ]})
 export class HeaderComponentComponent implements OnInit, OnDestroy {  
-
   constructor(
     private _bs: BackendBase, private _auth: AuthBase,
     private _ui : UIService, private _modalService: NgbModal,
@@ -65,7 +64,30 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         this.onDataReady(result)
     })    
   }
+  
+  bgList : string[] = ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg']
 
+  getNewUrl() : string{
+   let imgpath='assets/img/bg'
+    let idx=Math.floor(Math.random() * this.bgList.length-1)
+    if (idx<0) idx =0
+    console.log('IDX: ' + idx)
+    let imgname = this.bgList[idx]
+    console.log(imgname)
+
+    return `url("${imgpath}/${imgname}")`
+  }
+
+  onChangeBgImage(){
+    let newUrl= this.getNewUrl()
+    console.log(`${newUrl} =? ${document.body.style.backgroundImage}`)
+    while (newUrl === document.body.style.backgroundImage){
+      console.log("same image, try again!")
+      newUrl = this.getNewUrl()
+    }
+    document.body.style.backgroundImage=newUrl
+    //document.body.style.backgroundImage=`url(assets/img/bg/d6.jpg)`
+  }
   onUINotification(feedback:UserFeedback){
       this.currentFeedback=feedback
       // Start adding warnings/ errors to history after logon
@@ -90,14 +112,15 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         console.log(result)
         this._ui.error('Fout bij ophalen data: '+ result.error )// 
     } else {
-      //this._ui.info('de database is beschikbaar' )
-      console.log('handleDataReady: data ophalen success!')
+      this._ui.info('de data is beschikbaar' )
+      //console.log('handleDataReady: data ophalen success!')
     }
   }
   // ngDoCheck(){
   //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   //   console.log()
   // }
+
   ngOnDestroy() {
     this._ui.notifier().unsubscribe()
     //this._ds.dataReady().unsubscribe()
@@ -126,7 +149,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   //   }
   // }
 
-  exitElectron(){ //todo make method on service 
+  exitElectron(){ 
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Programma afsluiten';
     modalRef.componentInstance.message = 'Programma afsluiten?';

@@ -1,5 +1,6 @@
+<div class="container-fluid bgcolor " >
 <h2>Zoekresultaat</h2>
-<div class="row highlight " 
+<div class="row highlight  " 
 [ngClass]="selectedIdx ==idx ?'rowselect':''"
 *ngFor="let c of customers;let idx=index">
     <div class="col-md-3 ">{{c.name}} </div>
@@ -7,4 +8,5 @@
     <div class="col-md-2 "></div>
     <div class="col-md-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'edit')"> Bewerken</button></div>
     <div class="col-md-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'book')"> Boekingen</button></div>
+</div>
 </div>
