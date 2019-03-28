@@ -10,6 +10,13 @@ import { ReplaySubject } from 'rxjs';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { Router } from '@angular/router';
 import { AuthBase } from 'src/app/services/auth.base.service';
+import * as Papa from 'papaparse/papaparse.min.js';
+import { Customer } from 'src/app/models/customer.model';
+import { Booking } from 'src/app/models/booking.model';
+
+import * as moment from 'moment';
+import 'moment/locale/nl'  // without this line it didn't work
+moment.locale('nl')
 
 @Component({
   selector: 'app-config',
@@ -28,6 +35,7 @@ export class SettingsComponent implements OnInit {
   settings: ConfigSetting[]=[];
   logonForm: FormGroup
   changePwdForm: FormGroup
+  csvForm: FormGroup
   loggedOn = false //get from route?@!??!
   changepwdClicked=false
   capsLock=false
@@ -37,7 +45,7 @@ export class SettingsComponent implements OnInit {
   activetabId='logon'
   getdataSubs: ReplaySubject<tDataResult>
   //@ViewChild('tabset') tabset
-
+  importedCustomers: Customer[]=[]
   ngOnInit() {
     this.initForms()
     this.readConfig()
@@ -92,8 +100,50 @@ export class SettingsComponent implements OnInit {
       'newpassword': new FormControl('',[Validators.required]),       
       'newpassword2': new FormControl('',[Validators.required]),       
     })
+   this.csvForm = new FormGroup({
+      'csvFile': new FormControl(null,[Validators.required])
+    })
   }
- 
+  
+  onCsvUpload(event){
+    let reader = new FileReader()
+    reader.onload = () => {
+      console.log('file loaded!');
+      this.csvToCustomers(reader.result);
+    }
+    console.log(event.target.files[0])
+    reader.readAsText(event.target.files[0])
+  }
+  getBooktype(arrive: number,depart:number){
+    return 'Week'
+  }
+  csvToCustomers(csv){
+    var result = Papa.parse(csv, {header: true});
+    console.log(result)
+    this.importedCustomers.length=0
+    let cust:Customer
+    let book:Booking
+    for (let row of result.data){
+      if (row.Aankomst){
+        //booking
+        let arrive = moment(row.Aankomst, "DD-MM-YYYY").unix() * 1000
+        let depart = moment(row.Vertrek, "DD-MM-YYYY").unix() * 1000 
+        let appcode = row.Huis
+        let booktype=this.getBooktype(arrive, depart)
+        book=new Booking(-1, -1, arrive, depart,2, appcode, booktype)
+        cust.bookings.push(book)
+      }
+      else if (row.Email){
+        //customer
+        let name =row.Naam
+        let address =row.Adres
+        let email =row.Email
+        let country =row.Land
+        cust= new Customer(-1, name, address, email, '',country,[])
+        this.importedCustomers.push(cust)
+      }
+    }
+  }
   onLogon(){
     console.log('onLogon')
     if (this.checkSettings()){

@@ -67,9 +67,24 @@
        </ng-template>
     </ngb-tab>
     <ngb-tab id="Csv" *ngIf="loggedOn">
-      <ng-template ngbTabTitle><b>Csv Import</b></ng-template>
+      <ng-template ngbTabTitle><b>Csv Importeren</b></ng-template>
        <ng-template ngbTabContent>
-         <p>komt na de job</p>
+            <div class="csv">
+                <form
+                [formGroup]="csvForm" 
+                (change)="onCsvUpload($event)"
+                class="form-inline">
+                <label for="csvFile">Selecteer bestand 
+                  <input type="file" formControlName="csvFile">
+                </label>
+                </form>        
+              </div>
+              <div class="row" *ngFor="let cust of importedCustomers">
+                <div class="col-md-2">{{cust.name}}</div>
+                <div class="col-md-2">{{cust.address}}</div>
+                <div class="col-md-2">{{cust.email}}</div>
+                <div class="col-md-2">{{cust.country}}</div>
+              </div>
        </ng-template>
     </ngb-tab>
   </ngb-tabset>
