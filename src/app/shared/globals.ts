@@ -10,7 +10,7 @@ export class Globals {
   constructor() { }
 
   public static momDateformat:string='D MMM YY' 
-  public static momDatePattern:RegExp = new RegExp(/[0-9][0-9]? [a-zA-Z][a-z][a-z]\.+ [0-9][0-9]/)
+  public static momDatePattern:RegExp = new RegExp(/[0-9][0-9]? [a-zA-Z][a-z][a-z]\.? [0-9][0-9]/)
   public static slotPattern:RegExp = new RegExp(/[0-9][0-9]?\/[0-9][0-9]?,[0-9][0-9]?\/[0-9][0-9]?/)
   public static angularDateformat:string='d MMM yy' 
   public static angularDateformatWithWeekDay:string='EEE, d MMM yy' 
