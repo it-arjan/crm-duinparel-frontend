@@ -111,10 +111,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         console.log('Fout bij ophalen data!' + result.error)
         console.log(result)
         this._ui.error('Fout bij ophalen data: '+ result.error )// 
-    } else {
-      this._ui.info('de data is beschikbaar' )
-      //console.log('handleDataReady: data ophalen success!')
-    }
+    } 
   }
   // ngDoCheck(){
   //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')

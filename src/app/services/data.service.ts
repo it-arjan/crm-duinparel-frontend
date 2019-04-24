@@ -47,17 +47,22 @@ export class DataService implements iData{
   
   getData(): void {
     let error: string
-    this._ps.getData().pipe(take(1))  
-    .subscribe((data: tBulkdataResult) => {
-      this.customers = data.customers
-      this.mailings = data.mailings
-      //this._bs.cleanupDataCache()
-      let err = data.error ? data.error : null
-      let datareadyresult : tDataResult = {error:err}
-      //emit next on data ready
-      console.log("DataService: emitting dataReady. Repeated data fetch is a bug due to searchcomponent creation/descruction. The fix will be not to do that")
-      this.dataReady$.next(datareadyresult)
-    })  
+    if (this.customers.length === 0){
+      this._ps.getData().pipe(take(1))  
+      .subscribe((data: tBulkdataResult) => {
+        this.customers = data.customers
+        this.mailings = data.mailings
+    
+        //this._bs.cleanupDataCache()
+        let err = data.error ? data.error : null
+        let datareadyresult : tDataResult = {error:err}
+        //emit next on data ready
+        console.log("DataService: emitting dataReady. Repeated data fetch is a bug due to searchcomponent creation/descruction. The fix will be not to do that")
+        this._ui.info('de data is beschikbaar' )
+                
+        setTimeout(x=> this.dataReady$.next(datareadyresult), Globals.computeDelay()) 
+      })  
+    }
   }
 
   // Replay Subjects always emit the last value on subscribe, but only when there is at least one

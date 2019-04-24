@@ -24,7 +24,7 @@ export class PersistFakeService  extends PersistBase {
     console.log('fake getData')
     //this._ui.info('fake Data') //todo, make it possible to add send msgs
 
-    if (!this.customers) this.createData()
+    this.createData()
     if(!this.dataReplay) this.dataReplay = new ReplaySubject<tBulkdataResult>()
 
     setTimeout(x=> this.dataReplay.next({customers: this.customers, mailings: this.mailings, error: null}), Globals.computeDelay()) 
