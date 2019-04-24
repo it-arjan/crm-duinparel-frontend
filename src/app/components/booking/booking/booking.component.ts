@@ -15,6 +15,7 @@ import 'moment/locale/nl'  // without this line it didn't work
 moment.locale('nl')
 import { BackendBase } from 'src/app/services/backend.base.service';
 import { take } from 'rxjs/operators';
+import { tGuistate } from 'src/app/services/interfaces.ui';
 
 @Component({
   selector: 'app-booking',
@@ -114,6 +115,7 @@ export class BookingComponent implements OnInit {
       else {
         this.reactiveForm.setValue({arrive:'',depart:'', nrpers:'', propcode:'',booktype:''});
         this._ui.successIcon()
+
         this._cd.detectChanges()
       }
     })
@@ -141,6 +143,7 @@ export class BookingComponent implements OnInit {
       this._ui.error(`${result.wordFolder}, ${result.wordFilename}`)
     })
   }
+  
   onDelete (idx:number) {
     let arrive = moment(this.customer.bookings[idx].arrive).format(Globals.momDateformat)
     let depart = moment(this.customer.bookings[idx].arrive).format(Globals.momDateformat)
@@ -175,4 +178,9 @@ export class BookingComponent implements OnInit {
 
         })
   }      
+  onClose(){
+     this._ui.checkin(tGuistate.bookingsOfCustomerClose)
+     this._ui.cancelledIcon()
+     this._router.navigate(['/booking'])
+ }
 }

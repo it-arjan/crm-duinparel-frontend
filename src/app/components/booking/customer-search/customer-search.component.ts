@@ -26,11 +26,11 @@ export class CustomerSearchComponent implements OnInit {
     })
   }
   onSubmit(){
-    this._ui.checkin(tGuistate.searchCustomer)
+    this._ui.checkin(tGuistate.searchCustomerClick)
     this._ds.searchCustomers(this.reactiveForm.get('email').value, this.reactiveForm.get('name').value)
   }
   onNewCustomer(){
-    this._ui.checkin(tGuistate.newCustomer)
+    this._ui.checkin(tGuistate.newCustomerOpen)
     //this._ds.clearCustomerSearch();
     this._router.navigate(['booking','cust','new'])
   }

@@ -28,23 +28,35 @@ export class UIService implements iGuidance {
   createGuidance(state:tGuistate):tGuiguidance{
     let result:tGuiguidance
     switch (state){
-      case tGuistate.searchCustomer: 
+      case tGuistate.searchCustomerClick: 
         result= {
-          timeToGo: [tComponentNames.newEditCustomer,tComponentNames.listBooking ],
-          wakeUp: [tComponentNames.listCustomer]
+          hideList: [tComponentNames.newEditCustomer,tComponentNames.listBooking ],
+          displayList: [tComponentNames.listCustomer]
         }
         break;
-      case tGuistate.editCustomer: 
-      case tGuistate.newCustomer: 
-      case tGuistate.bookingsOfCustomer: 
+      case tGuistate.newCustomerOpen: 
         result= {
-          timeToGo: [],
-          wakeUp: [tComponentNames.newEditCustomer,tComponentNames.listBooking ]
+          hideList: [tComponentNames.searchCustomer, tComponentNames.listCustomer],
+          displayList: [tComponentNames.newEditCustomer ]
+        }
+        break;
+      case tGuistate.bookingsOfCustomerClose:
+      case tGuistate.customerClose: 
+        result= {
+          hideList: [tComponentNames.newEditCustomer],
+          displayList: [tComponentNames.searchCustomer ]
+        }
+        break;
+      case tGuistate.editCustomerOpen: 
+      case tGuistate.bookingsOfCustomerOpen: 
+        result= {
+          hideList: [tComponentNames.searchCustomer],
+          displayList: [tComponentNames.newEditCustomer,tComponentNames.listBooking ]
         }
         break;
       default: result= {
-        timeToGo: [],
-        wakeUp: []
+        hideList: [],
+        displayList: []
       }
     }//case
     return result
@@ -66,7 +78,7 @@ export class UIService implements iGuidance {
   }
 
   checkin(state:tGuistate) {
-    console.log("notified: "+tGuistate[state])
+    console.log("uiservice receives checkin "+tGuistate[state])
     this.naviListener.next(state)
   }
 

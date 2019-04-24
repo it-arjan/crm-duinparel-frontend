@@ -111,19 +111,24 @@ export class CustomerNewEditComponent implements OnInit {
       this._ui.error(`Fout bij ${placeholder} klant:  + ${result.error}`)
     }
     else {
-        if (remove) this._ui.deletedIcon()
-        else this._ui.successIcon()
-        this.navigate(['/booking'])
+      if (remove) this._ui.deletedIcon()
+      else this._ui.successIcon()
+
+      this._ui.checkin(tGuistate.customerClose)
+      this.navigate(['/booking'])
     }   
   }
 
   onCancel(){
     this._ui.cancelledIcon()
+    this._ui.checkin(tGuistate.customerClose)
     this._router.navigate(['/booking'])
   }
-public navigate(commands: any[]): void {
-    this.ngZone.run(() => this._router.navigate(commands)).then();
-}
+  
+  public navigate(commands: any[]): void {
+      this.ngZone.run(() => this._router.navigate(commands)).then();
+  }
+
   onDelete () {
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Klant verwijderen';

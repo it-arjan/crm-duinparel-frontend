@@ -34,11 +34,11 @@ export class CustomerListComponent implements OnInit {
 
     if (action==='book') {
       this._router.navigate(['booking','cust',this.customers[this.selectedIdx].id, 'bookings'])
-      this._ui.checkin(tGuistate.editCustomer)
+      this._ui.checkin(tGuistate.editCustomerOpen)
     }
     else {
       this._router.navigate(['booking','cust',this.customers[this.selectedIdx].id])
-      this._ui.checkin(tGuistate.bookingsOfCustomer)
+      this._ui.checkin(tGuistate.bookingsOfCustomerOpen)
     }
   }
   onDblclick(idx: number){

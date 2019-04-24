@@ -11,15 +11,27 @@ import { take } from 'rxjs/operators';
 export class BookingWrapComponent implements OnInit, OnDestroy { //todo rename to  customer-booking-wrap
 
   constructor(private _ui: UIService) { }
-  outletActive=false
+
+  outletActive=true
+  custSearchActive=true
+  custListActive=false
+  
   outlet_componentnames:tComponentNames[]=[tComponentNames.newEditCustomer, tComponentNames.listBooking]
-  ngOnInit() {
+ngOnInit() {
     this._ui.guider()//.pipe(take(1)) 
     .subscribe((guidance: tGuiguidance)=>{
+      
       this.outlet_componentnames.forEach(name => {
-        if (guidance.timeToGo.includes(name)) this.outletActive=false
-        else if (guidance.wakeUp.includes(name)) this.outletActive=true
+        if (guidance.hideList.includes(name)) this.outletActive=false
+        else if (guidance.displayList.includes(name)) this.outletActive=true
       })
+
+      if (guidance.hideList.includes(tComponentNames.searchCustomer)) this.custSearchActive = false
+      else if (guidance.displayList.includes(tComponentNames.searchCustomer)) this.custSearchActive=true
+
+      if (guidance.hideList.includes(tComponentNames.listCustomer)) this.custListActive = false
+      else if (guidance.displayList.includes(tComponentNames.listCustomer)) this.custListActive=true
+
   })
   }
   

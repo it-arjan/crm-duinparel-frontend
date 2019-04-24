@@ -69,7 +69,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
 
   getNewUrl() : string{
    let imgpath='assets/img/bg'
-    let idx=Math.floor(Math.random() * this.bgList.length-1)
+    let idx=Math.floor(Math.random() * this.bgList.length)
     if (idx<0) idx =0
     console.log('IDX: ' + idx)
     let imgname = this.bgList[idx]
