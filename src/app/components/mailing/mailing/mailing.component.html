@@ -11,7 +11,7 @@
               >
               <div class="form-group row border-top pt-2 vcenter">
                 <div class="input-group">
-                  <div class="col-2 text-right align-self-end">Periode</div>
+                  <div class="col-lg-2 text-right align-self-end">Periode</div>
                   <div class="input-group-append col-2">
                     <input 
                         class ="form-control-sm" 
@@ -23,43 +23,37 @@
                     <i class="fa fa-check" style="color:green" *ngIf="slotDataEntered() && validSlotEntered()" aria-hidden="true"></i>
                     <i class="fa fa-exclamation" *ngIf="slotDataEntered() && !validSlotEntered()" aria-hidden="true"> {{getErrorWhenPatternOk()}}</i>
                   </div>
-                  <div class="input-group-append col-1">
-                    
-                  </div>
                 </div>
                 </div>
                   <div class="form-group row border-top pt-2 vcenter">
-                      <div class="col-2">Laatste bezoek tussen</div>
-                      <div class="col-1">
-                        <input class ="col-12 rounded" type="number" formControlName="visitedFrom"/>
+                      <div class="col-lg-2">Laatste bezoek tussen</div>
+                      <div class="col-lg-1">
+                        <input class ="col-lg-12 rounded" type="number" formControlName="visitedFrom"/>
                       </div>
-                      <div class="col-1 text-center">en</div>
-                      <div class="col-1">
+                      <div class="col-lg-1 text-center p-2">en</div>
+                      <div class="col-lg-1">
                         <input class ="col-12 rounded" type="number" formControlName="visitedUntil">
                     </div>
-                    <div class="row-1">maanden</div>
+                    <div class="col-lg-1 text-center p-2">maanden</div>
                   </div>
                     <div class="form-group row border-top pt-2 vcenter">
-                        <div class="col-2">Niet gemaild sinds </div>
-                        <div class="col-1">
-                          <input class ="col-12 rounded" type="number" formControlName="mailedSinceFrom">
+                        <div class="col-lg-2">Niet gemaild sinds </div>
+                        <div class="col-lg-1">
+                          <input class ="col-lg-12 rounded" type="number" formControlName="mailedSinceFrom">
                           </div>
-                          <div class="col-1 text-center">maanden</div>
-                          <div class="col-1">
+                          <div class="col-lg-1 text-center p-2">maanden</div>
+                          <div class="col-lg-1">
                           </div>
-                        <div class="row-1"></div>
                   </div>
                   <div class="form-group row border-top pt-2 vcenter">
-                          <div class="col-2">Vaste klant: Minimaal</div>
-                          <div class="col-1">
-                            <input class ="col-12 rounded" type="number" formControlName="totalVisists"> 
+                          <div class="col-lg-2">Vaste klant: Minimaal</div>
+                          <div class="col-lg-2">
+                            <input class ="col-lg rounded" type="number" formControlName="totalVisists"> 
                           </div>
-                        <div class="row-1">keer geweest</div>
-                        <div class="col-3"></div>
+                        <div class="col-lg-2 text-center p-2"> keer geweest</div>
                   </div>
-                  <div class="form-group row border-top pt-2 vcenter">
-                    <div class="col-1"></div>
-                    <div class="col-2">
+                  <div class="row border-top  pt-2 vcenter">
+                    <div class="col-lg">
                       <div formGroupName="bookTypeCheckboxes" class="form-check form-check-inline">
                           <ng-template ngFor let-item [ngForOf]="reactiveForm.get('bookTypeCheckboxes').value | keyvalue">
                             <input class="form-check-input" type="checkbox" [formControlName]="item.key" checked [id]="item.key"/> 
@@ -68,7 +62,7 @@
                       </ng-template>
                     </div>
                     </div>
-                  <div class="col-2">
+                  <div class="col-lg">
                       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="propType">
                         <ng-template ngFor let-proptype [ngForOf]="propTypes">
                         <label ngbButtonLabel class="btn-outline-primary btn-sm">
@@ -77,12 +71,12 @@
                       </ng-template>
                     </div>
                   </div>
-                  <div class="col-1"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Zoek</button></div>
+                  <div class="col-lg"><button class="btn btn-outline-secondary" type="submit" [disabled]="!reactiveForm.valid">Zoek</button></div>
                 </div>
               </form>
         </div> 
         <div class="container-fluid " >
-          <div class="row"><div class="col-md-12"></div>  </div>
+          <div class="row" style="height:20px"><div class="col-md-12"></div>  </div>
         </div>   
         <div class="container-fluid bgcolor " >
           <!-- search results -->
