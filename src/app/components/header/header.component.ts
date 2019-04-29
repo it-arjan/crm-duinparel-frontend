@@ -34,6 +34,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     private _ds: DataService, private _r2: Renderer2
     ) { }
   notificationState:string
+  navbarOpen: boolean
 
   currentFeedback:UserFeedback
   showAsIcon: boolean
@@ -117,7 +118,9 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   //   console.log()
   // }
-
+toggleNavbar(){
+  this.navbarOpen = !this.navbarOpen;
+}
   ngOnDestroy() {
     this._ui.notifier().unsubscribe()
     //this._ds.dataReady().unsubscribe()
