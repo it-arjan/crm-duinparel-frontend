@@ -1,4 +1,4 @@
-<div class="container-fluid bgcolor " >
+<div class="container bgcolor " >
 <h2 *ngIf="editMode else insertMode">
     Bewerken gegevens
 </h2>
@@ -6,40 +6,48 @@
   <h2>Invoeren nieuwe klant</h2>
 </ng-template>
 <form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()" *ngIf="dataAvailable">
-    <div class="row">
-        <div class="col-md-5">
-          <div class="form-group">
-              <input class ="form-control" type="text" id="name" formControlName="name" placeholder="naam">
+   <div class="container">
+     <div class="row">
+      <div class="col-md-4">
+        <input class ="form-control" type="text" id="name" formControlName="name" placeholder="naam">
+        <input class ="form-control" type="text" id="address" formControlName="address" placeholder="address">
+        <input class ="form-control" type="text" id="email" formControlName="email" placeholder="email">
+        <input class ="form-control" type="text" id="phone" formControlName="phone" placeholder="telefoonnr">
+        <input class ="form-control" type="text" id="country" formControlName="country" placeholder="country">
+      </div>
+      <div class="col-md-8">
+        <div class="container-fluid ">
+          <div class="row ">            
+            <div class="col-md-8">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col">
+                        <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
+                            Opslaan
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-seconday" type="button" (click)="onCancel()">
+                            Stop
+                        </button>
+                    </div>
+                  </div>                 
+                </div>                 
             </div>
-            <div class="form-group">
-                <input class ="form-control" type="text" id="address" formControlName="address" placeholder="address">
-            </div>
-            <div class="form-group">
-                <input class ="form-control" type="text" id="email" formControlName="email" placeholder="email">
-            </div>
-            <div class="form-group">
-                <input class ="form-control" type="text" id="phone" formControlName="phone" placeholder="telefoonnr">
-            </div>
-            <div class="form-group">
-              <input class ="form-control" type="text" id="country" formControlName="country" placeholder="country">
-            </div>
-            </div>
-            <div class="form-group">
-              <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
-                  {{'Opslaan'}}
-              </button>
-              <button class="btn btn-outline-danger" type="button" (click)="onCancel()">
-                  Stop
-              </button>
-              <span style="width:30px"></span>
+            <div class="col-md-1" style="height:20px"></div>
+            <div class="col-md-3 d-flex align-items-end">
               <button 
-              class="btn btn-outline-danger" 
-              type="button" 
-              (click)="onDelete()"
-              *ngIf="editMode">
-                  Verwijder
+                      class="btn btn-outline-danger" 
+                      type="button" 
+                      (click)="onDelete()"
+                      *ngIf="editMode">
+                Verwijder
               </button>                 
             </div>
+          </div>                
+          </div>
         </div>
+      </div>
+   </div>
 </form>
 </div>

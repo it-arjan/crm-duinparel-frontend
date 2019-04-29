@@ -60,26 +60,32 @@
 <p class="text-info pad">Boekingen van {{customer.name}}</p>
 
 <!-- list existing bookings here, + delete button -->
-<div class="container">
+<div class="container-fluid">
   <div class="row border highlight vcenter" *ngFor="let booking of customer.bookings; let idx=index">
-    <div class="col-md-2">{{booking.arrive | date:globDateformat()}}</div>
-    <div class="col-md-2">{{booking.depart | date:globDateformat()}}</div>
-    <div class="col-md-1">{{booking.nrpers }}</div>
-    <div class="col-md-1">{{booking.propcode }}</div>
-    <div class="col-md-2">{{booking.booktype }}</div>
-    <div class="col-md-2 text-align-middle">
-        <button style="margin-right:3px" class="btn btn-sm btn-outline-success" (click)='onWord(idx)'>Word</button>
-    </div>
-    <div class="col-md-1 text-align-middle">
-        <button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>X</button>
+    <div class="col-2">{{booking.arrive | date:globDateformat()}}</div>
+    <div class="col-2">{{booking.depart | date:globDateformat()}}</div>
+    <div class="col-1">{{booking.nrpers }}</div>
+    <div class="col-1">{{booking.propcode }}</div>
+    <div class="col-2">{{booking.booktype }}</div>
+    <div class="col-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-6 text-align-middle">
+              <button style="margin-right:3px" class="btn btn-sm btn-outline-success" (click)='onWord(idx)'>Word</button>
+          </div>
+          <div class="col-6 text-align-middle">
+              <button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>X</button>
+          </div>
+        </div>
+      </div>      
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12">&nbsp;</div>
+    <div class="col-sm-12">&nbsp;</div>
   </div>
   <div class="row">
-    <div class="col-md-10"></div>
-    <div class="col-md-2"><button class="btn btn-sm btn-warning" (click)='onClose()'>Sluiten</button></div>
+    <div class="col-sm-10"></div>
+    <div class="col-sm-2"><button class="btn btn-sm btn-warning" (click)='onClose()'>Sluiten</button></div>
   </div>
 </div>
 

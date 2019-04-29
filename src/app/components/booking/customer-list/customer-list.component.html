@@ -3,10 +3,10 @@
 <div class="row highlight  " 
 [ngClass]="selectedIdx ==idx ?'rowselect':''"
 *ngFor="let c of customers;let idx=index">
-    <div class="col-md-3 ">{{c.name}} </div>
-    <div class="col-md-3 show-hover" (dblclick)="onDblclick(idx)">{{c.email}}</div>
-    <div class="col-md-2 "></div>
-    <div class="col-md-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'edit')"> Bewerken</button></div>
-    <div class="col-md-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'book')"> Boekingen</button></div>
+    <div class="col-sm-2 ">{{c.name}} </div>
+    <div class="col-sm-3 show-hover" (dblclick)="onDblclick(idx)">{{c.email}}</div>
+    <div class="col-sm-2 "></div>
+    <div class="col-sm-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'edit')"> Bewerken</button></div>
+    <div class="col-sm-3"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'book')"> Boekingen</button></div>
 </div>
 </div>
