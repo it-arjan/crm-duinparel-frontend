@@ -1,0 +1,45 @@
+<div class="container">
+  <h1>Grid Example</h1>
+  <p>This example demonstrates a 50%/50% split on small, medium, large and xlarge devices. On extra small devices, it will stack (100% width).</p>      
+  <p>Resize the browser window to see the effect.</p> 
+     <div class="row">
+      <div class="col-sm-5">
+        <input class ="form-control" type="text" id="name" formControlName="name" placeholder="naam">
+        <input class ="form-control" type="text" id="address" formControlName="address" placeholder="address">
+        <input class ="form-control" type="text" id="email" formControlName="email" placeholder="email">
+        <input class ="form-control" type="text" id="phone" formControlName="phone" placeholder="telefoonnr">
+        <input class ="form-control" type="text" id="country" formControlName="country" placeholder="country">
+      </div>
+      <div class="col-sm-7">
+        <div class="container">
+          <div class="row d-flex justify-content-between">
+            <div class="col">
+                <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
+                    Opslaan
+                </button>
+            </div>
+            <div class="col">
+                <button class="btn btn-outline-seconday" type="button" (click)="onCancel()">
+                    Stop
+                </button>
+            </div>
+            </div>   
+        </div>   
+       <div class="col">
+        <div class="container">
+          <div class="row">            
+                  <div class="col d-flex align-items-end">
+                    <button 
+                      class="btn btn-outline-danger" 
+                      type="button" 
+                      (click)="onDelete()"
+                      *ngIf="editMode">
+                        Verwijder
+                    </button>                 
+                  </div>
+              </div>                
+            </div>
+      </div>
+    </div>
+  </div>
+</div>
