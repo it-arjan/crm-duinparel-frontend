@@ -118,7 +118,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   //   console.log()
   // }
-displayNavbar(newval){
+displayNavbar(newval?: boolean){
   if (newval != undefined) this.navbarOpen=newval
   else this.navbarOpen = !this.navbarOpen;
 }
