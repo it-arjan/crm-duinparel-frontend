@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bgcolor">
   <button class="navbar-toggler" type="button"
-        (click)="toggleNavbar()">
+        (click)="displayNavbar()">
   <span class="navbar-toggler-icon"></span>
 </button>
   <div class="navbar-brand">
@@ -11,10 +11,10 @@
       <ul class="nav navbar-nav">
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" style="cursor:pointer" routerLink="/booking"
-            (click)="toggleNavbar()">Boeking</a></li>
+            (click)="displayNavbar(false)">Boeking</a></li>
         <li class="nav-item" routerLinkActive="active">
             <a class="nav-link" style="cursor:pointer" routerLink="/mailing"
-              (click)="toggleNavbar()">Mailing</a></li>
+              (click)="displayNavbar(false)">Mailing</a></li>
       </ul>
     </div>
     <div class="collapse navbar-collapse"
@@ -22,7 +22,7 @@
         <ul class="nav navbar-nav">
           <li class="nav-item" routerLinkActive="active">
             <a class="nav-link" style="cursor:pointer" routerLink="/settings"
-              (click)="toggleNavbar()">Instellingen</a></li>
+              (click)="displayNavbar(false)">Instellingen</a></li>
           </ul>
     </div>
     <div class="collapse navbar-collapse"
@@ -44,7 +44,6 @@
         </div>
       </div>
     </div>
-
     <div>
         <ngb-alert [type]="currentFeedback.classList" 
         [dismissible]="false"

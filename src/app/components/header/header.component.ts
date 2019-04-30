@@ -118,8 +118,9 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   //   console.log()
   // }
-toggleNavbar(){
-  this.navbarOpen = !this.navbarOpen;
+displayNavbar(newval){
+  if (newval != undefined) this.navbarOpen=newval
+  else this.navbarOpen = !this.navbarOpen;
 }
   ngOnDestroy() {
     this._ui.notifier().unsubscribe()
