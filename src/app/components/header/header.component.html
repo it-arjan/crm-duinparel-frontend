@@ -1,11 +1,11 @@
-<nav class="navbar navbar-expand-lg navbar-light bgcolor">
-    <div class="navbar-brand">
-      <a class="navbar-brand" (click)="onChangeBgImage()">CRM Duinparel</a>
-    </div>
+<nav class="navbar navbar-expand-md navbar-light bgcolor">
   <button class="navbar-toggler" type="button"
         (click)="toggleNavbar()">
   <span class="navbar-toggler-icon"></span>
 </button>
+  <div class="navbar-brand">
+      <a class="navbar-brand" (click)="onChangeBgImage()">CRM Duinparel</a>
+  </div>
     <div class="collapse navbar-collapse"
         [ngClass]="{ 'show': navbarOpen }">
       <ul class="nav navbar-nav">
@@ -25,9 +25,6 @@
               (click)="toggleNavbar()">Instellingen</a></li>
           </ul>
     </div>
-    <!-- <div class="collapse navbar-collapse">
-        <button type="button" (click)="_ui.info('info TEST')">info</button><button type="button" (click)="_ui.error('error TEST')">error</button>
-    </div>     -->
     <div class="collapse navbar-collapse"
         [ngClass]="{ 'show': navbarOpen }">
       <ul class="nav navbar-nav">
