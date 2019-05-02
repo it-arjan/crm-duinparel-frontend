@@ -58,10 +58,10 @@
         </div>
 </form>
 <hr>
-<p class="text-info pad">Boekingen van {{customer.name}}</p>
 
 <!-- list existing bookings here, + delete button -->
-<div class="container-fluid">
+<div class="container-fluid" *ngIf="customer && customer.bookings">
+  <p class="text-info pad">Boekingen van {{customer.name}}</p>
   <div class="row border highlight vcenter" *ngFor="let booking of customer.bookings; let idx=index">
     <div class="col-2">{{booking.arrive | date:globDateformat()}}</div>
     <div class="col-2">{{booking.depart | date:globDateformat()}}</div>
