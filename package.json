@@ -13,7 +13,10 @@
     "build": "ng build",
     "test-angular": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build_github": "ng build --prod --base-href 'https://it-arjan.github.io/crm-duinparel-frontend/'",
+    "prepare_pub":"copy 'Web.config' 'dist'",
+    "pub_github": "prepare_pub ngh"
   },
   "private": true,
   "dependencies": {
