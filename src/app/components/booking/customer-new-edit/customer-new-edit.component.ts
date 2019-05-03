@@ -32,6 +32,7 @@ export class CustomerNewEditComponent implements OnInit {
   custId:number;
   customer: Customer;
   dataAvailable=false
+
   ngOnInit() {
     //this.initForm()
     this._activatedRoute.params.subscribe( //subscription is cleanedup automatically in this case
@@ -41,17 +42,22 @@ export class CustomerNewEditComponent implements OnInit {
           //console.log('editMode')
           this.custId = +params['custid'];
           this._ds.dataReadyReplay().pipe(take(1))
-          .subscribe(()=>{
-              this.customer = this._ds.getCustomer(this.custId)
-              this.initForm()
-              this.dataAvailable=true
-          })
+            .subscribe(()=>{
+                this.customer = this._ds.getCustomer(this.custId)
+                this.initForm()
+                this.dataAvailable=true
+            })
         } else{
           this.initForm()
           this.dataAvailable=true
           this.custId=-1
         }
       })
+
+    this.reactiveForm.valueChanges.subscribe(val => {
+        this._ui.checkin(this.editMode? tGuistate.customerEditDataDirty:tGuistate.customerNewDataDirty)
+      });        
+
   }
 
   private initForm(){

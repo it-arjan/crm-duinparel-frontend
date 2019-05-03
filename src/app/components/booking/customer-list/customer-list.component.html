@@ -1,12 +1,13 @@
-<div class="container-fluid bgcolor " >
-<h2>Zoekresultaat</h2>
-<div class="row highlight  " 
-[ngClass]="selectedIdx ==idx ?'rowselect':''"
-*ngFor="let c of customers;let idx=index">
-    <div class="col-sm-2 ">{{c.name}} </div>
-    <div class="col-sm-3 show-hover" (dblclick)="onDblclick(idx)">{{c.email}}</div>
-    <div class="col-sm-2 "></div>
-    <div class="col-sm-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'edit')"> Bewerken</button></div>
-    <div class="col-sm-3"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'book')"> Boekingen</button></div>
-</div>
+<div class="container-fluid bgcolor ">
+  <div #customer_list_cover></div>
+  <h2 *ngIf="customers.length>0">Zoekresultaat</h2>
+  <div class="row highlight  " 
+  [ngClass]="selectedIdx ==idx ?'rowselect':''"
+  *ngFor="let c of customers;let idx=index">
+      <div class="col-sm-2 ">{{c.name}} </div>
+      <div class="col-sm-3 show-hover" (dblclick)="onDblclick(idx)">{{c.email}}</div>
+      <div class="col-sm-2 "></div>
+      <div class="col-sm-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'edit')"> Bewerken</button></div>
+      <div class="col-sm-3"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'book')"> Boekingen</button></div>
+  </div>
 </div>

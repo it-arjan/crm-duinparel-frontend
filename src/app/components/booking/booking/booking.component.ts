@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, Renderer2 } from '@angular/core';
 import { DataService } from 'src/app/services/data.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Customer } from 'src/app/models/customer.model';
@@ -15,13 +15,17 @@ import 'moment/locale/nl'  // without this line it didn't work
 moment.locale('nl')
 import { BackendBase } from 'src/app/services/backend.base.service';
 import { take } from 'rxjs/operators';
-import { tGuistate } from 'src/app/services/interfaces.ui';
+import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
+import { GuidanceService } from 'src/app/services/guidance.service';
 
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.component.html',
-  styles: [`
-    `]
+ styles: [`
+:host {
+    display: block;
+    }
+`]
 })
 export class BookingComponent implements OnInit {
 
@@ -32,10 +36,12 @@ export class BookingComponent implements OnInit {
     private _modalService: NgbModal,
     private _ui : UIService,
     private _router: Router, 
-    private _activatedRoute: ActivatedRoute) { 
-
+    private _activatedRoute: ActivatedRoute,
+    private hostRef:ElementRef, private _guidance: GuidanceService) {     
   }
-  
+
+  @ViewChild("booking_cover") coverRef: ElementRef
+
   propCodes = Globals.propCodes
   bookTypes = Globals.bookTypes
 
@@ -59,6 +65,16 @@ export class BookingComponent implements OnInit {
        })
     });
     this.initForm()
+
+    this._ui.guider()//.pipe(take(1)) 
+      .subscribe((guidance: tGuiguidance)=>{
+        console.log(guidance)
+        this._guidance.handleGuidance(tComponentNames.listBooking, this.hostRef, this.coverRef, guidance)
+      })
+
+    this.reactiveForm.valueChanges.subscribe(val => {
+        this._ui.checkin(tGuistate.bookingDataDirty)
+      });        
   }
 
   initForm(){
@@ -143,7 +159,7 @@ export class BookingComponent implements OnInit {
       this._ui.error(`${result.wordFolder}, ${result.wordFilename}`)
     })
   }
-  
+
   onDelete (idx:number) {
     let arrive = moment(this.customer.bookings[idx].arrive).format(Globals.momDateformat)
     let depart = moment(this.customer.bookings[idx].arrive).format(Globals.momDateformat)
@@ -162,7 +178,6 @@ export class BookingComponent implements OnInit {
                 this._ui.error('Fout bij verwijderen boeking: ' + result.error)
               }
               else {
-                this.reactiveForm.setValue({arrive:'',depart:'',nrpers:'',propcode:'',booktype:''});
                 this._ui.deletedIcon()
                 this._cd.detectChanges()
               }

@@ -1,30 +1,56 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { Customer } from 'src/app/models/customer.model';
 import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
 import { UIService } from 'src/app/services/ui.service';
-import { tGuistate } from 'src/app/services/interfaces.ui';
+import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
+import { GuidanceService } from 'src/app/services/guidance.service';
 
 @Component({
   selector: 'app-customer-list',
   templateUrl: './customer-list.component.html',
-  styleUrls: ['./customer-list.component.css']
-})
+  styles: [`
+:host { /* see if this affects the position: absolute behavior */
+    display: block;
+    }
+.rowselect{
+  background-color: #C7DBF0;
+}
+.show-hover{
+    cursor:pointer;
+    padding:0px;
+} 
+.highlight div {
+    padding:5px;
+}
+.highlight:hover{
+    background:#adcaeb;
+}
+`]})
 export class CustomerListComponent implements OnInit {
   customers : Customer[]=[]
   selectedIdx:number
+
+  @ViewChild("customer_list_cover") coverRef: ElementRef
+
   constructor(private _router: Router, private _ds: DataService, 
-              private _ui: UIService) { }
+              private _guidance: GuidanceService, private _ui: UIService,
+              private hostRef:ElementRef) { 
+              }
 
   ngOnInit() {
-    //this.customers = []
     this._ds.searchResults()
     .subscribe((searchResult: Customer[]) =>{
       console.log('CustomerListComponent received searchCompleted$') 
         this.customers.length =  0
         searchResult.forEach(x=>this.customers.push(x))
     })
+    this._ui.guider()//.pipe(take(1)) 
+      .subscribe((guidance: tGuiguidance)=>{
+        console.log(guidance)
+        this._guidance.handleGuidance(tComponentNames.listCustomer, this.hostRef, this.coverRef, guidance)
 
+        })
   }
   ngOnDestroy(){
     //this._ds.searchCompleted$.unsubscribe()

@@ -24,43 +24,59 @@ export class UIService implements iGuidance {
   ) {
     this.listenForCheckins()
   }
-
   createGuidance(state:tGuistate):tGuiguidance{
-    let result:tGuiguidance
+    let result:tGuiguidance = null;
     switch (state){
       case tGuistate.searchCustomerClick: 
         result= {
           hideList: [tComponentNames.newEditCustomer,tComponentNames.listBooking ],
-          displayList: [tComponentNames.listCustomer]
+          displayList: [tComponentNames.listCustomer],
+          blurList: []
         }
         break;
       case tGuistate.newCustomerOpen: 
         result= {
           hideList: [tComponentNames.searchCustomer, tComponentNames.listCustomer],
-          displayList: [tComponentNames.newEditCustomer ]
+          displayList: [tComponentNames.newEditCustomer ],
+          blurList: []
         }
         break;
-      case tGuistate.bookingsOfCustomerClose:
+      case tGuistate.bookingsOfCustomerClose: 
       case tGuistate.customerClose: 
         result= {
-          hideList: [tComponentNames.newEditCustomer],
-          displayList: [tComponentNames.searchCustomer ]
+          hideList: [],
+          displayList: [tComponentNames.searchCustomer, tComponentNames.header,tComponentNames.listCustomer ],
+          blurList: []
         }
         break;
       case tGuistate.editCustomerOpen: 
       case tGuistate.bookingsOfCustomerOpen: 
         result= {
           hideList: [tComponentNames.searchCustomer],
-          displayList: [tComponentNames.newEditCustomer,tComponentNames.listBooking ]
+          displayList: [tComponentNames.newEditCustomer,tComponentNames.listBooking ],
+          blurList: []
         }
         break;
-      default: result= {
-        hideList: [],
-        displayList: []
-      }
+      case tGuistate.bookingDataDirty: 
+      case tGuistate.customerEditDataDirty: 
+        result= {
+          hideList: [],
+          displayList: [],
+          blurList: [tComponentNames.header,tComponentNames.listCustomer]
+        }
+        break;
+      case tGuistate.customerNewDataDirty: 
+        result= {
+          hideList: [],
+          displayList: [],
+          blurList: [tComponentNames.header]
+        }
+        break;
+        default: result= null
     }//case
     return result
   }
+
   guider(): Subject<tGuiguidance> {
     console.log("guidance: subscriber request")
     return this.naviSender
@@ -71,8 +87,10 @@ export class UIService implements iGuidance {
       if (this._auth.isAuthenticated()){
         let guidance = this.createGuidance(guistate) 
         
-        console.log('sending guidance ')
-        this.naviSender.next(guidance )  
+        if (guidance) {
+          console.log('sending guidance ')
+          this.naviSender.next(guidance ) 
+        } 
       }
     })
   }

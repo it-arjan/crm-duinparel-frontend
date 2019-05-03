@@ -12,11 +12,53 @@ import { Router } from '@angular/router';
 import { BackendBase } from 'src/app/services/backend.base.service';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { AuthBase } from 'src/app/services/auth.base.service';
+import { GuidanceService } from 'src/app/services/guidance.service';
+import { tComponentNames, tGuiguidance } from 'src/app/services/interfaces.ui';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
+  styles: [`
+  :host {
+    display: block;
+    }
+  .dropbtn {
+  background-color: #3498DB;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+  background-color: #2980B9;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+`],
   animations: [
     // the fade-in/fade-out animation.
     trigger('feedbackAnimation', [
@@ -30,9 +72,11 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   constructor(
     private _bs: BackendBase, private _auth: AuthBase,
     private _ui : UIService, private _modalService: NgbModal,
-    private _cd: ChangeDetectorRef, private zone: NgZone,
+    private hostRef:ElementRef, private _guidance: GuidanceService, private zone: NgZone,
     private _ds: DataService, private _r2: Renderer2
     ) { }
+  @ViewChild("header_cover") coverRef: ElementRef
+
   notificationState:string
   navbarOpen: boolean
 
@@ -63,7 +107,14 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     this._ds.dataReadyReplay().pipe(take(1)) //auto-unsubscribe
       .subscribe((result)=>{
         this.onDataReady(result)
-    })    
+    })
+
+    this._ui.guider()//.pipe(take(1)) 
+    .subscribe((guidance: tGuiguidance)=>{
+      console.log(guidance)
+      this._guidance.handleGuidance(tComponentNames.header, this.hostRef, this.coverRef, guidance)
+      })
+  
   }
   
   bgList : string[] = ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg']

@@ -26,11 +26,11 @@ ngOnInit() {
         else if (guidance.displayList.includes(name)) this.outletActive=true
       })
 
-      if (guidance.hideList.includes(tComponentNames.searchCustomer)) this.custSearchActive = false
-      else if (guidance.displayList.includes(tComponentNames.searchCustomer)) this.custSearchActive=true
+      // if (guidance.hideList.includes(tComponentNames.searchCustomer)) this.custSearchActive = false
+      // else if (guidance.displayList.includes(tComponentNames.searchCustomer)) this.custSearchActive=true
 
-      if (guidance.hideList.includes(tComponentNames.listCustomer)) this.custListActive = false
-      else if (guidance.displayList.includes(tComponentNames.listCustomer)) this.custListActive=true
+      // if (guidance.hideList.includes(tComponentNames.listCustomer)) this.custListActive = false
+      // else if (guidance.displayList.includes(tComponentNames.listCustomer)) this.custListActive=true
 
   })
   }

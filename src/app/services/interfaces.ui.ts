@@ -1,11 +1,12 @@
 import { Subject } from 'rxjs';
 
-export enum tGuistate {searchCustomerClick, editCustomerOpen, editCustomerClose, newCustomerOpen, customerClose, bookingsOfCustomerOpen, bookingsOfCustomerClose}
-export enum tComponentNames {searchCustomer, listCustomer, newEditCustomer, listBooking, searchMailing, showSettings}
+export enum tGuistate {searchCustomerClick, editCustomerOpen, editCustomerClose, newCustomerOpen, customerClose, bookingsOfCustomerOpen, bookingsOfCustomerClose, bookingDataDirty, customerNewDataDirty, customerEditDataDirty}
+export enum tComponentNames {searchCustomer, listCustomer, newEditCustomer, listBooking, searchMailing, showSettings, header}
 
 export interface tGuiguidance {
   hideList: tComponentNames[]
   displayList: tComponentNames[]
+  blurList: tComponentNames[]
 }
 export enum ufType {
   iconRemoved, iconCancelled, iconSuccess, msgInfo, msgWarn, msgError
