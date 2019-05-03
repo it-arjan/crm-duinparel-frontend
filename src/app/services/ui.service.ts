@@ -38,7 +38,7 @@ export class UIService implements iGuidance {
         result= {
           hideList: [tComponentNames.searchCustomer, tComponentNames.listCustomer],
           displayList: [tComponentNames.newEditCustomer ],
-          blurList: []
+          blurList: [tComponentNames.header]
         }
         break;
       case tGuistate.bookingsOfCustomerClose: 
@@ -54,7 +54,7 @@ export class UIService implements iGuidance {
         result= {
           hideList: [tComponentNames.searchCustomer],
           displayList: [tComponentNames.newEditCustomer,tComponentNames.listBooking ],
-          blurList: []
+          blurList: [tComponentNames.header]
         }
         break;
       case tGuistate.bookingDataDirty: 
@@ -62,19 +62,19 @@ export class UIService implements iGuidance {
         result= {
           hideList: [],
           displayList: [],
-          blurList: [tComponentNames.header,tComponentNames.listCustomer]
+          blurList: [tComponentNames.listCustomer]
         }
         break;
       case tGuistate.customerNewDataDirty: 
         result= {
           hideList: [],
           displayList: [],
-          blurList: [tComponentNames.header]
+          blurList: []
         }
         break;
         default: result= null
     }//case
-    return result
+    return result.hideList.length +result.displayList.length +result.blurList.length > 0 ? result: null
   }
 
   guider(): Subject<tGuiguidance> {
