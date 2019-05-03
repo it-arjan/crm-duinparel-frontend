@@ -21,21 +21,20 @@ export class CustomerSearchComponent implements OnInit {
     private _router: Router, 
     private _ds: DataService,
     private _guidance: GuidanceService, 
-    private _ui: UIService,
-    private hostRef:ElementRef) 
+    private _ui: UIService) 
   {
    }
 
   reactiveForm: FormGroup;
   
+  @ViewChild("customer_search_outer") outerRef: ElementRef
   @ViewChild("customer_search_cover") coverRef: ElementRef
 
   ngOnInit() {
     this.initForm()
-    this._ds.getData() //emits on dataReady() when done
     this._ui.guider()//.pipe(take(1)) 
       .subscribe((guidance: tGuiguidance)=>{
-        this._guidance.handleGuidance(tComponentNames.searchCustomer, this.hostRef, this.coverRef, guidance)
+        this._guidance.handleGuidance(tComponentNames.searchCustomer, this.outerRef, this.coverRef, guidance)
         })
   }
   initForm(){

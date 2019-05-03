@@ -14,6 +14,7 @@ import { tDataResult } from 'src/app/services/interfaces.persist';
 import { AuthBase } from 'src/app/services/auth.base.service';
 import { GuidanceService } from 'src/app/services/guidance.service';
 import { tComponentNames, tGuiguidance } from 'src/app/services/interfaces.ui';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -72,10 +73,11 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   constructor(
     private _bs: BackendBase, private _auth: AuthBase,
     private _ui : UIService, private _modalService: NgbModal,
-    private hostRef:ElementRef, private _guidance: GuidanceService, private zone: NgZone,
+    private _guidance: GuidanceService, private zone: NgZone,
     private _ds: DataService, private _r2: Renderer2
     ) { }
   @ViewChild("header_cover") coverRef: ElementRef
+  @ViewChild("header_outer") outerRef: ElementRef
 
   notificationState:string
   navbarOpen: boolean
@@ -83,6 +85,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
   currentFeedback:UserFeedback
   showAsIcon: boolean
   showAsMsg: boolean
+  unsublist:Subscription[] =[]
 
   ufList:UserFeedback[]=[]
   @ViewChild('notifications') notifRef: ElementRef
@@ -99,24 +102,29 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     console.log('ngOnInit ')
-    this._ui.notifier()
-      .subscribe((feedback:UserFeedback)=>{
-        if (this._auth.isAuthenticated) this.onUINotification(feedback)
-    })
 
+    this.unsublist.push (
+      this._ui.notifier()
+        .subscribe((feedback:UserFeedback)=>{
+          if (this._auth.isAuthenticated) this.onUINotification(feedback)
+      })
+    )
+
+    this._ds.getData() //emits on dataReady() when done
     this._ds.dataReadyReplay().pipe(take(1)) //auto-unsubscribe
       .subscribe((result)=>{
         this.onDataReady(result)
     })
 
-    this._ui.guider()//.pipe(take(1)) 
-    .subscribe((guidance: tGuiguidance)=>{
-      console.log(guidance)
-      this._guidance.handleGuidance(tComponentNames.header, this.hostRef, this.coverRef, guidance)
-      })
-  
+    this.unsublist.push (
+      this._ui.guider()//.pipe(take(1)) 
+        .subscribe((guidance: tGuiguidance)=>{
+          console.log(guidance)
+          this._guidance.handleGuidance(tComponentNames.header, this.outerRef, this.coverRef, guidance)
+          })
+    )
   }
-  
+ 
   bgList : string[] = ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg']
 
   getNewUrl() : string{
@@ -173,10 +181,9 @@ displayNavbar(newval?: boolean){
   if (newval != undefined) this.navbarOpen=newval
   else this.navbarOpen = !this.navbarOpen;
 }
-  ngOnDestroy() {
-    this._ui.notifier().unsubscribe()
-    //this._ds.dataReady().unsubscribe()
-  }
+   ngOnDestroy(){
+    this.unsublist.forEach(x=>x.unsubscribe())
+  } 
 
   // processFeedback(feedback:UserFeedback){
   //   switch (feedback.type){

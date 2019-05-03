@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { Customer } from 'src/app/models/customer.model';
@@ -10,13 +10,14 @@ import { take } from 'rxjs/operators';
 import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
 import { TData } from '@angular/core/src/render3/interfaces/view';
 import { tDataResult } from 'src/app/services/interfaces.persist';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-customer-new-edit',
   templateUrl: './customer-new-edit.component.html',
   styleUrls: ['./customer-new-edit.component.css']
 })
-export class CustomerNewEditComponent implements OnInit {
+export class CustomerNewEditComponent implements OnInit, OnDestroy {
 
   constructor(
     private _ds: DataService, 
@@ -32,6 +33,7 @@ export class CustomerNewEditComponent implements OnInit {
   custId:number;
   customer: Customer;
   dataAvailable=false
+  unsublist:Subscription[] =[]
 
   ngOnInit() {
     //this.initForm()
@@ -41,7 +43,7 @@ export class CustomerNewEditComponent implements OnInit {
         if (this.editMode){
           //console.log('editMode')
           this.custId = +params['custid'];
-          this._ds.dataReadyReplay().pipe(take(1))
+          this._ds.dataReadyReplay().pipe(take(1)) // auto-unsub
             .subscribe(()=>{
                 this.customer = this._ds.getCustomer(this.custId)
                 this.initForm()
@@ -53,12 +55,17 @@ export class CustomerNewEditComponent implements OnInit {
           this.custId=-1
         }
       })
-
-    this.reactiveForm.valueChanges.subscribe(val => {
-        this._ui.checkin(this.editMode? tGuistate.customerEditDataDirty:tGuistate.customerNewDataDirty)
-      });        
-
+    this.unsublist.push (
+      this.reactiveForm.valueChanges.subscribe(val => {
+          this._ui.checkin(this.editMode? tGuistate.customerEditDataDirty:tGuistate.customerNewDataDirty)
+        })        
+    )
   }
+
+  ngOnDestroy(){
+    this.unsublist.forEach(x=>x.unsubscribe())
+  }
+  
 
   private initForm(){
     let name='', address='', email='', country='', phone=''

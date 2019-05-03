@@ -17,6 +17,7 @@ import { BackendBase } from 'src/app/services/backend.base.service';
 import { take } from 'rxjs/operators';
 import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
 import { GuidanceService } from 'src/app/services/guidance.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-booking',
@@ -27,7 +28,7 @@ import { GuidanceService } from 'src/app/services/guidance.service';
     }
 `]
 })
-export class BookingComponent implements OnInit {
+export class BookingComponent implements OnInit, OnDestroy {
 
   constructor(
     private _bs: BackendBase, 
@@ -37,10 +38,11 @@ export class BookingComponent implements OnInit {
     private _ui : UIService,
     private _router: Router, 
     private _activatedRoute: ActivatedRoute,
-    private hostRef:ElementRef, private _guidance: GuidanceService) {     
+    private _guidance: GuidanceService) {     
   }
 
   @ViewChild("booking_cover") coverRef: ElementRef
+  @ViewChild("booking_outer") outerRef: ElementRef
 
   propCodes = Globals.propCodes
   bookTypes = Globals.bookTypes
@@ -54,6 +56,7 @@ export class BookingComponent implements OnInit {
   reactiveForm: FormGroup;
   custId: number;
   customer: Customer;
+  unsublist:Subscription[] =[]
 
   ngOnInit() {
   this._activatedRoute.params.subscribe( //route subscriptions are cleaned up automatically
@@ -66,17 +69,24 @@ export class BookingComponent implements OnInit {
     });
     this.initForm()
 
-    this._ui.guider()//.pipe(take(1)) 
-      .subscribe((guidance: tGuiguidance)=>{
-        console.log(guidance)
-        this._guidance.handleGuidance(tComponentNames.listBooking, this.hostRef, this.coverRef, guidance)
-      })
-
-    this.reactiveForm.valueChanges.subscribe(val => {
-        this._ui.checkin(tGuistate.bookingDataDirty)
-      });        
+    this.unsublist.push (
+      this._ui.guider()
+        .subscribe((guidance: tGuiguidance)=>{
+          console.log(guidance)
+          this._guidance.handleGuidance(tComponentNames.listBooking, this.outerRef, this.coverRef, guidance)
+        })
+    )
+    this.unsublist.push (
+      this.reactiveForm.valueChanges.subscribe(val => {
+          this._ui.checkin(tGuistate.bookingDataDirty)
+        })
+      )
   }
 
+  ngOnDestroy(){
+    this.unsublist.forEach(x=>x.unsubscribe())
+  }
+  
   initForm(){
     this.reactiveForm = new FormGroup({
       'arrive': new FormControl('',[Validators.required, Validators.pattern(Globals.momDatePattern), this.datesValid.bind(this)]),

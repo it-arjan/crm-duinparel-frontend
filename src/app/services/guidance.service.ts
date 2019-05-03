@@ -52,8 +52,8 @@ export class GuidanceService {
       console.log(outerrectvalues.top, outerrectvalues.left, outerRef.nativeElement.offsetWidth, outerRef.nativeElement.offsetHeight);
       
       // Investigate why I cannot set top and left in angular app, but i should set left in html test with bootstrap styling
-      // renderer.setStyle(clickCoverRef.nativeElement, 'top',outerrectvalues.top+"px")
-      //this.renderer.setStyle(clickCoverRef.nativeElement, 'left',outerrectvalues.left+"px")
+      this.renderer.setStyle(clickCoverRef.nativeElement, 'top',outerrectvalues.top+"px")
+      this.renderer.setStyle(clickCoverRef.nativeElement, 'left',outerrectvalues.left+"px")
 
       this.renderer.setStyle(clickCoverRef.nativeElement, 'width',outerRef.nativeElement.offsetWidth+"px")
       this.renderer.setStyle(clickCoverRef.nativeElement, 'height',outerRef.nativeElement.offsetHeight+"px")

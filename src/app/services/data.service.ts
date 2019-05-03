@@ -57,7 +57,7 @@ export class DataService implements iData{
         let err = data.error ? data.error : null
         let datareadyresult : tDataResult = {error:err}
         //emit next on data ready
-        console.log("DataService: emitting dataReady. Repeated data fetch is a bug due to searchcomponent creation/descruction. The fix will be not to do that")
+        console.log("DataService: emitting dataReady.")
         this._ui.info('de data is beschikbaar' )
                 
         setTimeout(x=> this.dataReady$.next(datareadyresult), Globals.computeDelay()) 
