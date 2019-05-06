@@ -7,16 +7,18 @@
   },
   "scripts": {
     "electron": "electron dist/main.js --servefile",
-    "sqllite-rebuild": "electron-rebuild -f -w sqlite3",
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "test-angular": "ng test",
+    "test_angular": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build_github": "ng build --prod --base-href 'https://it-arjan.github.io/crm-duinparel-frontend/'",
-    "prepare_pub":"copy 'Web.config' 'dist'",
-    "pub_github": "prepare_pub ngh"
+    
+    "buildcode_azure": "ng build --prod ",
+    "web_config_azure": "copy .\\Web.config .\\dist",
+    "buildpub_azure": "npm run buildcode_azure && npm run web_config_azure",
+
+    "buildcode_github": "ng build --prod --base-href https://it-arjan.github.io/crm-duinparel-frontend/",
+    "pub_github": "npm run buildcode_github && ngh"
   },
   "private": true,
   "dependencies": {
@@ -37,9 +39,7 @@
     "ngx-electron": "^2.1.1",
     "no-config": "^1.1.2",
     "papaparse": "^4.6.3",
-    "sqlite3": "^4.0.4",
     "tslib": "^1.9.0",
-    "tssqlite": "^1.0.1",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
@@ -51,10 +51,9 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^8.9.5",
     "codelyzer": "~4.5.0",
-    "electron-rebuild": "^1.8.2",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
-    "karma": "~3.1.1",
+    "karma": "^4.1.0",
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~1.1.2",
