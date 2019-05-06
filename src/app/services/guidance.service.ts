@@ -20,17 +20,17 @@ export class GuidanceService {
 
   private uiHide(uiGuidanceName:tComponentNames, outerRef: ElementRef, clickCoverRef: ElementRef){
     //opacity main container to 100%
-    console.log('hiding ' + tComponentNames[uiGuidanceName])
+    console.log(tComponentNames[uiGuidanceName] + '.hide() ' )
     this.setCover(outerRef, clickCoverRef, true)
     this.setOuter(outerRef, 0)
   }
   private uiShow(uiGuidanceName:tComponentNames, outerRef: ElementRef, clickCoverRef: ElementRef){
-    console.log('showing ' + tComponentNames[uiGuidanceName])
+    console.log(tComponentNames[uiGuidanceName] + '.show() ' )
     this.setCover(outerRef, clickCoverRef, false)
     this.setOuter(outerRef, 1)
   }
   private uiBlur(uiGuidanceName:tComponentNames, outerRef: ElementRef, clickCoverRef: ElementRef){
-    console.log('blurring ' + tComponentNames[uiGuidanceName])
+    console.log(tComponentNames[uiGuidanceName] + '.blur() ' )
     this.setCover(outerRef, clickCoverRef, true, 0.2)
     this.setOuter(outerRef, 0.5)
   }
@@ -40,7 +40,7 @@ export class GuidanceService {
   }
 
   private setCover(outerRef: ElementRef, clickCoverRef: ElementRef, showcover:boolean, opa?: number){
-    console.log('setCover') 
+    console.log('setCover:' + showcover) 
     if (showcover){
       this.renderer.setStyle(clickCoverRef.nativeElement, 'position','absolute')
       this.renderer.setStyle(clickCoverRef.nativeElement, 'display','block')
@@ -51,7 +51,6 @@ export class GuidanceService {
       var outerrectvalues = outerRef.nativeElement.getBoundingClientRect();
       console.log(outerrectvalues.top, outerrectvalues.left, outerRef.nativeElement.offsetWidth, outerRef.nativeElement.offsetHeight);
       
-      // Investigate why I cannot set top and left in angular app, but i should set left in html test with bootstrap styling
       this.renderer.setStyle(clickCoverRef.nativeElement, 'top',outerrectvalues.top+"px")
       this.renderer.setStyle(clickCoverRef.nativeElement, 'left',outerrectvalues.left+"px")
 
