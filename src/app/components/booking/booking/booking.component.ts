@@ -16,7 +16,7 @@ moment.locale('nl')
 import { BackendBase } from 'src/app/services/backend.base.service';
 import { take } from 'rxjs/operators';
 import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
-import { GuidanceService } from 'src/app/services/guidance.service';
+import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -38,7 +38,7 @@ export class BookingComponent implements OnInit, OnDestroy {
     private _ui : UIService,
     private _router: Router, 
     private _activatedRoute: ActivatedRoute,
-    private _guidance: GuidanceService) {     
+    private _guidance: UIGuidanceService) {     
   }
 
   @ViewChild("booking_cover") coverRef: ElementRef

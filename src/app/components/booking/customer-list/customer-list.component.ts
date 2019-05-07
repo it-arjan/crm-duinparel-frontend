@@ -4,7 +4,7 @@ import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
 import { UIService } from 'src/app/services/ui.service';
 import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
-import { GuidanceService } from 'src/app/services/guidance.service';
+import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -37,7 +37,7 @@ export class CustomerListComponent implements OnInit {
   @ViewChild("customer_list_outer") outerRef: ElementRef
 
   constructor(private _router: Router, private _ds: DataService, 
-              private _guidance: GuidanceService, 
+              private _guidance: UIGuidanceService, 
               private _ui: UIService) { 
    
     this.unsublist.push (

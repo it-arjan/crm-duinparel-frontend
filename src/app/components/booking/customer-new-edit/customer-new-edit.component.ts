@@ -49,17 +49,12 @@ export class CustomerNewEditComponent implements OnInit, OnDestroy {
                 this.initForm()
                 this.dataAvailable=true
             })
-        } else{
+        } else {
           this.initForm()
           this.dataAvailable=true
           this.custId=-1
         }
       })
-    this.unsublist.push (
-      this.reactiveForm.valueChanges.subscribe(val => {
-          this._ui.checkin(this.editMode? tGuistate.customerEditDataDirty:tGuistate.customerNewDataDirty)
-        })        
-    )
   }
 
   ngOnDestroy(){
@@ -76,14 +71,20 @@ export class CustomerNewEditComponent implements OnInit, OnDestroy {
       phone = this.customer.phone
       country = this.customer.country  
    }
-
+    //create form
    this.reactiveForm = new FormGroup({
-    'name': new FormControl(name, Validators.required),
-    'address': new FormControl(address, Validators.required), 
-    'email': new FormControl(email, [Validators.required, Validators.email]), 
-    'phone': new FormControl(phone), 
-    'country': new FormControl(country), 
-  })
+      'name': new FormControl(name, Validators.required),
+      'address': new FormControl(address, Validators.required), 
+      'email': new FormControl(email, [Validators.required, Validators.email]), 
+      'phone': new FormControl(phone), 
+      'country': new FormControl(country), 
+    })
+    //subscribe to form changes
+    this.unsublist.push (
+      this.reactiveForm.valueChanges.subscribe(val => {
+          this._ui.checkin(this.editMode? tGuistate.customerEditDataDirty:tGuistate.customerNewDataDirty)
+        })        
+    )    
   }
 
   onSubmit(){

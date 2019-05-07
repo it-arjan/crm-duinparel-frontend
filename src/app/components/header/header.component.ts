@@ -12,9 +12,10 @@ import { Router } from '@angular/router';
 import { BackendBase } from 'src/app/services/backend.base.service';
 import { tDataResult } from 'src/app/services/interfaces.persist';
 import { AuthBase } from 'src/app/services/auth.base.service';
-import { GuidanceService } from 'src/app/services/guidance.service';
+import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 import { tComponentNames, tGuiguidance } from 'src/app/services/interfaces.ui';
 import { Subscription } from 'rxjs';
+import { EmptyNarrator } from 'src/app/shared/Narrator.Empty';
 
 @Component({
   selector: 'app-header',
@@ -69,13 +70,16 @@ import { Subscription } from 'rxjs';
       transition('out =>in',animate('1ms')),
     ])
   ]})
+
 export class HeaderComponentComponent implements OnInit, OnDestroy {  
   constructor(
     private _bs: BackendBase, private _auth: AuthBase,
-    private _ui : UIService, private _modalService: NgbModal,
-    private _guidance: GuidanceService, private zone: NgZone,
-    private _ds: DataService, private _r2: Renderer2
-    ) { }
+    private _ui : UIService, private _narraor : EmptyNarrator, private _modalService: NgbModal,
+    private _guidance: UIGuidanceService, private zone: NgZone,
+    private _ds: DataService, private _r2: Renderer2,
+    private _narrator: EmptyNarrator
+    ) { 
+    }
   @ViewChild("header_cover") coverRef: ElementRef
   @ViewChild("header_outer") outerRef: ElementRef
 
@@ -105,19 +109,19 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
 
     this.unsublist.push (
       this._ui.notifier()
-        .subscribe((feedback:UserFeedback)=>{
+        .subscribe((feedback:UserFeedback)=>{ //auto-unsubscribe
           if (this._auth.isAuthenticated) this.onUINotification(feedback)
       })
     )
 
-    this._ds.getData() //emits on dataReady() when done
+    this._ds.getData() //emits dataReady() when done, all componenets subscribe to that
     this._ds.dataReadyReplay().pipe(take(1)) //auto-unsubscribe
       .subscribe((result)=>{
         this.onDataReady(result)
     })
 
     this.unsublist.push (
-      this._ui.guider()//.pipe(take(1)) 
+      this._ui.guider() 
         .subscribe((guidance: tGuiguidance)=>{
           console.log(guidance)
           this._guidance.handleGuidance(tComponentNames.header, this.outerRef, this.coverRef, guidance)
@@ -125,6 +129,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     )
   }
  
+  //todo: get this list by querying a folder specified in settings
   bgList : string[] = ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg']
 
   getNewUrl() : string{
@@ -148,6 +153,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     document.body.style.backgroundImage=newUrl
     //document.body.style.backgroundImage=`url(assets/img/bg/d6.jpg)`
   }
+
   onUINotification(feedback:UserFeedback){
       this.currentFeedback=feedback
       // Start adding warnings/ errors to history after logon
@@ -172,6 +178,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
         console.log(result)
         this._ui.error('Fout bij ophalen data: '+ result.error )// 
     } 
+    else this._narrator.startNarrating()
   }
   // ngDoCheck(){
   //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
@@ -184,29 +191,6 @@ displayNavbar(newval?: boolean){
    ngOnDestroy(){
     this.unsublist.forEach(x=>x.unsubscribe())
   } 
-
-  // processFeedback(feedback:UserFeedback){
-  //   switch (feedback.type){
-  //     case ufType.iconRemoved:
-  //     case ufType.iconCancelled:
-  //     case ufType.iconSuccess: 
-  //       this.showAsIcon=true
-  //       this.showAsMsg=false
-  //       break;
-  //     case ufType.msgInfo:
-  //       this.showAsIcon=false
-  //       this.showAsMsg=true
-  //       break;
-  //     case ufType.msgWarn:
-  //       this.showAsIcon=false
-  //       this.showAsMsg=true
-  //       break;
-  //     case ufType.msgError: 
-  //       this.showAsIcon=false
-  //       this.showAsMsg=true
-  //       break;
-  //   }
-  // }
 
   exitElectron(){ 
     const modalRef = this._modalService.open(ModalConfirmComponent);

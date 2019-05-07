@@ -5,7 +5,7 @@ import { tComponentNames, tGuiguidance } from './interfaces.ui';
   providedIn: 'root' 
 })
 
-export class GuidanceService {
+export class UIGuidanceService {
   
   constructor(rendererFactory: RendererFactory2 ){
     this.renderer = rendererFactory.createRenderer(null, null);
@@ -24,6 +24,7 @@ export class GuidanceService {
     this.setCover(outerRef, clickCoverRef, true)
     this.setOuter(outerRef, 0)
   }
+  
   private uiShow(uiGuidanceName:tComponentNames, outerRef: ElementRef, clickCoverRef: ElementRef){
     console.log(tComponentNames[uiGuidanceName] + '.show() ' )
     this.setCover(outerRef, clickCoverRef, false)
