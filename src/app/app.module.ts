@@ -32,6 +32,8 @@ import { PersistService } from './services/persist.service';
 import { AuthFakeService } from './services/auth.fake.service';
 import { BackendFakeService } from './services/backend.fake.service';
 import { PersistFakeService } from './services/persist.fake.service';
+import { EmptyNarrator } from './shared/Narrator.Empty';
+import { DemoNarrator } from './shared/Narrator.Demo';
 
 registerLocaleData(localeNl, 'nl'); 
 
@@ -69,6 +71,7 @@ registerLocaleData(localeNl, 'nl');
     { provide: AuthBase, useClass: AuthFakeService},
     { provide: BackendBase, useClass: BackendFakeService},
     { provide: PersistBase, useClass: PersistFakeService},
+    { provide: EmptyNarrator, useClass: DemoNarrator},
     ],
   bootstrap: [AppComponent]
 })
