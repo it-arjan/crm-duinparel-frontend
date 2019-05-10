@@ -6,10 +6,10 @@
     (ngSubmit)="onSubmit()" 
     class="form-inline"
     >
-    <!-- <div class="row"> -->
+    <div class="row">
         <div class="col-md-12">
             <div class="input-group">
-              <div class="input-group-append col-2">
+              <div class="col-2">
                <input 
                     class ="form-control-sm" 
                     type="text" 
@@ -19,7 +19,7 @@
                     placeholder="aankomst"
                     >
               </div>
-               <div class="input-group-append col-2">
+            <div class=" col-2">
               <input 
                     class ="form-control-sm" 
                     type="text" 
@@ -29,14 +29,14 @@
               </div>
  
 
-              <div class="input-group-append col-1">
+              <div class=" col-1">
                 <span>
                   <i class="fa fa-calendar " aria-hidden="true" style="font-size:2em;display:inline-block" (click)="openModalCalendar()"></i>
                 </span>
 
                    <!-- <button class="btn btn-outline-primary calendar" (click)="openModalCalendar()" type="button"></button> -->
               </div>
-              <div class="input-group-append col-2">
+              <div class=" col-2">
                    <input 
                     class ="form-control-sm" 
                     id="nrpers"
@@ -53,11 +53,12 @@
                   <option disabled selected value>--</option>
                   <option *ngFor="let btype of bookTypes">{{btype}}</option>
                 </select>
-                <button class="btn btn-sm btn-primary form-control" type="submit" [disabled]="!reactiveForm.valid">
-                    Voeg toe
+                <button class="btn btn-sm btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
+                    <i class="fa fa-plus "></i>
                 </button>
              </div>
         </div>
+      </div> <!-- Row -->
 </form>
 <hr>
 
