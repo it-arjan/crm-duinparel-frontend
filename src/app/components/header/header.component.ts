@@ -80,6 +80,7 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     private _narrator: EmptyNarrator
     ) { 
     }
+
   @ViewChild("header_cover") coverRef: ElementRef
   @ViewChild("header_outer") outerRef: ElementRef
 
@@ -113,12 +114,16 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
           if (this._auth.isAuthenticated) this.onUINotification(feedback)
       })
     )
+    this.unsublist.push (
+      this._auth.authCompletedReplay().subscribe(()=>{ //only get the data when logged on
+        this._ds.getData() //emits dataReady() when done, all componenets subscribe to that
 
-    this._ds.getData() //emits dataReady() when done, all componenets subscribe to that
-    this._ds.dataReadyReplay().pipe(take(1)) //auto-unsubscribe
-      .subscribe((result)=>{
-        this.onDataReady(result)
-    })
+        this._ds.dataReadyReplay().pipe(take(1))
+          .subscribe((result)=>{
+            this.onDataReady(result)
+        })
+      })
+    )
 
     this.unsublist.push (
       this._ui.guider() 

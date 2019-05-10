@@ -9,6 +9,7 @@ import { Globals } from '../shared/globals';
 export class AuthFakeService extends AuthBase {
   constructor() { 
     super()
+    this.raiseAuthCompleted(true)
   }
   
   isAuthenticated(): boolean {
