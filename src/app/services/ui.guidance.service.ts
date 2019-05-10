@@ -52,8 +52,8 @@ export class UIGuidanceService {
       var outerrectvalues = outerRef.nativeElement.getBoundingClientRect();
       console.log(outerrectvalues.top, outerrectvalues.left, outerRef.nativeElement.offsetWidth, outerRef.nativeElement.offsetHeight);
       
-      this.renderer.setStyle(clickCoverRef.nativeElement, 'top',outerrectvalues.top+"px")
-      this.renderer.setStyle(clickCoverRef.nativeElement, 'left',outerrectvalues.left+"px")
+      // this.renderer.setStyle(clickCoverRef.nativeElement, 'top',outerrectvalues.top+"px")
+      // this.renderer.setStyle(clickCoverRef.nativeElement, 'left',outerrectvalues.left+"px")
 
       this.renderer.setStyle(clickCoverRef.nativeElement, 'width',outerRef.nativeElement.offsetWidth+"px")
       this.renderer.setStyle(clickCoverRef.nativeElement, 'height',outerRef.nativeElement.offsetHeight+"px")
