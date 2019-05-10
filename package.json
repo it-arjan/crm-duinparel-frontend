@@ -18,7 +18,7 @@
     "buildpub_azure": "npm run buildcode_azure && npm run web_config_azure",
 
     "buildcode_github": "ng build --prod --base-href https://it-arjan.github.io/crm-duinparel-frontend/",
-    "pub_github": "npm run buildcode_github && ngh"
+    "buildpub_github": "npm run buildcode_github && ngh"
   },
   "private": true,
   "dependencies": {
