@@ -8,7 +8,7 @@ import { CustomerBatch } from '../models/customerbatch.model';
 export interface iData{
     getData(): void
     dataReadyReplay(): ReplaySubject<tDataResult>
-    searchResults(): BehaviorSubject<Customer[]>
+    searchResults(): ReplaySubject <Customer[]>
     
     searchCustomers(emailPiece:string, namePiece: string): void
     clearCustomerSearch(): void

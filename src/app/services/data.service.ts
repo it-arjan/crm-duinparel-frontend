@@ -6,7 +6,7 @@ import { Mailing } from '../models/mailing.model';
 import { tBulkdataResult, tPersist, tDataResult } from './interfaces.persist';
 import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
-import { ReplaySubject, Subject, BehaviorSubject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { Globals } from '../shared/globals';
 import { iData } from './interfaces.data';
@@ -24,7 +24,6 @@ export class DataService implements iData{
   constructor(
     private _ps: PersistBase,
     private _ui: UIService,
-    private _router: Router 
    ) { 
       this.searchResult = new Array<Customer>();
   }
@@ -34,7 +33,7 @@ export class DataService implements iData{
   public searchResult: Array<Customer>=[]; // temp, will come out of observable
 
   private dataReady$ = new ReplaySubject<tDataResult>()
-  private searchCompleted$: BehaviorSubject<Customer[]>= new BehaviorSubject<Customer[]>([])
+  private searchCompleted$: ReplaySubject<Customer[]>= new ReplaySubject<Customer[]>()
   emailSearchTerm:string 
 
   getCustomer(id:number): Customer {
@@ -70,7 +69,7 @@ export class DataService implements iData{
        return this.dataReady$
   }
   // BehaviorSubjects start with initial value, subscribers will get get most recent value upon subscription
-  searchResults(): BehaviorSubject<Customer[]>{
+  searchResults(): ReplaySubject<Customer[]>{
        return this.searchCompleted$
   }
 
@@ -335,9 +334,10 @@ export class DataService implements iData{
 
   searchEmails( str_slot: string, 
                 monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
-                monthsNotMailedFrom:number, totalVisits:number, 
-                selectedProptypes: string[],
-                selectedBooktypes: string[]) : CustomerBatch[]{
+                monthsNotMailedFrom:number, 
+                totalVisits:number, 
+                selectedProptypes: string[], selectedBooktypes: string[]
+              ) : CustomerBatch[]{
     //convert everything to msec
 
     let msecNotVisitedFrom = monthsNotVisitedFrom   ?  Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : -1
