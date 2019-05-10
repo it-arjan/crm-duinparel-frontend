@@ -12,15 +12,22 @@ export class DemoNarrator extends EmptyNarrator{
   }
 
   private story: string[]=[
-    'Tip: View the layout on Mobile as well as on Desktop',
-    'Tip: Change some data to see how this affects the layout!',
+    'The fake data backend has a programmed delay between 0-2 sec.',
+    'Tip 1: Refresh a deeplink to see how the app handles these data delays.',
+    'Tip 2: Check the layout as well on Mobile as on Desktop.',
+    'Tip 3: Change some data (esp on desktop) to see how this affects the layout.',
   ]
   
   public startNarrating(){
     console.log('============ startNarrating!!!!======================')
-    //msgs are buffered in _ui
+
+    let incTimeout=5000
+    let timeout=incTimeout
     this.story.forEach(x=>{
-      this._ui.info(x) 
+      setTimeout(() => {
+        this._ui.info(x)         
+      }, timeout);
+      timeout += incTimeout
     })
   }
 }

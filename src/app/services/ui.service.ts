@@ -16,7 +16,7 @@ export class UIService implements iGuidance {
   private naviListener:Subject<tGuistate> = new Subject<tGuistate>();
   private timeLastMsg: number= 0
   
-  private mininterval=5000
+  private mininterval=1500
 
   feedbackHistory: UserFeedback[] =[]
   constructor(
@@ -105,7 +105,7 @@ export class UIService implements iGuidance {
   }
   
   ensureMinTimeInBetween(): number{
-     let interval =  this.timeLastMsg>0 ? Date.now() - this.timeLastMsg:5000
+     let interval =  this.timeLastMsg>0 ? Date.now() - this.timeLastMsg:this.mininterval
      let timeout=interval >= this.mininterval ? 0: this.mininterval - interval 
      //keep admin asap
      this.timeLastMsg=Date.now() + timeout
