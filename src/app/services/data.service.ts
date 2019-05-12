@@ -172,204 +172,221 @@ export class DataService implements iData{
     this._ps.persistBooking(booking, tPersist.Insert).pipe(take(1))
     .subscribe((result) =>{
         if (!result.error) {
-          let realCust = this.customers.find(x=>x.id==booking.custid)
-          realCust.bookings.unshift(booking)
+          let realCust = this.customers.find(x=>x.id==booking.custid);
+          realCust.bookings.unshift(booking);
         }
-        result$.next(result)
+        result$.next(result);
     })
-    return result$
+    return result$;
   }
 
   removeBooking(booking:Booking) : ReplaySubject<tDataResult> {
     // persist
-   let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+   let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>();
     this._ps.persistBooking(booking, tPersist.Delete).pipe(take(1))
     .subscribe((result) =>{
         if (!result.error) {
-          let cust = this.customers.find(x=>x.id === booking.custid)
-          let idx = cust.bookings.indexOf(booking)
-          if (idx >=0) cust.bookings.splice(idx, 1)
+          let cust = this.customers.find(x=>x.id === booking.custid);
+          let idx = cust.bookings.indexOf(booking);
+          if (idx >=0) cust.bookings.splice(idx, 1);
         }
-      result$.next(result)
+      result$.next(result);
     })
-    return  result$
+    return  result$;
   }
 
   addMailing(custList: number[]) : ReplaySubject<tDataResult>{
-   let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
-    let mail = new Mailing(-1, Date.now(), '', custList.slice())
+   let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>();
+    let mail = new Mailing(-1, Date.now(), '', custList.slice());
     this._ps.persistMailing(mail, tPersist.Insert).pipe(take(1))
       .subscribe((dataResult)=>{
         if (!dataResult.error) {
-          this.mailings.push(mail)
+          this.mailings.push(mail);
         }
-        result$.next(dataResult)
+        result$.next(dataResult);
       })
-      return result$
+      return result$;
   }
+
   getLastMailing():Mailing {
     this.mailings.sort((m1,m2) =>{
-      return m1.id-m2.id
+      return m1.id-m2.id;
     })
-    console.log(this.mailings)
-    return this.mailings[this.mailings.length-1]
+    console.log(this.mailings);
+    return this.mailings[this.mailings.length-1];
   }
+
   removeMailing(mail:Mailing) : ReplaySubject<tDataResult>{
-    let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>()
+    let result$: ReplaySubject<tDataResult> = new ReplaySubject<tDataResult>();
     this._ps.persistMailing(mail, tPersist.Delete).pipe(take(1))
       .subscribe((dataResult)=>{
         if (!dataResult.error) {
-          let idx = this.mailings.indexOf(mail)
-          this.mailings.splice(idx,1)
+          let idx = this.mailings.indexOf(mail);
+          this.mailings.splice(idx,1);
         }
-        result$.next(dataResult)
+        result$.next(dataResult);
       })
-      return result$
+      return result$;
   }
+
   clearCustomerSearch(){
     this.searchResult.length=0;
   }
 
   private bookingFallsWithinSlot(book: Booking, str_slot) : boolean {
-    let arr_fromuntil = str_slot.split(',')
-    let str_slot_from = arr_fromuntil[0]
-    let str_slot_until= arr_fromuntil[1]
+    let arr_fromuntil = str_slot.split(',');
+    let str_slot_from = arr_fromuntil[0];
+    let str_slot_until= arr_fromuntil[1];
 
-    let arr_slot_from = str_slot_from.split('/')
-    let day_slot_from = Number(arr_slot_from[0])
-    let month_slot_from = Number(arr_slot_from[1])
+    let arr_slot_from = str_slot_from.split('/');
+    let day_slot_from = Number(arr_slot_from[0]);
+    let month_slot_from = Number(arr_slot_from[1]);
     
-    let arr_slot_until = str_slot_until.split('/')
-    let day_slot_until = Number(arr_slot_until[0])
-    let month_slot_until = Number(arr_slot_until[1])
+    let arr_slot_until = str_slot_until.split('/');
+    let day_slot_until = Number(arr_slot_until[0]);
+    let month_slot_until = Number(arr_slot_until[1]);
 
-    let arrive_m = moment(book.arrive)
-    let depart_m = moment(book.arrive)
+    let arrive_m = moment(book.arrive);
+    let depart_m = moment(book.arrive);
     
+    // regardless the year
     // compare months
-    //if moth same, compare the day
+    // if moth same, compare the day
     let arrive_within = arrive_m.month() > month_slot_from
                         ? true
                         : arrive_m.month() === month_slot_from
                         ? arrive_m.date() >= day_slot_from
-                        : false
+                        : false;
     let depart_within = depart_m.month() < month_slot_until
                         ? true
                         : depart_m.month() === month_slot_until
                         ? depart_m.date() <= day_slot_until
-                        : false
-    return arrive_within && depart_within
+                        : false;
+    return arrive_within && depart_within;
   } 
-  private selectMatchingBookings( cust: Customer, 
+  private matchBookings( bookings: Booking[],
                           str_slot: string,
                           msecNotVisitedFrom: number, msecNotVisitedUntil: number, 
                           allowedProptypes: string[], allowedBooktypes: string[]) {
-      let matchingBookings = cust.bookings.filter((book) => {
 
-            //does property/bookType match?
-            let hasMachingBookings = allowedProptypes.includes(book.propcode) && allowedBooktypes.includes(book.booktype)
-            if (str_slot ){
-              hasMachingBookings = hasMachingBookings && this.bookingFallsWithinSlot(book, str_slot)
-            }
-            if (hasMachingBookings){
-              //Refine by date  
-              let diff_msec = Date.now() - book.arrive 
-              hasMachingBookings = diff_msec > msecNotVisitedFrom
-              if (hasMachingBookings && msecNotVisitedUntil > 0) 
-                hasMachingBookings = diff_msec < msecNotVisitedUntil
-            }
-            return hasMachingBookings
-          }) //cust.bookings.filter
-    return matchingBookings 
+      let typeAndSlotMatches = bookings.filter(
+        (book) => {
+          let typesMatch:boolean = allowedProptypes.includes(book.propcode) && allowedBooktypes.includes(book.booktype);
+          let slotMatches:boolean = str_slot ? this.bookingFallsWithinSlot(book, str_slot): true;
+          return slotMatches && typesMatch;
+      }) //bookings.filter
+      
+      let result =false;
+      let mostRecentBooking: Booking;
+      
+      // Check the arrival date on bookings of allowed types 
+      if (typeAndSlotMatches.length > 0){
+        // get the most recent one
+        mostRecentBooking = typeAndSlotMatches.sort((a: Booking,b: Booking) => { return a.arrive- b.arrive })[0];
+        //Now compare with not visitedSince & until
+        let msec_ago = Date.now() - mostRecentBooking.arrive;
+        result = msec_ago > msecNotVisitedFrom;
+        if (result && msecNotVisitedUntil > 0) 
+          result = msec_ago < msecNotVisitedUntil;
+      }
+    return result;
   }
 
-  private findCustomers(str_slot: string, 
+  private getCustomers4Mailing (str_slot: string, 
                 msecNotVisitedFrom: number, 
                 msecNotVisitedUntil: number, 
                 msecNotMailedFrom:number, 
                 visitCount:number, 
                 selectedProptypes: string[],
                 selectedBooktypes: string[]):Customer[] {
-    let result:Customer[]=[]
-    let hasMatchingBookings=false  
-            
+
+    let result:Customer[]=[];
     if (this.customers){
-      // simply filter customers
-        let custHits =this.customers.filter((cust: Customer) => {
-          // First see if this customer has bookings of this book-type and propcode
-          // any booking will do, it can be too old for the criteria
-          let hasVisitedEnough = visitCount < 0 || cust.bookings.length >= visitCount
-          if (hasVisitedEnough){
-              hasMatchingBookings=this.selectMatchingBookings(cust, 
-                                            str_slot,
-                                            msecNotVisitedFrom, msecNotVisitedUntil, 
-                                            selectedProptypes, selectedBooktypes)
-                                            .length > 0
+      // start filtering customers
+        let custHits =this.customers.filter(
+          (cust: Customer) => {
+            let filterResult = this.checkVisitCount(cust.bookings, visitCount);
+            filterResult = filterResult && this.matchBookings(cust.bookings, str_slot,
+                                    msecNotVisitedFrom, msecNotVisitedUntil, 
+                                    selectedProptypes, selectedBooktypes);
+
+            //Refine custHits by notMailedSince, if this is used
+            if (msecNotMailedFrom > 0 && filterResult){
+              filterResult = this.checkLastMailed(cust.id, msecNotMailedFrom);
             }
-            return hasMatchingBookings
-          })
+            return filterResult;
+            }
+          ) // customers.filter
         
-        //Refine by mailing criteria
-        //Not optimal in performance but better for maintenance
-        if (msecNotMailedFrom > 0){
-          custHits =custHits.filter((cust) => {
-          let included=false
-            //get mailings including this customer
-            let mailings_thisCust = this.mailings.filter(m=>m.customerids.includes(cust.id))
-            //narrow down on date sent
-            if (mailings_thisCust.length > 0)
-            {
-                let mostRecentMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0]
-                let mdiff = Date.now() - mostRecentMail.sent
-                included = mdiff >= msecNotMailedFrom
-            }
-          
-          return included
-        })
-        } // if monthsNotMailedFrom
-        result = custHits
+        result = custHits;
       } //if (this.customers)
+      return result;
+  }
+
+  checkLastMailed(custId: number, msecNotMailedFrom: number): boolean{
+    let result=false
+        //get mailings including this customer
+        let mailings_thisCust = this.mailings.filter(m=>m.customerids.includes(custId))
+        //narrow down on date sent
+        if (mailings_thisCust.length > 0)
+        {
+            let mostRecentMail = mailings_thisCust.sort((m1,m2)=>m1.sent > m2.sent ? 1 : -1)[0];
+            let mdiff = Date.now() - mostRecentMail.sent;
+            result = mdiff >= msecNotMailedFrom;
+        }
       return result
+  }
+  checkVisitCount(bookings: Booking[], visitCount: number) : boolean {
+    // if visitCount is used, check it
+    return visitCount < 0 || bookings.length >= visitCount;
   }
 
   searchEmails( str_slot: string, 
                 monthsNotVisitedFrom: number, monthsNotVisitedUntil: number, 
-                monthsNotMailedFrom:number, 
+                monthslastMailed:number, 
                 totalVisits:number, 
                 selectedProptypes: string[], selectedBooktypes: string[]
               ) : CustomerBatch[]{
     //convert everything to msec
 
-    let msecNotVisitedFrom = monthsNotVisitedFrom   ?  Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : -1
-    let msecNotVisitedUntil = monthsNotVisitedUntil   ? Math.floor(totalVisits * 1000 * 3600 * 24 * 30.5) : -1
-    let msecNotMailedFrom = monthsNotMailedFrom     ?  Math.floor(monthsNotMailedFrom * 1000 * 3600 * 24 * 30.5) : -1
-    let visitCount = totalVisits || -1
     console.log('============= searchEmails =============')
-    console.log(str_slot, msecNotVisitedFrom, msecNotVisitedUntil, msecNotMailedFrom, visitCount)
+    console.log(str_slot, 
+                monthsNotVisitedFrom, monthsNotVisitedUntil, 
+                monthslastMailed,  totalVisits, 
+                selectedProptypes, selectedBooktypes);
+
+    let msecNotVisitedFrom = monthsNotVisitedFrom   ?  Math.floor(monthsNotVisitedFrom * 1000 * 3600 * 24 * 30.5) : -1;
+    let msecNotVisitedUntil = monthsNotVisitedUntil   ? Math.floor(monthsNotVisitedUntil * 1000 * 3600 * 24 * 30.5) : -1;
+    let msecNotMailedFrom = monthslastMailed     ?  Math.floor(monthslastMailed * 1000 * 3600 * 24 * 30.5) : -1;
+    let visitCount = totalVisits || -1;
     
-    let custHits:Customer[]
-    custHits = this.findCustomers(str_slot, 
+
+    console.log(str_slot, 
+                msecNotVisitedFrom, msecNotVisitedUntil, 
+                msecNotMailedFrom, visitCount, 
+                selectedProptypes, selectedBooktypes);
+    let custHits:Customer[];
+    custHits = this.getCustomers4Mailing(str_slot, 
                                   msecNotVisitedFrom, msecNotVisitedUntil, 
                                   msecNotMailedFrom, visitCount, 
-                                  selectedProptypes, selectedBooktypes)
-
+                                  selectedProptypes, selectedBooktypes);
     
-    let batchArr:CustomerBatch[]=[]
+    let batchArr:CustomerBatch[]=[];
 
-    let i=1
-    let batchsize=99
-    let batch : CustomerBatch = new CustomerBatch(batchsize)
+    let i=1;
+    let batchsize=99;
+    let batch : CustomerBatch = new CustomerBatch(batchsize);
     for (let c of custHits){
       if (!batch.hasSpace()){
-        batchArr.push(batch)
-        batch = new CustomerBatch(batchsize)// 100 = max size hotmail. todo make config setting
+        batchArr.push(batch);
+        batch = new CustomerBatch(batchsize);// 100 = max size hotmail. todo make config setting
       }
-      batch.add(c)
+      batch.add(c);
     } // for
     // add last open batch
-    if (batch.hasItems()) batchArr.push(batch)
+    if (batch.hasItems()) batchArr.push(batch);
 
-    return batchArr
+    return batchArr;
   }
 
  

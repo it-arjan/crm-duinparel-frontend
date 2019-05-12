@@ -38,13 +38,15 @@ export class MailingComponent implements OnInit {
   reactiveForm: FormGroup;
   propTypes = Globals.propTypesMailing
   bookTypes = Globals.bookTypes
-  selectedPropCodes: Array<string> = []
-  selectedBookTypes: Array<string> = []
+  
+  str_slot = null
   visitedFrom = 24 //todo maak setting
   visitedUntil = 0 //todo maak setting
-  mailedSinceFrom = 0  //todo maak setting
+  lastMailedSince = 0  //todo maak setting
   totalVisists = 0 //todo maak setting
-
+  selectedPropCodes: Array<string> = []
+  selectedBookTypes: Array<string> = []
+  
   lastSavedmailing: Mailing
   batchesCopied_Idx: number[] = []
 
@@ -82,10 +84,10 @@ export class MailingComponent implements OnInit {
 
   initForm(){
     this.reactiveForm = new FormGroup({
-      'slot': new FormControl('',{validators: this.slotValidVal.bind(this), updateOn: "blur"}),
+      'slot': new FormControl('',{updateOn: "blur", validators: [this.slotValidator.bind(this)] }),
       'visitedFrom': new FormControl(this.visitedFrom,[Validators.required, Validators.pattern(/[1-9][0-9]*/)]), 
-      'visitedUntil': new FormControl(this.visitedUntil>0?this.visitedUntil:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
-      'mailedSinceFrom': new FormControl(this.mailedSinceFrom>0?this.mailedSinceFrom:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
+      'visitedUntil': new FormControl(this.visitedUntil>0?this.visitedUntil:undefined,{updateOn: "blur", validators: [Validators.pattern(/[1-9][0-9]*/), this.visitedUntilValidator.bind(this)]}), 
+      'mailedSinceFrom': new FormControl(this.lastMailedSince>0?this.lastMailedSince:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'totalVisists': new FormControl(this.totalVisists>0?this.totalVisists:undefined,[Validators.pattern(/[1-9][0-9]*/)]), 
       'propType': new FormControl('',[Validators.required]),
       'bookTypeCheckboxes': new FormGroup({
@@ -143,7 +145,7 @@ export class MailingComponent implements OnInit {
     return errormsg
   }
 
-  slotValidVal(control: FormControl) : {[s: string]: boolean}{
+  slotValidator(control: FormControl) : {[s: string]: boolean}{
     //PS: called as validator onBlur and with bind(this)
     let result:{[s: string]:boolean}=null
     if (this.reactiveForm){  //needed, is somehow called before this.reactiveForm is instantiated
@@ -161,6 +163,18 @@ export class MailingComponent implements OnInit {
     return result
   }
 
+  visitedUntilValidator(control: FormControl) : {[s: string]: boolean}{
+    let result:{[s: string]:boolean}=null
+    if (this.reactiveForm ){  
+        let visitedFrom=this.reactiveForm.get('visitedFrom').value
+        if (visitedFrom && Number(visitedFrom) > 0 && control.value && Number(control.value) <= visitedFrom){
+          this._ui.error("'korter dan' kan niet gelijk of groter zijn dan 'langer dan'")
+          result = {'untilEarilerThenFrom': true} 
+        }
+    }
+    
+     return result   
+  }
   setSelectedBooktypes(checkboxes:FormGroup){
     this.selectedBookTypes.length=0 //clear array
     for (let booktype of this.bookTypes){
@@ -170,12 +184,16 @@ export class MailingComponent implements OnInit {
 
   onSubmit(){
     this.resetScreen()
-    let str_slot:string = this.reactiveForm.get('slot').value
-    if (str_slot) str_slot=str_slot.replace(/\s/g,'')
+    //remove all spaces
 
+    this.str_slot = this.reactiveForm.get('slot').value
+    if (this.str_slot) {
+      this.str_slot = this.str_slot.replace(/\s/g,'')
+      this.str_slot = this.str_slot.length > 0 ? this.str_slot : null
+    } 
     this.visitedFrom = this.reactiveForm.get('visitedFrom').value
     this.visitedUntil = this.reactiveForm.get('visitedUntil').value
-    this.mailedSinceFrom = this.reactiveForm.get('mailedSinceFrom').value
+    this.lastMailedSince = this.reactiveForm.get('mailedSinceFrom').value
     this.totalVisists = this.reactiveForm.get('totalVisists').value
 
     this.selectedPropCodes = Globals.propType2PropCode(this.reactiveForm.get('propType').value )
@@ -184,10 +202,14 @@ export class MailingComponent implements OnInit {
     // console.log(this.visitedFrom,this.visitedUntil,
     //   this.mailedSinceFrom,this.totalVisists,
     //   this.selectedPropCodes, this.selectedBookTypes)
-      
-    this.selectionAsBatches = this._ds.searchEmails(str_slot, 
+    console.log('============= Submit =============')
+    console.log(this.str_slot, 
+                this.visitedFrom, this.visitedUntil, 
+                this.lastMailedSince, this.totalVisists, 
+                this.selectedPropCodes, this.selectedBookTypes)      
+    this.selectionAsBatches = this._ds.searchEmails(this.str_slot, 
                                                   this.visitedFrom,this.visitedUntil,
-                                                  this.mailedSinceFrom,this.totalVisists,
+                                                  this.lastMailedSince,this.totalVisists,
                                                   this.selectedPropCodes, this.selectedBookTypes)
    // console.log(this.selectionAsBatches)
     }

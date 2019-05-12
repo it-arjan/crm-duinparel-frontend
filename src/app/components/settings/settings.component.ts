@@ -73,7 +73,7 @@ export class SettingsComponent implements OnInit {
 
   setActiveTabNr(){
     if (!this.checkSettings()) this.activetabNr=2
-    else if (!this.loggedOn) this.activetabNr=0
+    else if (!this._auth.isAuthenticated()) this.activetabNr=0
     else this.activetabNr=2
 
     this.activetabId = this.getActiveTabID()
@@ -144,12 +144,14 @@ export class SettingsComponent implements OnInit {
       }
     }
   }
+  
   onLogon(){
     console.log('onLogon')
     if (this.checkSettings()){
       this._auth.logOn(this.logonForm.get('password').value)
       .then(()=>{
         this.loggedOn =true
+        this._auth.raiseAuthCompleted(true)
         this.logonForm.setValue({password:''})
         this.setActiveTabNr() 
         this._ui.successIcon()
