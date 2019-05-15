@@ -63,7 +63,7 @@
 <hr>
 
 <!-- list existing bookings here, + delete button -->
-<div class="container-fluid" *ngIf="customer && customer.bookings">
+<div *ngIf="customer && customer.bookings">
   <p class="text-info pad">Boekingen van {{customer.name}}</p>
   <div class="row border highlight vcenter" *ngFor="let booking of customer.bookings; let idx=index">
     <div class="col-2">{{booking.arrive | date:globDateformat()}}</div>
@@ -72,7 +72,6 @@
     <div class="col-1">{{booking.propcode }}</div>
     <div class="col-2">{{booking.booktype }}</div>
     <div class="col-4">
-      <div class="container">
         <div class="row">
           <div class="col-6 text-align-middle">
               <button style="margin-right:3px" class="btn btn-sm btn-outline-success" (click)='onWord(idx)'>Word</button>
@@ -81,7 +80,6 @@
               <button class="btn btn-sm btn-outline-danger" (click)='onDelete(idx)'>X</button>
           </div>
         </div>
-      </div>      
     </div>
   </div>
   <div class="row">

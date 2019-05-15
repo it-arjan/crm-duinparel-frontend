@@ -1,6 +1,7 @@
-<div #customer_list_outer class="container bgcolor ">
+<div #customer_list_outer [ngClass]="customers.length>0?'bgcolor container-fluid':''" >
   <div #customer_list_cover></div>
-  <h2 *ngIf="customers.length>0">Zoekresultaat</h2>
+  <div *ngIf="customers.length>0">
+  <h2 >Zoekresultaat</h2>
   <div class="row highlight  " 
   [ngClass]="selectedIdx ==idx ?'rowselect':''"
   *ngFor="let c of customers;let idx=index">
@@ -9,5 +10,6 @@
       <div class="col-sm-2 "></div>
       <div class="col-sm-2"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'edit')"> Bewerken</button></div>
       <div class="col-sm-3"><button class="btn btn-sm btn-outline-secondary" (click)="onClick(idx,'book')"> Boekingen</button></div>
+  </div>
   </div>
 </div>

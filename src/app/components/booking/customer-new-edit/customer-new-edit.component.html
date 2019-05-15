@@ -1,52 +1,44 @@
-<div class="container bgcolor " >
-<h2 *ngIf="editMode else insertMode">
+<div class="container bgcolor ">
+  <h2 *ngIf="editMode else insertMode">
     Bewerken gegevens
-</h2>
-<ng-template #insertMode>
-  <h2>Invoeren nieuwe klant</h2>
-</ng-template>
-<form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()" *ngIf="dataAvailable">
-   <div class="container">
-     <div class="row">
-      <div class="col-md-4">
-        <input class ="form-control" type="text" id="name" formControlName="name" placeholder="naam">
-        <input class ="form-control" type="text" id="address" formControlName="address" placeholder="address">
-        <input class ="form-control" type="text" id="email" formControlName="email" placeholder="email">
-        <input class ="form-control" type="text" id="phone" formControlName="phone" placeholder="telefoonnr">
-        <input class ="form-control" type="text" id="country" formControlName="country" placeholder="country">
-      </div>
-      <div class="col-md-8 d-flex flex-wrap align-content-stretch">
-        <div class="container  d-flex flex-wrap align-content-stretch">
-          <div class="row">            
-            <div class="col-md d-flex justify-content-around">
-                <div class="container-fluid d-flex justify-content-around">
-                  <div class="row">
-                    <div class="col-9">
-                        <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
-                            Opslaan
-                        </button>
-                    </div>
-                    <div class="col-3">
-                      <button 
-                              class="btn btn-outline-danger" 
-                              type="button" 
-                              (click)="onDelete()"
-                              *ngIf="editMode">
-                        Verwijder
-                      </button>  
-                    </div>
-                  </div>                 
-                </div>                 
-            </div>
-            <div class="col-md-4 d-flex align-items-end">
-              <button class="btn btn-warning" type="button" (click)="onCancel()">
-                    Stop
+  </h2>
+  <ng-template #insertMode>
+    <h2>Invoeren nieuwe klant</h2>
+  </ng-template>
+  <form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()" *ngIf="dataAvailable">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <input class="form-control" type="text" id="name" formControlName="name" placeholder="naam">
+          <input class="form-control" type="text" id="address" formControlName="address" placeholder="address">
+          <input class="form-control" type="text" id="email" formControlName="email" placeholder="email">
+          <input class="form-control" type="text" id="phone" formControlName="phone" placeholder="telefoonnr">
+          <input class="form-control" type="text" id="country" formControlName="country" placeholder="country">
+        </div>
+        <div class="col-md-8 d-flex flex-wrap align-content-stretch">
+          <div class="container d-flex flex-column align-content-stretch">
+            <div class="d-flex flex-row" style="width:100%;height:50%">
+              <div class="col">
+                <button class="btn btn-outline-primary" type="submit" [disabled]="!reactiveForm.valid">
+                  Opslaan
                 </button>
+              </div>
+              <div class="col d-flex flex-row align-items-start justify-content-end">
+                <button class="btn btn-outline-danger" type="button" (click)="onDelete()" *ngIf="editMode">
+                  Verwijder
+                </button>
+              </div>
             </div>
-          </div>                
+            <div class="d-flex flex-row " style="width:100%;height:50%">
+              <div class="col-md-12 d-flex align-items-end justify-content-end">
+                <button class="btn btn-warning" type="button" (click)="onCancel()">
+                  Stop
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-   </div>
-</form>
+    </div>
+  </form>
 </div>
