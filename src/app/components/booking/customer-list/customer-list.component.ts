@@ -4,8 +4,8 @@ import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
 import { UIService } from 'src/app/services/ui.service';
 import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces/interfaces.ui';
-import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 import { Subscription } from 'rxjs';
+import { UIGuidableComponent } from 'src/app/services/base/ui.guidable.component';
 
 @Component({
   selector: 'app-customer-list',
@@ -27,55 +27,57 @@ import { Subscription } from 'rxjs';
 .highlight:hover{
     background:#adcaeb;
 }
-`]})
-export class CustomerListComponent implements OnInit {
-  customers : Customer[]=[]
-  selectedIdx:number
-  unsublist:Subscription[] =[]
+`]
+})
+export class CustomerListComponent extends UIGuidableComponent implements OnInit {
+  customers: Customer[] = []
+  selectedIdx: number
+  unsublist: Subscription[] = []
 
   @ViewChild("customer_list_cover") coverRef: ElementRef
   @ViewChild("customer_list_outer") outerRef: ElementRef
 
-  constructor(private _router: Router, private _ds: DataService, 
-              private _guidance: UIGuidanceService, 
-              private _ui: UIService) { 
-   
-    this.unsublist.push (
+  constructor(private _router: Router, private _ds: DataService,
+    private _ui: UIService, private _r2: Renderer2) {
+
+    super(_r2, tComponentNames.listCustomer)
+
+    this.unsublist.push(
       this._ui.guider()//.pipe(take(1)) 
-      .subscribe((guidance: tGuiguidance)=>{
-        console.log(guidance)
-        this._guidance.handleGuidance(tComponentNames.listCustomer, this.outerRef, this.coverRef, guidance)
-      })
+        .subscribe((guidance: tGuiguidance) => {
+          console.log(guidance)
+          this.handleGuidance(this.outerRef, this.coverRef, guidance)
+        })
     )
   } //constructor
 
   ngOnInit() {
-    this.unsublist.push (
+    this.unsublist.push(
       this._ds.searchResults()
-        .subscribe((searchResult: Customer[]) =>{
-          console.log('CustomerListComponent received searchCompleted$') 
-            this.customers.length =  0
-            searchResult.forEach(x=>this.customers.push(x))
-      })
+        .subscribe((searchResult: Customer[]) => {
+          console.log('CustomerListComponent received searchCompleted$')
+          this.customers.length = 0
+          searchResult.forEach(x => this.customers.push(x))
+        })
     )
 
   }
-  ngOnDestroy(){
-    this.unsublist.forEach(x=>x.unsubscribe())
-  }  
-  onClick(idx:number, action:string){
-    this.selectedIdx=idx; 
+  ngOnDestroy() {
+    this.unsublist.forEach(x => x.unsubscribe())
+  }
+  onClick(idx: number, action: string) {
+    this.selectedIdx = idx;
 
-    if (action==='book') {
-      this._router.navigate(['booking','cust',this.customers[this.selectedIdx].id, 'bookings'])
+    if (action === 'book') {
+      this._router.navigate(['booking', 'cust', this.customers[this.selectedIdx].id, 'bookings'])
       this._ui.checkin(tGuistate.editCustomerOpen)
     }
     else {
-      this._router.navigate(['booking','cust',this.customers[this.selectedIdx].id])
+      this._router.navigate(['booking', 'cust', this.customers[this.selectedIdx].id])
       this._ui.checkin(tGuistate.bookingsOfCustomerOpen)
     }
   }
-  onDblclick(idx: number){
-    this._ds.searchCustomers(this.customers[idx].email,null)
+  onDblclick(idx: number) {
+    this._ds.searchCustomers(this.customers[idx].email, null)
   }
 }

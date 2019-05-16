@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef, Renderer2, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { UIService } from 'src/app/services/ui.service';
 import { UserFeedback } from 'src/app/models/UserFeedback.model';
-import {trigger, state, style, animate, transition} from '@angular/animations';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 import { IconFeedback } from 'src/app/models/icon-feedback';
 import { MessageFeedback } from 'src/app/models/message-feedback';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -12,10 +12,10 @@ import { Router } from '@angular/router';
 import { BackendBase } from 'src/app/services/base/backend.base.service';
 import { tDataResult } from 'src/app/services/interfaces/interfaces.persist';
 import { AuthBase } from 'src/app/services/base/auth.base.service';
-import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 import { tComponentNames, tGuiguidance } from 'src/app/services/interfaces/interfaces.ui';
 import { Subscription } from 'rxjs';
 import { EmptyNarrator } from 'src/app/shared/Narrator.Empty';
+import { UIGuidableComponent } from 'src/app/services/base/ui.guidable.component';
 
 @Component({
   selector: 'app-header',
@@ -64,83 +64,86 @@ import { EmptyNarrator } from 'src/app/shared/Narrator.Empty';
   animations: [
     // the fade-in/fade-out animation.
     trigger('feedbackAnimation', [
-      state('in', style({opacity: 1})),
-      state('out', style({opacity: 0})),
-      transition('in =>out',animate('5000ms')),
-      transition('out =>in',animate('1ms')),
+      state('in', style({ opacity: 1 })),
+      state('out', style({ opacity: 0 })),
+      transition('in =>out', animate('5000ms')),
+      transition('out =>in', animate('1ms')),
     ])
-  ]})
+  ]
+})
 
-export class HeaderComponentComponent implements OnInit, OnDestroy {  
+export class HeaderComponentComponent extends UIGuidableComponent implements OnInit, OnDestroy {
   constructor(
     private _bs: BackendBase, private _auth: AuthBase,
-    private _ui : UIService, private _narraor : EmptyNarrator, private _modalService: NgbModal,
-    private _guidance: UIGuidanceService, private zone: NgZone,
-    private _ds: DataService, private _r2: Renderer2,
+    private _ui: UIService, private _modalService: NgbModal,
+    private _r2: Renderer2, private zone: NgZone,
+    private _ds: DataService,
     private _narrator: EmptyNarrator
-    ) { 
-    }
+  ) {
+    super(_r2, tComponentNames.header)
+  }
 
   @ViewChild("header_cover") coverRef: ElementRef
   @ViewChild("header_outer") outerRef: ElementRef
 
-  notificationState:string
+  notificationState: string
   navbarOpen: boolean
 
-  currentFeedback:UserFeedback
+  currentFeedback: UserFeedback
   showAsIcon: boolean
   showAsMsg: boolean
-  unsublist:Subscription[] =[]
+  unsublist: Subscription[] = []
 
-  ufList:UserFeedback[]=[]
+  ufList: UserFeedback[] = []
   @ViewChild('notifications') notifRef: ElementRef
-  notifClicked=false
+  notifClicked = false
 
-  resetAnimation(){
-      this.zone.run(() => {
-       this.notificationState = 'in'
-        setTimeout(()=>{ 
-              this.notificationState = 'out';
-          },200)
-      })
+  resetAnimation() {
+    this.zone.run(() => {
+      this.notificationState = 'in'
+      setTimeout(() => {
+        this.notificationState = 'out';
+      }, 200)
+    })
   }
 
   ngOnInit() {
     console.log('ngOnInit ')
 
-    this.unsublist.push (
+    this.unsublist.push(
       this._ui.notifier()
-        .subscribe((feedback:UserFeedback)=>{ //auto-unsubscribe
+        .subscribe((feedback: UserFeedback) => {
           if (this._auth.isAuthenticated) this.onUINotification(feedback)
-      })
+        })
     )
-    this.unsublist.push (
-      this._auth.authCompletedReplay().subscribe(()=>{ //only get the data when logged on
+
+    this.unsublist.push(
+      this._auth.authCompletedReplay().subscribe(() => { //only get the data when logged on
         this._ds.getData() //emits dataReady() when done, all componenets subscribe to that
 
         this._ds.dataReadyReplay().pipe(take(1))
-          .subscribe((result)=>{
+          .subscribe((result) => {
             this.onDataReady(result)
-        })
+          })
       })
     )
 
-    this.unsublist.push (
-      this._ui.guider() 
-        .subscribe((guidance: tGuiguidance)=>{
+    this.unsublist.push(
+      this._ui.guider()
+        .subscribe((guidance: tGuiguidance) => {
           console.log(guidance)
-          this._guidance.handleGuidance(tComponentNames.header, this.outerRef, this.coverRef, guidance)
-          })
+          this.handleGuidance(this.outerRef, this.coverRef, guidance)
+        })
     )
   }
- 
-  //todo: get this list by querying a folder specified in settings
-  bgList : string[] = ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg']
 
-  getNewUrl() : string{
-   let imgpath='assets/img/bg'
-    let idx=Math.floor(Math.random() * this.bgList.length)
-    if (idx<0) idx =0
+  //todo: get this list by querying a folder specified in settings
+  bgList: string[] = ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg']
+
+  getNewUrl(): string {
+    let imgpath = 'assets/img/bg'
+    let idx = Math.floor(Math.random() * this.bgList.length)
+    if (idx < 0) idx = 0
     console.log('IDX: ' + idx)
     let imgname = this.bgList[idx]
     console.log(imgname)
@@ -148,65 +151,65 @@ export class HeaderComponentComponent implements OnInit, OnDestroy {
     return `url("${imgpath}/${imgname}")`
   }
 
-  onChangeBgImage(){
-    let newUrl= this.getNewUrl()
+  onChangeBgImage() {
+    let newUrl = this.getNewUrl()
     console.log(`${newUrl} =? ${document.body.style.backgroundImage}`)
-    while (newUrl === document.body.style.backgroundImage){
+    while (newUrl === document.body.style.backgroundImage) {
       console.log("same image, try again!")
       newUrl = this.getNewUrl()
     }
-    document.body.style.backgroundImage=newUrl
+    document.body.style.backgroundImage = newUrl
     //document.body.style.backgroundImage=`url(assets/img/bg/d6.jpg)`
   }
 
-  onUINotification(feedback:UserFeedback){
-      this.currentFeedback=feedback
-      // Start adding warnings/ errors to history after logon
-      if (feedback.toHistory()) {
-        this.ufList.unshift(feedback) 
-      }
-      this.resetAnimation()
+  onUINotification(feedback: UserFeedback) {
+    this.currentFeedback = feedback
+    // Start adding warnings/ errors to history after logon
+    if (feedback.toHistory()) {
+      this.ufList.unshift(feedback)
+    }
+    this.resetAnimation()
   }
 
-  onClickNotifications(){
-    this.notifClicked=!this.notifClicked
+  onClickNotifications() {
+    this.notifClicked = !this.notifClicked
 
-    let action = this.notifClicked ? 'block': 'none'
-    console.log('action='+action)
+    let action = this.notifClicked ? 'block' : 'none'
+    console.log('action=' + action)
     //this._r2[action](this.notifRef.nativeElement, 'open-notifications')
-    this._r2.setStyle(this.notifRef.nativeElement,'display', action)
+    this._r2.setStyle(this.notifRef.nativeElement, 'display', action)
   }
-  
-  onDataReady(result: tDataResult){
-    if (result.error) { 
-        console.log('Fout bij ophalen data!' + result.error)
-        console.log(result)
-        this._ui.error('Fout bij ophalen data: '+ result.error )// 
-    } 
+
+  onDataReady(result: tDataResult) {
+    if (result.error) {
+      console.log('Fout bij ophalen data!' + result.error)
+      console.log(result)
+      this._ui.error('Fout bij ophalen data: ' + result.error)// 
+    }
     else this._narrator.startNarrating()
   }
   // ngDoCheck(){
   //   console.log('=-=-=-=-=-=-=-=-=-=-=- DoCheck EXPENSIVE change detection in header  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   //   console.log()
   // }
-displayNavbar(newval?: boolean){
-  if (newval != undefined) this.navbarOpen=newval
-  else this.navbarOpen = !this.navbarOpen;
-}
-   ngOnDestroy(){
-    this.unsublist.forEach(x=>x.unsubscribe())
-  } 
+  displayNavbar(newval?: boolean) {
+    if (newval != undefined) this.navbarOpen = newval
+    else this.navbarOpen = !this.navbarOpen;
+  }
+  ngOnDestroy() {
+    this.unsublist.forEach(x => x.unsubscribe())
+  }
 
-  exitElectron(){ 
+  exitElectron() {
     const modalRef = this._modalService.open(ModalConfirmComponent);
     modalRef.componentInstance.title = 'Programma afsluiten';
     modalRef.componentInstance.message = 'Programma afsluiten?';
     modalRef.result
-    .then(()=>{
-      this._bs.exitProgram() 
-    })
-    .catch(()=>{
-      console.log('modal cancelled')
-    })  
+      .then(() => {
+        this._bs.exitProgram()
+      })
+      .catch(() => {
+        console.log('modal cancelled')
+      })
   }
 }
