@@ -40,7 +40,8 @@ export class BookingComponent extends UIGuidableComponent implements OnInit, OnD
     private _activatedRoute: ActivatedRoute,
     private _r2: Renderer2) {
 
-    super(_r2, tComponentNames.listBooking)
+    super(_r2);
+    super.setGuidanceName(tComponentNames.listBooking)
   }
 
   @ViewChild("booking_cover") coverRef: ElementRef

@@ -16,7 +16,7 @@ import { CustomerNewEditComponent } from './components/booking/customer-new-edit
 import { MailingComponent } from './components/mailing/mailing/mailing.component';
 import { BookingComponent } from './components/booking/booking/booking.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import {NgbModule, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from './components/ng-bootstrap/modal-confirm/modal-confirm.component';
 import { ModalDaterangeSelectComponent } from './components/ng-bootstrap/modal-daterange-select/modal-daterange-select.component';
 import { Nl2BrPipe } from './shared/nl2br.pipe';
@@ -34,8 +34,9 @@ import { BackendFakeService } from './services/backend.fake.service';
 import { PersistFakeService } from './services/persist.fake.service';
 import { EmptyNarrator } from './shared/Narrator.Empty';
 import { DemoNarrator } from './shared/Narrator.Demo';
+import { UIGuidableComponent } from './services/base/ui.guidable.component';
 
-registerLocaleData(localeNl, 'nl'); 
+registerLocaleData(localeNl, 'nl');
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ registerLocaleData(localeNl, 'nl');
     ModalDaterangeSelectComponent,
     Nl2BrPipe,
     AssumeSafeHtmlPipe,
+    UIGuidableComponent,
   ],
   entryComponents: [
     ModalConfirmComponent,
@@ -68,11 +70,11 @@ registerLocaleData(localeNl, 'nl');
   ],
   providers: [
     { provide: LOCALE_ID, useValue: "nl" },
-    { provide: AuthBase, useClass: AuthFakeService},
-    { provide: BackendBase, useClass: BackendFakeService},
-    { provide: PersistBase, useClass: PersistFakeService},
-    { provide: EmptyNarrator, useClass: DemoNarrator},
-    ],
+    { provide: AuthBase, useClass: AuthFakeService },
+    { provide: BackendBase, useClass: BackendFakeService },
+    { provide: PersistBase, useClass: PersistFakeService },
+    { provide: EmptyNarrator, useClass: DemoNarrator },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

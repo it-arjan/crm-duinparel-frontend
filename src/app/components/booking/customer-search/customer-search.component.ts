@@ -20,7 +20,9 @@ export class CustomerSearchComponent extends UIGuidableComponent implements OnIn
   constructor(private _router: Router, private _ds: DataService,
     private _ui: UIService, private _r2: Renderer2) {
 
-    super(_r2, tComponentNames.searchCustomer)
+    super(_r2);
+    super.setGuidanceName(tComponentNames.searchCustomer)
+
   }
 
   reactiveForm: FormGroup;

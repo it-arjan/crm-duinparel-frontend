@@ -80,7 +80,9 @@ export class HeaderComponentComponent extends UIGuidableComponent implements OnI
     private _ds: DataService,
     private _narrator: EmptyNarrator
   ) {
-    super(_r2, tComponentNames.header)
+    super(_r2)
+    super.setGuidanceName(tComponentNames.header)
+
   }
 
   @ViewChild("header_cover") coverRef: ElementRef

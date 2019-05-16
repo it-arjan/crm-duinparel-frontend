@@ -40,7 +40,8 @@ export class CustomerListComponent extends UIGuidableComponent implements OnInit
   constructor(private _router: Router, private _ds: DataService,
     private _ui: UIService, private _r2: Renderer2) {
 
-    super(_r2, tComponentNames.listCustomer)
+    super(_r2)
+    super.setGuidanceName(tComponentNames.listCustomer)
 
     this.unsublist.push(
       this._ui.guider()//.pipe(take(1)) 
