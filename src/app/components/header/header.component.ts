@@ -9,11 +9,11 @@ import { ModalConfirmComponent } from '../ng-bootstrap/modal-confirm/modal-confi
 import { take } from 'rxjs/operators';
 import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
-import { BackendBase } from 'src/app/services/backend.base.service';
-import { tDataResult } from 'src/app/services/interfaces.persist';
-import { AuthBase } from 'src/app/services/auth.base.service';
+import { BackendBase } from 'src/app/services/base/backend.base.service';
+import { tDataResult } from 'src/app/services/interfaces/interfaces.persist';
+import { AuthBase } from 'src/app/services/base/auth.base.service';
 import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
-import { tComponentNames, tGuiguidance } from 'src/app/services/interfaces.ui';
+import { tComponentNames, tGuiguidance } from 'src/app/services/interfaces/interfaces.ui';
 import { Subscription } from 'rxjs';
 import { EmptyNarrator } from 'src/app/shared/Narrator.Empty';
 

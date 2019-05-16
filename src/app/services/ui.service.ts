@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { UserFeedback } from '../models/UserFeedback.model';
-import { tGuistate, tGuiguidance, tComponentNames, iGuidance, ufType } from './interfaces.ui';
-import { AuthBase } from './auth.base.service';
+import { tGuistate, tGuiguidance, tComponentNames, iGuidance, ufType } from './interfaces/interfaces.ui';
+import { AuthBase } from './base/auth.base.service';
 
 
 @Injectable({

@@ -1,9 +1,9 @@
 import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { tDataResult } from './interfaces.persist';
-import { Customer } from '../models/customer.model';
-import { Booking } from '../models/booking.model';
-import { Mailing } from '../models/mailing.model';
-import { CustomerBatch } from '../models/customerbatch.model';
+import { Customer } from '../../models/customer.model';
+import { Booking } from '../../models/booking.model';
+import { Mailing } from '../../models/mailing.model';
+import { CustomerBatch } from '../../models/customerbatch.model';
 
 export interface iData{
     getData(): void

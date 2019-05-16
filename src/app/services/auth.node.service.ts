@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { iAuth, iAuthResult, changePwdInput } from './interfaces.auth';
+import { iAuth, iAuthResult, changePwdInput } from './interfaces/interfaces.auth';
 import { ElectronService } from 'ngx-electron';
 import { UIService } from './ui.service';
-import { AuthBase } from './auth.base.service';
+import { AuthBase } from './base/auth.base.service';
 
 @Injectable()
 export class AuthNodejsService extends AuthBase {

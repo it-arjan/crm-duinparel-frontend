@@ -1,5 +1,5 @@
 import { ElementRef, Renderer2, Injectable, RendererFactory2 } from '@angular/core';
-import { tComponentNames, tGuiguidance } from './interfaces.ui';
+import { tComponentNames, tGuiguidance } from './interfaces/interfaces.ui';
 
 @Injectable({
   providedIn: 'root' 

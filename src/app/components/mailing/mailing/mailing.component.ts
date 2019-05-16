@@ -12,7 +12,7 @@ import { ModalConfirmComponent } from '../../ng-bootstrap/modal-confirm/modal-co
 import * as moment from 'moment';
 import 'moment/locale/nl'  // without this line it didn't work
 moment.locale('nl')
-import { tPersist, tDataResult } from 'src/app/services/interfaces.persist';
+import { tPersist, tDataResult } from 'src/app/services/interfaces/interfaces.persist';
 import { ModalDaterangeSelectComponent } from '../../ng-bootstrap/modal-daterange-select/modal-daterange-select.component';
 
 @Component({

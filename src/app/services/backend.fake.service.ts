@@ -5,9 +5,9 @@ import { UIService } from './ui.service';
 import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { LogEntry } from '../models/logentry.model';
-import { iBackendTasks } from './interfaces.backend';
+import { iBackendTasks } from './interfaces/interfaces.backend';
 import { Globals } from '../shared/globals';
-import { BackendBase } from './backend.base.service';
+import { BackendBase } from './base/backend.base.service';
 
 
 @Injectable()

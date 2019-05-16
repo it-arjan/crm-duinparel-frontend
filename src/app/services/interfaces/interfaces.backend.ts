@@ -1,7 +1,7 @@
-import { ConfigSetting } from '../models/configsetting.model';
-import { Customer } from '../models/customer.model';
-import { Booking } from '../models/booking.model';
-import { LogEntry } from '../models/logentry.model';
+import { ConfigSetting } from '../../models/configsetting.model';
+import { Customer } from '../../models/customer.model';
+import { Booking } from '../../models/booking.model';
+import { LogEntry } from '../../models/logentry.model';
 
 export interface iBackendTasks {
     readConfig(): Promise<ConfigSetting[]>

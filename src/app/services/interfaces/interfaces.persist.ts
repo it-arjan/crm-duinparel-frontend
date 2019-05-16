@@ -1,6 +1,6 @@
-import { Customer, jsCustomer } from '../models/customer.model';
-import { Mailing, jsMailing } from '../models/mailing.model';
-import { Booking } from '../models/booking.model';
+import { Customer, jsCustomer } from '../../models/customer.model';
+import { Mailing, jsMailing } from '../../models/mailing.model';
+import { Booking } from '../../models/booking.model';
 import { ReplaySubject } from 'rxjs';
 
 // export interface tBulkdataResult {

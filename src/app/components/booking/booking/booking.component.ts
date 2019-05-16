@@ -13,9 +13,9 @@ import { Globals, tDateError } from '../../../shared/globals';
 import * as moment from 'moment';
 import 'moment/locale/nl'  // without this line it didn't work
 moment.locale('nl')
-import { BackendBase } from 'src/app/services/backend.base.service';
+import { BackendBase } from 'src/app/services/base/backend.base.service';
 import { take } from 'rxjs/operators';
-import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
+import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces/interfaces.ui';
 import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 import { Subscription } from 'rxjs';
 

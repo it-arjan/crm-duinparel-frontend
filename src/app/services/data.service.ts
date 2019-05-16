@@ -3,14 +3,14 @@ import { Customer } from '../models/customer.model';
 import { Booking } from '../models/booking.model';
 import { CustomerBatch } from '../models/customerbatch.model';
 import { Mailing } from '../models/mailing.model';
-import { tBulkdataResult, tPersist, tDataResult } from './interfaces.persist';
+import { tBulkdataResult, tPersist, tDataResult } from './interfaces/interfaces.persist';
 import { take } from 'rxjs/operators';
 import { UIService } from './ui.service';
 import { ReplaySubject, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { Globals } from '../shared/globals';
-import { iData } from './interfaces.data';
-import { PersistBase } from './persist.base.service';
+import { iData } from './interfaces/interfaces.data';
+import { PersistBase } from './base/persist.base.service';
 
 import * as moment from 'moment';
 import 'moment/locale/nl'  // without this line it didn't work

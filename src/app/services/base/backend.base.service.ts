@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
-import { ConfigSetting } from '../models/configsetting.model';
-import { UIService } from './ui.service';
-import { Customer } from '../models/customer.model';
-import { Booking } from '../models/booking.model';
-import { LogEntry } from '../models/logentry.model';
-import { iBackendTasks } from './interfaces.backend';
+import { ConfigSetting } from '../../models/configsetting.model';
+import { UIService } from '../ui.service';
+import { Customer } from '../../models/customer.model';
+import { Booking } from '../../models/booking.model';
+import { LogEntry } from '../../models/logentry.model';
+import { iBackendTasks } from '../interfaces/interfaces.backend';
 
 
 @Injectable()

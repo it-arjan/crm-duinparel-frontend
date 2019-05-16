@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, OnChanges, NgZone } from '@angular/core';
-import { BackendBase } from 'src/app/services/backend.base.service';
+import { BackendBase } from 'src/app/services/base/backend.base.service';
 import { ConfigSetting } from 'src/app/models/configsetting.model';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { UIService } from 'src/app/services/ui.service';
@@ -7,9 +7,9 @@ import { LogEntry } from 'src/app/models/logentry.model';
 import { Globals } from 'src/app/shared/globals';
 import { DataService } from 'src/app/services/data.service';
 import { ReplaySubject } from 'rxjs';
-import { tDataResult } from 'src/app/services/interfaces.persist';
+import { tDataResult } from 'src/app/services/interfaces/interfaces.persist';
 import { Router } from '@angular/router';
-import { AuthBase } from 'src/app/services/auth.base.service';
+import { AuthBase } from 'src/app/services/base/auth.base.service';
 import * as Papa from 'papaparse/papaparse.min.js';
 import { Customer } from 'src/app/models/customer.model';
 import { Booking } from 'src/app/models/booking.model';

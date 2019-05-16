@@ -3,7 +3,7 @@ import { Customer } from 'src/app/models/customer.model';
 import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
 import { UIService } from 'src/app/services/ui.service';
-import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
+import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces/interfaces.ui';
 import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 import { Subscription } from 'rxjs';
 

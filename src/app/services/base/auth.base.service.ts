@@ -1,4 +1,4 @@
-import { iAuthResult } from './interfaces.auth';
+import { iAuthResult } from '../interfaces/interfaces.auth';
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 @Injectable()

@@ -1,4 +1,4 @@
-import { ufType } from '../services/interfaces.ui';
+import { ufType } from '../services/interfaces/interfaces.ui';
 
 export class UserFeedback{
     constructor(public type:ufType, public message:string    ){

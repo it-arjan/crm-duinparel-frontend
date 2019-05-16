@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { BackendBase } from './backend.base.service';
+import { BackendBase } from './base/backend.base.service';
 
 describe('BackendBase', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

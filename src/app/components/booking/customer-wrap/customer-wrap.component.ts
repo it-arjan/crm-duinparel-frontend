@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { UIService } from 'src/app/services/ui.service'
-import { tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui'
+import { tGuiguidance, tComponentNames } from 'src/app/services/interfaces/interfaces.ui'
 import { take } from 'rxjs/operators';
 
 @Component({

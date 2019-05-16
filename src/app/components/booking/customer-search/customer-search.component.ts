@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UIService } from 'src/app/services/ui.service';
-import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
+import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces/interfaces.ui';
 import { UIGuidanceService } from 'src/app/services/ui.guidance.service';
 
 @Component({

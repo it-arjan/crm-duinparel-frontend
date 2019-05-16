@@ -7,9 +7,9 @@ import { UIService } from 'src/app/services/ui.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../../ng-bootstrap/modal-confirm/modal-confirm.component';
 import { take } from 'rxjs/operators';
-import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces.ui';
+import { tGuistate, tGuiguidance, tComponentNames } from 'src/app/services/interfaces/interfaces.ui';
 import { TData } from '@angular/core/src/render3/interfaces/view';
-import { tDataResult } from 'src/app/services/interfaces.persist';
+import { tDataResult } from 'src/app/services/interfaces/interfaces.persist';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { tBulkdataResult, tDataResult, iDataPersist, tPersist, tDataResultNodejs, tPersistBag } from './interfaces.persist';
-import { Customer } from '../models/customer.model';
+import { tBulkdataResult, tDataResult, iDataPersist, tPersist, tDataResultNodejs, tPersistBag } from '../interfaces/interfaces.persist';
+import { Customer } from '../../models/customer.model';
 import { ElectronService } from 'ngx-electron';
-import { Mailing } from '../models/mailing.model';
-import { Booking } from '../models/booking.model';
-import { UIService } from './ui.service';
+import { Mailing } from '../../models/mailing.model';
+import { Booking } from '../../models/booking.model';
+import { UIService } from '../ui.service';
 
 @Injectable()
 export abstract class PersistBase  implements iDataPersist {
