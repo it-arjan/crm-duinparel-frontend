@@ -12,11 +12,9 @@
     "test_angular": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    
     "buildcode_azure": "ng build --prod ",
     "web_config_azure": "copy .\\Web.config .\\dist",
     "buildpub_azure": "npm run buildcode_azure && npm run web_config_azure",
-
     "buildcode_github": "ng build --prod --base-href https://it-arjan.github.io/crm-duinparel-frontend/",
     "buildpub_github": "npm run buildcode_github && ngh"
   },
@@ -43,7 +41,7 @@
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.11.0",
+    "@angular-devkit/build-angular": "^0.12.4",
     "@angular/cli": "~7.1.4",
     "@angular/compiler-cli": "~7.1.0",
     "@angular/language-service": "~7.1.0",
