@@ -32,7 +32,7 @@
     "bootstrap": "^4.2.1",
     "core-js": "^2.5.4",
     "dotenv": "^6.2.0",
-    "electron": "^5.0.0",
+    "electron": "^18.3.7",
     "moment": "^2.24.0",
     "ngx-electron": "^2.1.1",
     "no-config": "^1.1.2",
